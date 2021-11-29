@@ -14,6 +14,8 @@ APlayerCharacter::APlayerCharacter()
 	LookUpRate = 45.0f;
 	isJumping = false;
 	isBlocking = false;
+	isAttacking = false;
+	attackCounter = 0;
 
 	// Set players max and current health stats
 	maxHealth = 100.0f;
@@ -108,4 +110,9 @@ void APlayerCharacter::Block()
 void APlayerCharacter::StopBlocking()
 {
 	isBlocking = false;
+}
+
+void APlayerCharacter::Attack()
+{
+	isAttacking = true;
 }

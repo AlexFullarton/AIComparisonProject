@@ -16,6 +16,12 @@ UPlayerCharacter3P_Anim::UPlayerCharacter3P_Anim()
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> blockAnim(TEXT("AnimMontage'/Game/Animations/Character/Sword/Combat/BlockMovement.BlockMovement'"));
 	blockAnimationMontage = blockAnim.Object;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> attackAnim0(TEXT("AnimMontage'/Game/Animations/Character/Sword/Combat/AttackMovement0.AttackMovement0'"));
+	attackAnimationMontage0 = attackAnim0.Object;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> attackAnim1(TEXT("AnimMontage'/Game/Animations/Character/Sword/Combat/AttackMovement1.AttackMovement1'"));
+	attackAnimationMontage1 = attackAnim1.Object;
 }
 
 void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
@@ -28,9 +34,26 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 		sidewaysMovement = -1 * FVector::DotProduct(Player->GetVelocity(), Player->GetActorRightVector());
 		isJumping = Player->isJumping;
 		isBlocking = Player->isBlocking;
+		isAttacking = Player->isAttacking;
 		currentHealth = Player->currentHealth;
 	}
+	// ATTACK ANIMATIONS
+	if (isAttacking && Player->attackCounter == 0 && !Montage_IsPlaying(NULL))
+	{
+		float wait_time = Montage_Play(attackAnimationMontage0);
+		_sleep(wait_time);
+		Player->attackCounter++;
+		Player->isAttacking = false;
+	}
+	else if (isAttacking && Player->attackCounter != 0 && !Montage_IsPlaying(NULL))
+	{
+		float wait_time = Montage_Play(attackAnimationMontage1);
+		_sleep(wait_time);
+		Player->attackCounter = 0;
+		Player->isAttacking = false;
+	}
 
+	// BLOCKING ANIMATIONS
 	if (isBlocking && !Montage_IsPlaying(blockAnimationMontage))
 	{
 		Montage_Play(blockAnimationMontage);

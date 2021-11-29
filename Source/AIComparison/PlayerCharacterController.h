@@ -38,6 +38,8 @@ protected:
 
 	void StopBlocking();
 
+	void Attack();
+
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 };

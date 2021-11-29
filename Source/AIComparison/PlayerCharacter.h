@@ -44,6 +44,9 @@ public:
 	void Block();
 	void StopBlocking();
 
+	// attack function
+	void Attack();
+
 	// Interaction function
 	void Interact();
 
@@ -73,9 +76,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool isBlocking;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	bool isAttacking;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerStats")
 	float maxHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerStats")
 	float currentHealth;
+
+	int attackCounter;
+
 };

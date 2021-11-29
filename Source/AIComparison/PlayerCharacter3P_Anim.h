@@ -37,6 +37,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isBlocking;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	bool isAttacking;
+
 private:
-	UAnimMontage* blockAnimationMontage;
+	UAnimMontage* blockAnimationMontage, *attackAnimationMontage0, * attackAnimationMontage1;
 };

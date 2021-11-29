@@ -19,6 +19,9 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacterController::Block);
 	InputComponent->BindAction("Block", IE_Released, this, &APlayerCharacterController::StopBlocking);
 
+	// Bind Attack event
+	InputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacterController::Attack);
+
 	// Bind movement events
 	InputComponent->BindAxis("MoveForward", this, &APlayerCharacterController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APlayerCharacterController::MoveRight);
@@ -143,5 +146,15 @@ void APlayerCharacterController::StopBlocking()
 	if (player != nullptr)
 	{
 		player->StopBlocking();
+	}
+}
+
+void APlayerCharacterController::Attack()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
+	// If the player is currently controlling their avatar
+	if (player != nullptr)
+	{
+		player->Attack();
 	}
 }
