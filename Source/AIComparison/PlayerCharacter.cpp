@@ -13,9 +13,14 @@ APlayerCharacter::APlayerCharacter()
 	TurnRate = 45.0f;
 	LookUpRate = 45.0f;
 	isJumping = false;
+	isBlocking = false;
+
+	// Set players max and current health stats
+	maxHealth = 100.0f;
+	currentHealth = maxHealth;
 
 	// Initial Camera Offset
-	FVector cameraOffset(-30.0f, 0.0f, 70.0f);
+	FVector cameraOffset(-200.0f, 20.0f, 70.0f);
 
 	// Create third person camera component
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
@@ -37,9 +42,14 @@ APlayerCharacter::APlayerCharacter()
 	Mesh3P->SkeletalMesh = Mesh3PObject.Object;
 
 	// Set animation blueprint for the third person mesh
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/PlayerCharacter3P_Anim.PlayerCharacter3P_Anim'"));
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Sword/Player3P_AnimBP.Player3P_AnimBP'"));
 	Mesh3P->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	Mesh3P->AnimClass = AnimationBP.Object->GeneratedClass;
+
+	// Setup player movement component acceleration/deceleration coefficients
+	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxAcceleration = 800.0f;
+	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFrictionFactor = 0.1f;
+	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFriction = 0.01f;
 }
 
 // Called when the game starts or when spawned
@@ -88,4 +98,14 @@ void APlayerCharacter::Jump()
 void APlayerCharacter::StopJumping()
 {
 	Super::StopJumping();
+}
+
+void APlayerCharacter::Block()
+{
+	isBlocking = true;
+}
+
+void APlayerCharacter::StopBlocking()
+{
+	isBlocking = false;
 }

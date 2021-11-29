@@ -15,6 +15,10 @@ void APlayerCharacterController::SetupInputComponent()
 	// Bind interact event
 	InputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacterController::Interact);
 
+	// Bind block event
+	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacterController::Block);
+	InputComponent->BindAction("Block", IE_Released, this, &APlayerCharacterController::StopBlocking);
+
 	// Bind movement events
 	InputComponent->BindAxis("MoveForward", this, &APlayerCharacterController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APlayerCharacterController::MoveRight);
@@ -26,6 +30,8 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAxis("TurnRate", this, &APlayerCharacterController::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APlayerCharacterController::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &APlayerCharacterController::LookUpAtRate);
+
+	
 }
 
 void APlayerCharacterController::Jump()
@@ -117,5 +123,25 @@ void APlayerCharacterController::LookUpAtRate(float rate)
 	if (player != nullptr)
 	{
 		player->LookUpAtRate(rate);
+	}
+}
+
+void APlayerCharacterController::Block()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
+	// If the player is currently controlling their avatar
+	if (player != nullptr)
+	{
+		player->Block();
+	}
+}
+
+void APlayerCharacterController::StopBlocking()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
+	// If the player is currently controlling their avatar
+	if (player != nullptr)
+	{
+		player->StopBlocking();
 	}
 }

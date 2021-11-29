@@ -8,6 +8,7 @@
 #include "PlayerCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "PlayerCharacter3P_Anim.generated.h"
 
 UCLASS()
@@ -29,4 +30,13 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isJumping;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	float currentHealth;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	bool isBlocking;
+
+private:
+	UAnimMontage* blockAnimationMontage;
 };

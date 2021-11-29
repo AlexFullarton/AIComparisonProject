@@ -9,6 +9,13 @@ UPlayerCharacter3P_Anim::UPlayerCharacter3P_Anim()
 	forwardMovement = 0.0f;
 	sidewaysMovement = 0.0f;
 	isJumping = false;
+	isBlocking = false;
+
+	// Initialise player stat variables
+	currentHealth = 1.0f;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> blockAnim(TEXT("AnimMontage'/Game/Animations/Character/Sword/Combat/BlockMovement.BlockMovement'"));
+	blockAnimationMontage = blockAnim.Object;
 }
 
 void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
@@ -19,6 +26,17 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		forwardMovement = FVector::DotProduct(Player->GetVelocity(), Player->GetActorForwardVector());
 		sidewaysMovement = -1 * FVector::DotProduct(Player->GetVelocity(), Player->GetActorRightVector());
-		//isJumping = Player->GetMovementComponent()->isFalling();
+		isJumping = Player->isJumping;
+		isBlocking = Player->isBlocking;
+		currentHealth = Player->currentHealth;
+	}
+
+	if (isBlocking && !Montage_IsPlaying(blockAnimationMontage))
+	{
+		Montage_Play(blockAnimationMontage);
+	}
+	if (!isBlocking && Montage_IsPlaying(blockAnimationMontage))
+	{
+		Montage_Stop(0.2f, blockAnimationMontage);
 	}
 }

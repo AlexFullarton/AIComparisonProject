@@ -34,6 +34,10 @@ protected:
 
 	void LookUpAtRate(float rate);
 
+	void Block();
+
+	void StopBlocking();
+
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 };
