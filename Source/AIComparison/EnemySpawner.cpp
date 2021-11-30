@@ -23,7 +23,16 @@ AEnemySpawner::AEnemySpawner()
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	FTransform spawnTransform;
+	spawnTransform.SetTranslation(GetActorLocation());
+	spawnTransform.SetRotation(GetActorQuat());
+	spawnTransform.SetScale3D(GetActorScale3D());
+	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(AEnemyCharacter::StaticClass(), spawnTransform);
+
+	// Set the enemy controller here
+
+	enemy->FinishSpawning(spawnTransform);
 }
 
 
