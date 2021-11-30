@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
+#include "EnemyCharacter.h"
 #include "EnemySpawner.generated.h"
 
 UCLASS()
@@ -15,12 +20,17 @@ public:
 	// Sets default values for this actor's properties
 	AEnemySpawner();
 
+	// Root component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Root)
+	USceneComponent* SceneComponent;
+	// Static mesh for visibility in editor
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	UStaticMeshComponent* objectMesh;
+	// Enemy type to be spawned in by this spawner
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	FString enemyType;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

@@ -6,9 +6,17 @@
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
+	SetRootComponent(SceneComponent);
+	objectMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	objectMesh->SetupAttachment(RootComponent);
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
+	objectMesh->SetStaticMesh(cylinderMesh.Object);
+
+	SceneComponent->bHiddenInGame = true;
+	objectMesh->bHiddenInGame = true;
+	SetActorHiddenInGame(true);
 }
 
 // Called when the game starts or when spawned
@@ -18,10 +26,4 @@ void AEnemySpawner::BeginPlay()
 	
 }
 
-// Called every frame
-void AEnemySpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
