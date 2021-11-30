@@ -11,6 +11,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "UObject/Class.h"
+#include "MeleeWeapon.h"
+#include "RangedWeapon.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -18,13 +21,21 @@ class AICOMPARISON_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	// Character body mesh for third person view
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* Mesh3P;
-
 	// Third person camera - viewport
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ThirdPersonCameraComponent;
+
+	// Equipped weapons
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	UClass* leftHandShield;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	UClass* rightHandSword;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	UClass* rightHandBow;
+
 
 public:
 	// Sets default values for this character's properties

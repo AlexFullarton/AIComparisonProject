@@ -11,7 +11,7 @@
 APlayerHUD::APlayerHUD()
 {
 	// Setup crosshair texture
-	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTextureObj(TEXT("Texture2D'/Game/Textures/FirstPersonCrosshair.FirstPersonCrosshair'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTextureObj(TEXT("Texture2D'/Game/Textures/HUD/FirstPersonCrosshair.FirstPersonCrosshair'"));
 	CrosshairTexture = CrosshairTextureObj.Object;
 }
 

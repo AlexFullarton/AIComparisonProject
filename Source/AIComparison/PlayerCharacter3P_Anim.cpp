@@ -40,15 +40,13 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 	// ATTACK ANIMATIONS
 	if (isAttacking && Player->attackCounter == 0 && !Montage_IsPlaying(NULL))
 	{
-		float wait_time = Montage_Play(attackAnimationMontage0);
-		_sleep(wait_time);
+		Montage_Play(attackAnimationMontage0);
 		Player->attackCounter++;
 		Player->isAttacking = false;
 	}
 	else if (isAttacking && Player->attackCounter != 0 && !Montage_IsPlaying(NULL))
 	{
-		float wait_time = Montage_Play(attackAnimationMontage1);
-		_sleep(wait_time);
+		Montage_Play(attackAnimationMontage1);
 		Player->attackCounter = 0;
 		Player->isAttacking = false;
 	}

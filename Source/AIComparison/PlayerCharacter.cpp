@@ -31,34 +31,40 @@ APlayerCharacter::APlayerCharacter()
 	ThirdPersonCameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 	ThirdPersonCameraComponent->bUsePawnControlRotation = true;
 
-	// Create a mesh component for 3rd person view
-	Mesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
-	Mesh3P->SetupAttachment(GetCapsuleComponent());
+	// Setup a skeletal mesh component for 3rd person view
+	USkeletalMeshComponent* SkelMesh = GetMesh();
+	SkelMesh->SetupAttachment(GetCapsuleComponent());
 	//Mesh3P->SetOwnerNoSee(true);
-	Mesh3P->bCastDynamicShadow = true;
-	Mesh3P->CastShadow = false;
-	Mesh3P->SetRelativeRotation(FRotator(0, 0, 0));
-	Mesh3P->SetRelativeLocation(FVector(0, 0, -100.0f));
+	SkelMesh->bCastDynamicShadow = true;
+	SkelMesh->CastShadow = false;
+	SkelMesh->SetRelativeRotation(FRotator(0, 0, 0));
+	SkelMesh->SetRelativeLocation(FVector(0, 0, -100.0f));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh3PObject(TEXT("SkeletalMesh'/Game/Meshes/Characters/ybot.ybot'"));
-	Mesh3P->SkeletalMesh = Mesh3PObject.Object;
+	SkelMesh->SkeletalMesh = Mesh3PObject.Object;
 
 	// Set animation blueprint for the third person mesh
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Sword/Player3P_AnimBP.Player3P_AnimBP'"));
-	Mesh3P->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	Mesh3P->AnimClass = AnimationBP.Object->GeneratedClass;
+	SkelMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	SkelMesh->AnimClass = AnimationBP.Object->GeneratedClass;
 
 	// Setup player movement component acceleration/deceleration coefficients
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxAcceleration = 800.0f;
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFrictionFactor = 0.1f;
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFriction = 0.01f;
+
+	static ConstructorHelpers::FObjectFinder<UBlueprint> swordBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Sword.Sword'"));
+	rightHandSword = swordBP.Object->GeneratedClass;
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Spawn starting weapons for the player
+	AMeleeWeapon* sword = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
+	sword->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
 }
 
 void APlayerCharacter::MoveForward(float value)
