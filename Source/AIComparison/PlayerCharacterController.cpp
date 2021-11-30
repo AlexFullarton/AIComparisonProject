@@ -8,13 +8,6 @@ void APlayerCharacterController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	// Bind jump events
-	InputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacterController::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacterController::StopJumping);
-
-	// Bind interact event
-	InputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacterController::Interact);
-
 	// Bind block event
 	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacterController::Block);
 	InputComponent->BindAction("Block", IE_Released, this, &APlayerCharacterController::StopBlocking);
@@ -33,40 +26,6 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAxis("TurnRate", this, &APlayerCharacterController::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APlayerCharacterController::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &APlayerCharacterController::LookUpAtRate);
-
-	
-}
-
-void APlayerCharacterController::Jump()
-{
-	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
-	// If the player is currently controlling their avatar
-	if (player != nullptr)
-	{
-		player->isJumping = true;
-		player->Jump();
-	}
-}
-
-void APlayerCharacterController::StopJumping()
-{
-	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
-	// If the player is currently controlling their avatar
-	if (player != nullptr)
-	{
-		player->isJumping = false;
-		player->StopJumping();
-	}
-}
-
-void APlayerCharacterController::Interact()
-{
-	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
-	// If the player is currently controlling their avatar
-	if (player != nullptr)
-	{
-		player->Interact();
-	}
 }
 
 void APlayerCharacterController::MoveForward(float value)

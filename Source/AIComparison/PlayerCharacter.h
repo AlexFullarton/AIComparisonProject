@@ -21,6 +21,10 @@ class AICOMPARISON_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	// Sets default values for this character's properties
+	APlayerCharacter();
+
 	// Third person camera - viewport
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ThirdPersonCameraComponent;
@@ -36,20 +40,11 @@ class AICOMPARISON_API APlayerCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	UClass* rightHandBow;
 
-
-public:
-	// Sets default values for this character's properties
-	APlayerCharacter();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	
-	// jump functions
-	void Jump();
-	void StopJumping();
 
 	// block function
 	void Block();
@@ -57,9 +52,6 @@ public:
 
 	// attack function
 	void Attack();
-
-	// Interaction function
-	void Interact();
 
 	// moving forward/backward
 	void MoveForward(float Val);

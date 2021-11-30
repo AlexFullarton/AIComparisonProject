@@ -34,9 +34,8 @@ APlayerCharacter::APlayerCharacter()
 	// Setup a skeletal mesh component for 3rd person view
 	USkeletalMeshComponent* SkelMesh = GetMesh();
 	SkelMesh->SetupAttachment(GetCapsuleComponent());
-	//Mesh3P->SetOwnerNoSee(true);
 	SkelMesh->bCastDynamicShadow = true;
-	SkelMesh->CastShadow = false;
+	SkelMesh->CastShadow = true;
 	SkelMesh->SetRelativeRotation(FRotator(0, 0, 0));
 	SkelMesh->SetRelativeLocation(FVector(0, 0, -100.0f));
 
@@ -53,8 +52,12 @@ APlayerCharacter::APlayerCharacter()
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFrictionFactor = 0.1f;
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFriction = 0.01f;
 
+	// Gather weapon data for the player
 	static ConstructorHelpers::FObjectFinder<UBlueprint> swordBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Sword.Sword'"));
 	rightHandSword = swordBP.Object->GeneratedClass;
+
+	static ConstructorHelpers::FObjectFinder<UBlueprint> shieldBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Shield.Shield'"));
+	leftHandShield = shieldBP.Object->GeneratedClass;
 }
 
 // Called when the game starts or when spawned
@@ -65,6 +68,9 @@ void APlayerCharacter::BeginPlay()
 	// Spawn starting weapons for the player
 	AMeleeWeapon* sword = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
 	sword->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+
+	AMeleeWeapon* shield = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
+	shield->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
 }
 
 void APlayerCharacter::MoveForward(float value)
@@ -91,21 +97,6 @@ void APlayerCharacter::TurnAtRate(float rate)
 void APlayerCharacter::LookUpAtRate(float rate)
 {
 	AddControllerPitchInput(rate * LookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void APlayerCharacter::Interact()
-{
-
-}
-
-void APlayerCharacter::Jump()
-{
-	Super::Jump();
-}
-
-void APlayerCharacter::StopJumping()
-{
-	Super::StopJumping();
 }
 
 void APlayerCharacter::Block()
