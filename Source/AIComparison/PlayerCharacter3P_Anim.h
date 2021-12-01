@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/BlendSpace.h"
 #include "PlayerCharacter.h"
+#include "EnemyCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -27,9 +28,6 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	float sidewaysMovement;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
-	bool isJumping;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	float currentHealth;
