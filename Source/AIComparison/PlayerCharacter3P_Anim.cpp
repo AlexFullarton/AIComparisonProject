@@ -23,29 +23,34 @@ UPlayerCharacter3P_Anim::UPlayerCharacter3P_Anim()
 	attackAnimationMontage1 = attackAnim1.Object;
 }
 
+void UPlayerCharacter3P_Anim::NativeBeginPlay()
+{
+	AGameCharacter* PlayerObject = Cast<AGameCharacter>(GetOwningActor());
+	if (PlayerObject)
+		Owner = PlayerObject;
+}
+
 void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 {
 	//Super::NativeUpdateAnimation(DeltaSeconds);
-	// For the player animations
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwningActor());
-	if (Player != nullptr)
+	if (Owner != nullptr)
 	{
-		forwardMovement = FVector::DotProduct(Player->GetVelocity(), Player->GetActorForwardVector());
-		sidewaysMovement = -1 * FVector::DotProduct(Player->GetVelocity(), Player->GetActorRightVector());
-		isBlocking = Player->isBlocking;
-		isAttacking = Player->isAttacking;
-		currentHealth = Player->currentHealth;
+		forwardMovement = FVector::DotProduct(Owner->GetVelocity(), Owner->GetActorForwardVector());
+		sidewaysMovement = -1 * FVector::DotProduct(Owner->GetVelocity(), Owner->GetActorRightVector());
+		isBlocking = Owner->isBlocking;
+		isAttacking = Owner->isAttacking;
+		currentHealth = Owner->currentHealth;
 
 		// ATTACK ANIMATIONS
-		if (isAttacking && Player->attackCounter == 0 && !Montage_IsPlaying(NULL))
+		if (isAttacking && Owner->attackCounter == 0 && !Montage_IsPlaying(NULL))
 		{
 			Montage_Play(attackAnimationMontage0);
-			Player->attackCounter++;
+			Owner->attackCounter++;
 		}
-		else if (isAttacking && Player->attackCounter != 0 && !Montage_IsPlaying(NULL))
+		else if (isAttacking && Owner->attackCounter != 0 && !Montage_IsPlaying(NULL))
 		{
 			Montage_Play(attackAnimationMontage1);
-			Player->attackCounter = 0;
+			Owner->attackCounter = 0;
 		}
 
 		// BLOCKING ANIMATIONS
@@ -58,38 +63,4 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 			Montage_Stop(0.2f, blockAnimationMontage);
 		}
 	}
-
-	// For the enemy animations
-	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(GetOwningActor());
-	if (Enemy != nullptr)
-	{
-		forwardMovement = FVector::DotProduct(Enemy->GetVelocity(), Enemy->GetActorForwardVector());
-		sidewaysMovement = -1 * FVector::DotProduct(Enemy->GetVelocity(), Enemy->GetActorRightVector());
-		isBlocking = Enemy->isBlocking;
-		isAttacking = Enemy->isAttacking;
-		currentHealth = Enemy->currentHealth;
-
-		// ATTACK ANIMATIONS
-		if (isAttacking && Enemy->attackCounter == 0 && !Montage_IsPlaying(NULL))
-		{
-			Montage_Play(attackAnimationMontage0);
-			Enemy->attackCounter++;
-		}
-		else if (isAttacking && Player->attackCounter != 0 && !Montage_IsPlaying(NULL))
-		{
-			Montage_Play(attackAnimationMontage1);
-			Enemy->attackCounter = 0;
-		}
-
-		// BLOCKING ANIMATIONS
-		if (isBlocking && !Montage_IsPlaying(blockAnimationMontage))
-		{
-			Montage_Play(blockAnimationMontage);
-		}
-		if (!isBlocking && Montage_IsPlaying(blockAnimationMontage))
-		{
-			Montage_Stop(0.2f, blockAnimationMontage);
-		}
-	}
-	
 }

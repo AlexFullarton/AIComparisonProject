@@ -12,7 +12,6 @@ APlayerCharacter::APlayerCharacter()
 	// Set player look and turn rates
 	TurnRate = 45.0f;
 	LookUpRate = 45.0f;
-	isJumping = false;
 	isBlocking = false;
 	isAttacking = false;
 	attackCounter = 0;
@@ -74,50 +73,9 @@ void APlayerCharacter::BeginPlay()
 	shield->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
 }
 
-void APlayerCharacter::MoveForward(float value)
+// Called every frame
+void APlayerCharacter::Tick(float DeltaTime)
 {
-	if (value != 0.0f)
-	{
-		AddMovementInput(GetActorForwardVector(), value);
-	}
-}
+	Super::Tick(DeltaTime);
 
-void APlayerCharacter::MoveRight(float value)
-{
-	if (value != 0.0f)
-	{
-		AddMovementInput(GetActorRightVector(), value);
-	}
-}
-
-void APlayerCharacter::TurnAtRate(float rate)
-{
-	AddControllerYawInput(rate * TurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void APlayerCharacter::LookUpAtRate(float rate)
-{
-	AddControllerPitchInput(rate * LookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void APlayerCharacter::Block()
-{
-	isBlocking = true;
-}
-
-void APlayerCharacter::StopBlocking()
-{
-	isBlocking = false;
-}
-
-void APlayerCharacter::Attack()
-{
-	isAttacking = true;
-	swordWeapon->Attack();
-}
-
-void APlayerCharacter::stopAttacking()
-{
-	isAttacking = false;
-	swordWeapon->stopAttacking();
 }

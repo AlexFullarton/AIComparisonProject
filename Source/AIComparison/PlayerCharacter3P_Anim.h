@@ -5,8 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/BlendSpace.h"
-#include "PlayerCharacter.h"
-#include "EnemyCharacter.h"
+#include "GameCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -21,6 +20,11 @@ public:
 
 	UPlayerCharacter3P_Anim();
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void NativeBeginPlay() override;
+
+public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
@@ -37,6 +41,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isAttacking;
+
+	AGameCharacter* Owner;
 
 private:
 	UAnimMontage* blockAnimationMontage, *attackAnimationMontage0, * attackAnimationMontage1;
