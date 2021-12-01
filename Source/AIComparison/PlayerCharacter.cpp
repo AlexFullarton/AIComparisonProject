@@ -66,8 +66,9 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// Spawn starting weapons for the player
-	AMeleeWeapon* sword = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
-	sword->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+	swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
+	swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+	swordWeapon->weaponDamage = 30.0f;
 
 	AMeleeWeapon* shield = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
 	shield->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
@@ -112,4 +113,11 @@ void APlayerCharacter::StopBlocking()
 void APlayerCharacter::Attack()
 {
 	isAttacking = true;
+	swordWeapon->Attack();
+}
+
+void APlayerCharacter::stopAttacking()
+{
+	isAttacking = false;
+	swordWeapon->stopAttacking();
 }

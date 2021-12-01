@@ -58,6 +58,14 @@ public:
 	// movement left and right
 	void MoveRight(float Val);
 
+	// For collision detection with the players weapons
+	UFUNCTION()
+	void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// Function to modify health on damage by the player
+	UFUNCTION()
+	void ModifyHealth(float healthToSubtract);
+
 	//turn rate, in deg/sec
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float TurnRate;

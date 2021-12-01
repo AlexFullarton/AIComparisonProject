@@ -23,4 +23,6 @@ public:
 
 	// Melee weapon attack function
 	void Attack() override;
+
+	void stopAttacking() override;
 };

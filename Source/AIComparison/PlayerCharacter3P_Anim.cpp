@@ -42,13 +42,13 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Montage_Play(attackAnimationMontage0);
 		Player->attackCounter++;
-		Player->isAttacking = false;
+		//Player->stopAttacking();
 	}
 	else if (isAttacking && Player->attackCounter != 0 && !Montage_IsPlaying(NULL))
 	{
 		Montage_Play(attackAnimationMontage1);
 		Player->attackCounter = 0;
-		Player->isAttacking = false;
+		//Player->stopAttacking();
 	}
 
 	// BLOCKING ANIMATIONS

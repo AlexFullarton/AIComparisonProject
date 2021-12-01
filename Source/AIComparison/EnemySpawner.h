@@ -27,7 +27,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
 	UStaticMeshComponent* objectMesh;
 	// Enemy type to be spawned in by this spawner
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spwan Metrics")
+	UClass* enemyClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spawn Metrics")
 	FString enemyType;
 
 protected:

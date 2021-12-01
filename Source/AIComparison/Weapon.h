@@ -17,8 +17,10 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	
-	// Pure virtual function - implementation in child classes melee and ranged weapons respectively
+	// virtual function - implementation in child classes melee and ranged weapons respectively
 	virtual void Attack();
+
+	virtual void stopAttacking();
 
 	// Attach the weapon to the owning pawn/character
 	virtual bool AttachWeapon(APawn* WeaponOwner, FString SkeletalCompName, FName socketName);

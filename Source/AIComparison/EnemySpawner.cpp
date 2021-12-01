@@ -14,6 +14,9 @@ AEnemySpawner::AEnemySpawner()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
 	objectMesh->SetStaticMesh(cylinderMesh.Object);
 
+	static ConstructorHelpers::FClassFinder<AEnemyCharacter> enemyClassBP(TEXT("Blueprint'/Game/Blueprints/Characters/EnemyCharacterBP.EnemyCharacterBP_C'"));
+	enemyClass = enemyClassBP.Class;
+
 	SceneComponent->bHiddenInGame = true;
 	objectMesh->bHiddenInGame = true;
 	SetActorHiddenInGame(true);
@@ -28,7 +31,7 @@ void AEnemySpawner::BeginPlay()
 	spawnTransform.SetTranslation(GetActorLocation());
 	spawnTransform.SetRotation(GetActorQuat());
 	spawnTransform.SetScale3D(GetActorScale3D());
-	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(AEnemyCharacter::StaticClass(), spawnTransform);
+	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(enemyClass, spawnTransform);
 
 	// Set the enemy controller here
 

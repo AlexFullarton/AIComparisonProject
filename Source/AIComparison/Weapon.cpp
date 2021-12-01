@@ -18,6 +18,11 @@ void AWeapon::Attack()
 
 }
 
+void AWeapon::stopAttacking()
+{
+
+}
+
 bool AWeapon::AttachWeapon(APawn* WeaponOwner, FString SkeletalCompName, FName socketName)
 {
 	// Set owner of this weapon

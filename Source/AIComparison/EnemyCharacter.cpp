@@ -38,6 +38,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> shieldBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Shield.Shield'"));
 	leftHandShield = shieldBP.Object->GeneratedClass;
+
 }
 
 void AEnemyCharacter::InitialiseEnemy(FString enemyType)
@@ -53,6 +54,9 @@ void AEnemyCharacter::InitialiseEnemy(FString enemyType)
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Add overlap event for the enemy collider
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCharacter::OnCapsuleBeginOverlap);
 
 	// Spawn starting weapons for the enemy
 	AMeleeWeapon* sword = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
@@ -86,6 +90,16 @@ void AEnemyCharacter::MoveRight(float value)
 	}
 }
 
+void AEnemyCharacter::ModifyHealth(float healthToSubtract)
+{
+	if ((currentHealth - healthToSubtract) < 0.0f)
+		currentHealth = 0.0f;
+	else if ((currentHealth - healthToSubtract) > maxHealth)
+		currentHealth = maxHealth;
+	else
+		currentHealth -= healthToSubtract;
+}
+
 void AEnemyCharacter::Block()
 {
 	isBlocking = true;
@@ -99,4 +113,13 @@ void AEnemyCharacter::StopBlocking()
 void AEnemyCharacter::Attack()
 {
 	isAttacking = true;
+}
+
+void AEnemyCharacter::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_GameTraceChannel1)
+	{
+		AMeleeWeapon* weap = Cast<AMeleeWeapon>(OtherActor);
+		ModifyHealth(weap->weaponDamage);
+	}
 }

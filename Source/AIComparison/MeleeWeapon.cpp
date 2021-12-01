@@ -11,6 +11,11 @@ AMeleeWeapon::AMeleeWeapon()
 
 void AMeleeWeapon::Attack()
 {
+	meleeWeaponCollider->SetGenerateOverlapEvents(true);
+}
 
+void AMeleeWeapon::stopAttacking()
+{
+	meleeWeaponCollider->SetGenerateOverlapEvents(false);
 }
 

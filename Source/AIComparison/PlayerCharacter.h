@@ -30,7 +30,6 @@ public:
 	UCameraComponent* ThirdPersonCameraComponent;
 
 	// Equipped weapons
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	UClass* leftHandShield;
 
@@ -39,6 +38,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	UClass* rightHandBow;
+
+	AMeleeWeapon* swordWeapon;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,6 +53,9 @@ public:
 
 	// attack function
 	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void stopAttacking();
 
 	// moving forward/backward
 	void MoveForward(float Val);
