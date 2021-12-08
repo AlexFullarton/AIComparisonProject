@@ -43,6 +43,9 @@ public:
 	bool isAttacking;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	int attackCounter;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isMelee;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")

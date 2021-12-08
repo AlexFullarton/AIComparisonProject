@@ -95,7 +95,7 @@ void APlayerCharacterController::Block()
 {
 	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
 	// If the player is currently controlling their avatar
-	if (player != nullptr)
+	if (player != nullptr && !player->isAttacking)
 	{
 		player->Block();
 	}
@@ -115,7 +115,7 @@ void APlayerCharacterController::Attack()
 {
 	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
 	// If the player is currently controlling their avatar
-	if (player != nullptr)
+	if (player != nullptr && !player->isBlocking && !player->isAttacking)
 	{
 		player->Attack();
 	}
@@ -125,7 +125,7 @@ void APlayerCharacterController::SwapWeapons()
 {
 	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
 	// If the player is currently controlling their avatar
-	if (player != nullptr)
+	if (player != nullptr && !player->isAttacking && !player->isBlocking)
 	{
 		player->SwapWeapons();
 	}

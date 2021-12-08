@@ -9,13 +9,8 @@ AMeleeWeapon::AMeleeWeapon()
 	meleeWeaponCollider->SetupAttachment(RootComponent);
 }
 
-void AMeleeWeapon::Attack()
+void AMeleeWeapon::toggleCollider()
 {
-	meleeWeaponCollider->SetGenerateOverlapEvents(true);
-}
-
-void AMeleeWeapon::stopAttacking()
-{
-	meleeWeaponCollider->SetGenerateOverlapEvents(false);
+	meleeWeaponCollider->SetGenerateOverlapEvents(!meleeWeaponCollider->GetGenerateOverlapEvents());
 }
 

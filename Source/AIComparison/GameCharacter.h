@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void stopAttacking();
 
+	UFUNCTION(BlueprintCallable)
+	void toggleWeaponCollider();
+
 	// moving forward/backward
 	void MoveForward(float Val);
 

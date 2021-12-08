@@ -22,7 +22,5 @@ public:
 	UBoxComponent* meleeWeaponCollider;
 
 	// Melee weapon attack function
-	void Attack() override;
-
-	void stopAttacking() override;
+	void toggleCollider();
 };

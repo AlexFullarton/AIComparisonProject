@@ -38,19 +38,19 @@ void AGameCharacter::StopBlocking()
 void AGameCharacter::Attack()
 {
 	if (isMelee)
-	{
 		isAttacking = true;
-		swordWeapon->Attack();
-	}
 }
 
 void AGameCharacter::stopAttacking()
 {
 	if (isMelee)
-	{
 		isAttacking = false;
-		swordWeapon->stopAttacking();
-	}
+}
+
+void AGameCharacter::toggleWeaponCollider()
+{
+	if (isMelee)
+		swordWeapon->toggleCollider();
 }
 
 void AGameCharacter::SwapWeapons()
