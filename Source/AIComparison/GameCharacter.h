@@ -49,6 +49,8 @@ public:
 	// attack functions
 	void Attack();
 
+	void SwapWeapons();
+
 	UFUNCTION(BlueprintCallable)
 	void stopAttacking();
 
@@ -91,6 +93,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool turnLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
+	bool isMelee;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
+	bool isRanged;
 
 	// Function to modify health on damage
 	UFUNCTION()

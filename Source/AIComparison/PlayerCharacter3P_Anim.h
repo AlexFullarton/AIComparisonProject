@@ -42,6 +42,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isAttacking;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	bool isMelee;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	bool isRanged;
+
 	AGameCharacter* Owner;
 
 private:

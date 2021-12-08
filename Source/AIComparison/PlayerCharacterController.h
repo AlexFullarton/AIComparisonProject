@@ -40,6 +40,8 @@ protected:
 
 	void Attack();
 
+	void SwapWeapons();
+
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 };

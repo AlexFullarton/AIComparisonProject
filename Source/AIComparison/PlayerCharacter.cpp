@@ -20,6 +20,10 @@ APlayerCharacter::APlayerCharacter()
 	maxHealth = 100.0f;
 	currentHealth = maxHealth;
 
+	// Player will start with melee weapons equipped
+	isMelee = true;
+	isRanged = false;
+
 	// Initial Camera Offset
 	FVector cameraOffset(-200.0f, 20.0f, 70.0f);
 
@@ -42,7 +46,7 @@ APlayerCharacter::APlayerCharacter()
 	SkelMesh->SkeletalMesh = Mesh3PObject.Object;
 
 	// Set animation blueprint for the third person mesh
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Sword/Player3P_AnimBP.Player3P_AnimBP'"));
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP'"));
 	SkelMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	SkelMesh->AnimClass = AnimationBP.Object->GeneratedClass;
 

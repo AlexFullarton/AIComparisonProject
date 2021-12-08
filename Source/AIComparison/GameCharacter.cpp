@@ -45,6 +45,12 @@ void AGameCharacter::stopAttacking()
 	swordWeapon->stopAttacking();
 }
 
+void AGameCharacter::SwapWeapons()
+{
+	isMelee = !isMelee;
+	isRanged = !isRanged;
+}
+
 void AGameCharacter::MoveForward(float value)
 {
 	if (value != 0.0f)

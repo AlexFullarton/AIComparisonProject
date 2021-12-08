@@ -9,6 +9,8 @@ UPlayerCharacter3P_Anim::UPlayerCharacter3P_Anim()
 	forwardMovement = 0.0f;
 	sidewaysMovement = 0.0f;
 	isBlocking = false;
+	isMelee = true;
+	isRanged = false;
 
 	// Initialise player stat variables
 	currentHealth = 1.0f;
@@ -40,6 +42,8 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 		isBlocking = Owner->isBlocking;
 		isAttacking = Owner->isAttacking;
 		currentHealth = Owner->currentHealth;
+		isMelee = Owner->isMelee;
+		isRanged = Owner->isRanged;
 
 		// ATTACK ANIMATIONS
 		if (isAttacking && Owner->attackCounter == 0 && !Montage_IsPlaying(NULL))
