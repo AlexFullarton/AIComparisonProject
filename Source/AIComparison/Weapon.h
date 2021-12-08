@@ -25,6 +25,8 @@ public:
 	// Attach the weapon to the owning pawn/character
 	virtual bool AttachWeapon(APawn* WeaponOwner, FString SkeletalCompName, FName socketName);
 
+	virtual void DetachWeapon();
+
 	// Get a pointer to the skeletal mesh of the owning pawn
 	virtual USkeletalMeshComponent* GetPawnSkeletalMesh(FString ComponentName);
 

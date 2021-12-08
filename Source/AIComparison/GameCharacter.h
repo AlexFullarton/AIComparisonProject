@@ -32,7 +32,7 @@ public:
 	UClass* rightHandSword;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	UClass* rightHandBow;
+	UClass* leftHandBow;
 
 protected:
 	// Called when the game starts or when spawned
@@ -109,4 +109,6 @@ public:
 	void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	AMeleeWeapon* swordWeapon;
+	AMeleeWeapon* shieldWeapon;
+	ARangedWeapon* bowWeapon;
 };

@@ -43,6 +43,8 @@ AEnemyCharacter::AEnemyCharacter()
 	static ConstructorHelpers::FObjectFinder<UBlueprint> shieldBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Shield.Shield'"));
 	leftHandShield = shieldBP.Object->GeneratedClass;
 
+	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
+	leftHandBow = bowBP.Object->GeneratedClass;
 }
 
 void AEnemyCharacter::InitialiseEnemy(FString enemyType)
@@ -63,11 +65,11 @@ void AEnemyCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCharacter::OnCapsuleBeginOverlap);
 
 	// Spawn starting weapons for the enemy
-	AMeleeWeapon* sword = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
-	sword->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+	swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
+	swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
 
-	AMeleeWeapon* shield = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
-	shield->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
+	shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
+	shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
 
 }
 

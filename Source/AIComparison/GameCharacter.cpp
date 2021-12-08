@@ -25,30 +25,60 @@ void AGameCharacter::Tick(float DeltaTime)
 
 void AGameCharacter::Block()
 {
-	isBlocking = true;
+	if (isMelee)
+		isBlocking = true;
 }
 
 void AGameCharacter::StopBlocking()
 {
-	isBlocking = false;
+	if (isMelee)
+		isBlocking = false;
 }
 
 void AGameCharacter::Attack()
 {
-	isAttacking = true;
-	swordWeapon->Attack();
+	if (isMelee)
+	{
+		isAttacking = true;
+		swordWeapon->Attack();
+	}
 }
 
 void AGameCharacter::stopAttacking()
 {
-	isAttacking = false;
-	swordWeapon->stopAttacking();
+	if (isMelee)
+	{
+		isAttacking = false;
+		swordWeapon->stopAttacking();
+	}
 }
 
 void AGameCharacter::SwapWeapons()
 {
 	isMelee = !isMelee;
 	isRanged = !isRanged;
+
+	if (isMelee)
+	{
+		// Detach bow from right hand socket
+		bowWeapon->DetachWeapon();
+		// Add sword and shield to right and left hand sockets
+		swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
+		swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+		swordWeapon->weaponDamage = 30.0f;
+
+		shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
+		shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
+	}
+	if (isRanged)
+	{
+		swordWeapon->DetachWeapon();
+		shieldWeapon->DetachWeapon();
+
+		bowWeapon = Cast<ARangedWeapon>(GetWorld()->SpawnActor(leftHandBow));
+		bowWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
+		bowWeapon->weaponDamage = 50.0f;
+	}
 }
 
 void AGameCharacter::MoveForward(float value)

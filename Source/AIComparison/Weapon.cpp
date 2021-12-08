@@ -43,6 +43,11 @@ bool AWeapon::AttachWeapon(APawn* WeaponOwner, FString SkeletalCompName, FName s
 		return false;
 }
 
+void AWeapon::DetachWeapon()
+{
+	Destroy();
+}
+
 USkeletalMeshComponent* AWeapon::GetPawnSkeletalMesh(FString ComponentName)
 {
 	TArray<UActorComponent*> Components;

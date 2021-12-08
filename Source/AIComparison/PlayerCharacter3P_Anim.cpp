@@ -23,6 +23,15 @@ UPlayerCharacter3P_Anim::UPlayerCharacter3P_Anim()
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> attackAnim1(TEXT("AnimMontage'/Game/Animations/Character/Sword/Combat/AttackMovement1.AttackMovement1'"));
 	attackAnimationMontage1 = attackAnim1.Object;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> drawAnim(TEXT("AnimMontage'/Game/Animations/Character/Bow/Combat/DrawArrow.DrawArrow'"));
+	attackAnimationMontage1 = drawAnim.Object;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> holdAnim(TEXT("AnimMontage'/Game/Animations/Character/Bow/Combat/AimHold.AimHold'"));
+	attackAnimationMontage1 = holdAnim.Object;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> shootAnim(TEXT("AnimMontage'/Game/Animations/Character/Bow/Combat/ShootRecoil.ShootRecoil'"));
+	attackAnimationMontage1 = shootAnim.Object;
 }
 
 void UPlayerCharacter3P_Anim::NativeBeginPlay()
