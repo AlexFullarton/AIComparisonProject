@@ -86,3 +86,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void APlayerCharacter::FireArrow()
+{
+	if (isRanged)
+	{
+		// Shoot arrow on realease of left click
+		// Need to spawn arrow at location of bow socket
+		// Give projectile velicoty in the direciton the player is looking
+	}
+}

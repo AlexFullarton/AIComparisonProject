@@ -18,10 +18,6 @@ protected:
 
 	void Jump();
 
-	void StopJumping();
-
-	void Interact();
-
 	void MoveForward(float value);
 
 	void MoveRight(float value);
@@ -39,6 +35,8 @@ protected:
 	void StopBlocking();
 
 	void Attack();
+
+	void FireArrow();
 
 	void SwapWeapons();
 

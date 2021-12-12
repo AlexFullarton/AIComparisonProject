@@ -20,7 +20,6 @@ void AGameCharacter::BeginPlay()
 void AGameCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AGameCharacter::Block()
@@ -37,14 +36,27 @@ void AGameCharacter::StopBlocking()
 
 void AGameCharacter::Attack()
 {
-	if (isMelee)
-		isAttacking = true;
+	isAttacking = true;
 }
 
-void AGameCharacter::stopAttacking()
+void AGameCharacter::FireArrow()
 {
-	if (isMelee)
-		isAttacking = false;
+	if (isRanged)
+	{
+		// Shoot arrow on realease of left click
+		// Need to spawn arrow at location of bow socket
+		// Give projectile velicoty in the direciton the player is looking
+	}
+}
+
+void AGameCharacter::meleeAttackDone()
+{
+	isAttacking = false;
+}
+
+void AGameCharacter::rangedAttackDone()
+{
+	isAttacking = false;
 }
 
 void AGameCharacter::toggleWeaponCollider()
@@ -145,8 +157,8 @@ void AGameCharacter::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedCompon
 {
 	if (OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_GameTraceChannel1)
 	{
-		AMeleeWeapon* weap = Cast<AMeleeWeapon>(OtherActor);
-		ModifyHealth(weap->weaponDamage);
+		AMeleeWeapon* meleeWeap = Cast<AMeleeWeapon>(OtherActor);
+		ModifyHealth(meleeWeap->weaponDamage);
 	}
 }
 

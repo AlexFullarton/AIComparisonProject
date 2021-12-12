@@ -48,11 +48,15 @@ public:
 
 	// attack functions
 	void Attack();
+	virtual void FireArrow();
 
 	void SwapWeapons();
 
 	UFUNCTION(BlueprintCallable)
-	void stopAttacking();
+	void meleeAttackDone();
+
+	UFUNCTION(BlueprintCallable)
+	void rangedAttackDone();
 
 	UFUNCTION(BlueprintCallable)
 	void toggleWeaponCollider();

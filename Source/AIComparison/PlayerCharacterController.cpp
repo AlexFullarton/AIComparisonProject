@@ -14,6 +14,7 @@ void APlayerCharacterController::SetupInputComponent()
 
 	// Bind Attack event
 	InputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacterController::Attack);
+	InputComponent->BindAction("Attack", IE_Released, this, &APlayerCharacterController::FireArrow);
 
 	// Bind Weapon Swap Event
 	InputComponent->BindAction("WeaponSwap", IE_Pressed, this, &APlayerCharacterController::SwapWeapons);
@@ -118,6 +119,16 @@ void APlayerCharacterController::Attack()
 	if (player != nullptr && !player->isBlocking && !player->isAttacking)
 	{
 		player->Attack();
+	}
+}
+
+void APlayerCharacterController::FireArrow()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(GetPawn());
+	// If the player is currently controlling their avatar
+	if (player != nullptr)
+	{
+		player->FireArrow();
 	}
 }
 

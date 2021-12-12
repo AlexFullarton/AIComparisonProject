@@ -16,6 +16,8 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	virtual void FireArrow() override;
+
 	// Third person camera - viewport
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ThirdPersonCameraComponent;
