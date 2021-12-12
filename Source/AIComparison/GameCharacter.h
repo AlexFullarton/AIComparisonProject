@@ -13,6 +13,7 @@
 #include "UObject/Class.h"
 #include "MeleeWeapon.h"
 #include "RangedWeapon.h"
+#include "Arrow.h"
 #include "GameCharacter.generated.h"
 
 UCLASS()
@@ -38,6 +39,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultSOnly, Category = Projectile)
+	UClass* ArrowClass;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -53,10 +57,7 @@ public:
 	void SwapWeapons();
 
 	UFUNCTION(BlueprintCallable)
-	void meleeAttackDone();
-
-	UFUNCTION(BlueprintCallable)
-	void rangedAttackDone();
+	void AttackDone();
 
 	UFUNCTION(BlueprintCallable)
 	void toggleWeaponCollider();
@@ -106,6 +107,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
 	bool isRanged;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
+	bool canFire;
 
 	// Function to modify health on damage
 	UFUNCTION()

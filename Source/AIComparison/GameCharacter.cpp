@@ -43,19 +43,36 @@ void AGameCharacter::FireArrow()
 {
 	if (isRanged)
 	{
-		// Shoot arrow on realease of left click
-		// Need to spawn arrow at location of bow socket
-		// Give projectile velicoty in the direciton the player is looking
+		if (ArrowClass)
+		{
+			canFire = true;
+			// Initial spawn location and rotation for arrow
+			FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
+			FRotator spawnRotation = GetActorRotation();
+
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+				SpawnParams.Instigator = GetInstigator();
+
+				// Spawn the projectile at the given location
+				AArrow* arrow = World->SpawnActor<AArrow>(ArrowClass, spawnLocation, spawnRotation, SpawnParams);
+				if (arrow)
+				{
+					// Set projectiles initial trajectory
+					FVector LaunchDirection = spawnRotation.Vector();
+					arrow->FireInDirection(LaunchDirection);
+				}
+			}
+		}
 	}
 }
 
-void AGameCharacter::meleeAttackDone()
+void AGameCharacter::AttackDone()
 {
-	isAttacking = false;
-}
-
-void AGameCharacter::rangedAttackDone()
-{
+	canFire = false;
 	isAttacking = false;
 }
 

@@ -36,5 +36,6 @@ void UPlayerCharacter3P_Anim::NativeUpdateAnimation(float DeltaSeconds)
 		currentHealth = Owner->currentHealth;
 		isMelee = Owner->isMelee;
 		isRanged = Owner->isRanged;
+		canFire = Owner->canFire;
 	}
 }

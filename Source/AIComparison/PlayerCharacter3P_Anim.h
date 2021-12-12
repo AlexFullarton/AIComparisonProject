@@ -51,6 +51,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
 	bool isRanged;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Anims")
+	bool canFire;
+
 	AGameCharacter* Owner;
 
 private:
