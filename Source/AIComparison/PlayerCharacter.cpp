@@ -8,6 +8,7 @@ APlayerCharacter::APlayerCharacter()
 {
  	// Set size for the player capsule collider
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 100.0f);
+	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(TEXT("Pawn"));
 
 	// Set player look and turn rates
 	TurnRate = 45.0f;
@@ -64,9 +65,6 @@ APlayerCharacter::APlayerCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
 	leftHandBow = bowBP.Object->GeneratedClass;
-
-	static ConstructorHelpers::FClassFinder<AActor> arrowClass(TEXT("Class'/Script/AIComparison.Arrow'"));
-	ArrowClass = arrowClass.Class;
 }
 
 // Called when the game starts or when spawned
@@ -94,30 +92,13 @@ void APlayerCharacter::FireArrow()
 {
 	if (isRanged)
 	{
-		if (ArrowClass)
-		{
-			canFire = true;
-			// Initial spawn location and rotation for arrow
-			FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
-			FRotator spawnRotation = GetActorRotation();
-			spawnRotation.Pitch = ThirdPersonCameraComponent->GetRelativeRotation().Pitch;
-
-			UWorld* World = GetWorld();
-			if (World)
-			{
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-				SpawnParams.Instigator = GetInstigator();
-
-				// Spawn the projectile at the given location
-				AArrow* arrow = World->SpawnActor<AArrow>(ArrowClass, spawnLocation, spawnRotation, SpawnParams);
-				if (arrow)
-				{
-					// Set projectiles initial trajectory
-					FVector LaunchDirection = spawnRotation.Vector();
-					arrow->FireInDirection(LaunchDirection);
-				}
-			}
-		}
+		// Bool for anim transition
+		canFire = true;
+		// Initial spawn location and rotation for arrow
+		FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
+		spawnLocation.Y -= 20.0f;
+		FRotator spawnRotation = GetActorRotation();
+		spawnRotation.Pitch = ThirdPersonCameraComponent->GetRelativeRotation().Pitch;
+		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
 }

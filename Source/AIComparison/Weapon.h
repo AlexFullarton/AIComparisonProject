@@ -8,6 +8,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Weapon.generated.h"
 
+class AGameCharacter;
+
 UCLASS()
 class AICOMPARISON_API AWeapon : public AActor
 {

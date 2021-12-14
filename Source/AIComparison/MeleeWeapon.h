@@ -7,9 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "MeleeWeapon.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AICOMPARISON_API AMeleeWeapon : public AWeapon
 {
@@ -23,4 +20,7 @@ public:
 
 	// Melee weapon attack function
 	void toggleCollider();
+
+	UFUNCTION()
+	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

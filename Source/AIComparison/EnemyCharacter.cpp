@@ -11,6 +11,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 	// Set size for the enemy capsule collider
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 100.0f);
+	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(TEXT("Pawn"));
 
 	// Set enemy's max and current health stats
 	maxHealth = 100.0f;
@@ -60,9 +61,6 @@ void AEnemyCharacter::InitialiseEnemy(FString enemyType)
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Add overlap event for the enemy collider
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCharacter::OnCapsuleBeginOverlap);
 
 	// Spawn starting weapons for the enemy
 	swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));

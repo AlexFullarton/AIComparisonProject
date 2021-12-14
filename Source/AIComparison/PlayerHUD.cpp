@@ -17,14 +17,18 @@ APlayerHUD::APlayerHUD()
 
 void APlayerHUD::DrawHUD()
 {
-	//Super::DrawHUD();
+	Super::DrawHUD();
 
-	// Draw crosshair to screen
-	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
-	const FVector2D drawPosition(Center.X, Center.Y + 20.0f);
+	if (CrosshairTexture)
+	{ 
+		// Draw crosshair to screen
+		const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
+		const FVector2D drawPosition(Center.X - (CrosshairTexture->GetSurfaceWidth() * 0.5f), Center.Y - (CrosshairTexture->GetSurfaceHeight() * 0.5f));
 
-	FCanvasTileItem item(drawPosition, CrosshairTexture->Resource, FLinearColor::Yellow);
-	item.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(item);
+		FCanvasTileItem item(drawPosition, CrosshairTexture->Resource, FLinearColor::Yellow);
+		item.BlendMode = SE_BLEND_Translucent;
+		Canvas->DrawItem(item);
+	}
+	
 
 }

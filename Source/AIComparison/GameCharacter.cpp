@@ -43,30 +43,12 @@ void AGameCharacter::FireArrow()
 {
 	if (isRanged)
 	{
-		if (ArrowClass)
-		{
-			canFire = true;
-			// Initial spawn location and rotation for arrow
-			FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
-			FRotator spawnRotation = GetActorRotation();
-
-			UWorld* World = GetWorld();
-			if (World)
-			{
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-				SpawnParams.Instigator = GetInstigator();
-
-				// Spawn the projectile at the given location
-				AArrow* arrow = World->SpawnActor<AArrow>(ArrowClass, spawnLocation, spawnRotation, SpawnParams);
-				if (arrow)
-				{
-					// Set projectiles initial trajectory
-					FVector LaunchDirection = spawnRotation.Vector();
-					arrow->FireInDirection(LaunchDirection);
-				}
-			}
-		}
+		// Bool for anim transition
+		canFire = true;
+		// Initial spawn location and rotation for arrow
+		FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
+		FRotator spawnRotation = GetActorRotation();
+		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
 }
 
@@ -168,14 +150,5 @@ void AGameCharacter::ModifyHealth(float healthToSubtract)
 		currentHealth = maxHealth;
 	else
 		currentHealth -= healthToSubtract;
-}
-
-void AGameCharacter::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_GameTraceChannel1)
-	{
-		AMeleeWeapon* meleeWeap = Cast<AMeleeWeapon>(OtherActor);
-		ModifyHealth(meleeWeap->weaponDamage);
-	}
 }
 
