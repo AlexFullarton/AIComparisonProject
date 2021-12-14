@@ -3,7 +3,7 @@
 
 #include "AIComparisonMenuGameModeBase.h"
 #include "PlayerCharacter.h"
-#include "PlayerCharacterController.h"
+#include "PlayerMenuController.h"
 
 AAIComparisonMenuGameModeBase::AAIComparisonMenuGameModeBase()
 	: Super()
@@ -13,5 +13,5 @@ AAIComparisonMenuGameModeBase::AAIComparisonMenuGameModeBase()
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
 	// Use custom player controller menu class
-	PlayerControllerClass = APlayerCharacterController::StaticClass();
+	PlayerControllerClass = APlayerMenuController::StaticClass();
 }
