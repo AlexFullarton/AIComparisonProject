@@ -13,6 +13,7 @@
 #include "UObject/Class.h"
 #include "MeleeWeapon.h"
 #include "RangedWeapon.h"
+#include "AIComparisonInstance.h"
 #include "GameCharacter.generated.h"
 
 UCLASS()
@@ -91,6 +92,9 @@ public:
 	float currentHealth;
 
 	int attackCounter;
+
+	float meleeDamage;
+	float rangedDamage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool turnRight;

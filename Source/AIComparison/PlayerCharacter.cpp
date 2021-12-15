@@ -17,9 +17,13 @@ APlayerCharacter::APlayerCharacter()
 	isAttacking = false;
 	attackCounter = 0;
 
-	// Set players max and current health stats
+	// Set players max and current health defaults
 	maxHealth = 100.0f;
 	currentHealth = maxHealth;
+
+	// Set player's damage defaults
+	meleeDamage = 30.0f;
+	rangedDamage = 50.0f;
 
 	// Player will start with melee weapons equipped
 	isMelee = true;
@@ -72,10 +76,20 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Get game instance to retrieve data from main menu
+	UAIComparisonInstance* instance = Cast<UAIComparisonInstance>(GetGameInstance());
+
+	// Get health and damage values from main menu
+	maxHealth = instance->PlayerInitialHealth;
+	currentHealth = maxHealth;
+
+	meleeDamage = instance->PlayerMeleeDamage;
+	rangedDamage = instance->PlayerRangedDamage;
+
 	// Spawn starting weapons for the player
 	swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
 	swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
-	swordWeapon->weaponDamage = 30.0f;
+	swordWeapon->weaponDamage = meleeDamage;
 
 	shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
 	shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");

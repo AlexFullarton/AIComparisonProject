@@ -13,9 +13,13 @@ AEnemyCharacter::AEnemyCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 100.0f);
 	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(TEXT("Pawn"));
 
-	// Set enemy's max and current health stats
+	// Set enemy's max and current health defaults
 	maxHealth = 100.0f;
 	currentHealth = maxHealth;
+
+	// Set enemy's damamage defaults
+	meleeDamage = 10.0f;
+	rangedDamage = 20.0f;
 
 	// Enemy will start with melee weapons equipped
 	isMelee = true;
@@ -62,13 +66,23 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Get game instance to retrieve data from main menu
+	UAIComparisonInstance* instance = Cast<UAIComparisonInstance>(GetGameInstance());
+
+	// Get health and damage values from main menu
+	maxHealth = instance->EnemyInitialHealth;
+	currentHealth = maxHealth;
+
+	meleeDamage = instance->EnemyMeleeDamage;
+	rangedDamage = instance->EnemyRangedDamage;
+
 	// Spawn starting weapons for the enemy
 	swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
 	swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
+	swordWeapon->weaponDamage = meleeDamage;
 
 	shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
 	shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
-
 }
 
 // Called every frame

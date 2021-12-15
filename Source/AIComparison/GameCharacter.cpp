@@ -76,7 +76,7 @@ void AGameCharacter::SwapWeapons()
 		// Add sword and shield to right and left hand sockets
 		swordWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(rightHandSword));
 		swordWeapon->AttachWeapon(this, GetMesh()->GetName(), "RightHandSocket");
-		swordWeapon->weaponDamage = 30.0f;
+		swordWeapon->weaponDamage = meleeDamage;;
 
 		shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
 		shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
@@ -88,7 +88,7 @@ void AGameCharacter::SwapWeapons()
 
 		bowWeapon = Cast<ARangedWeapon>(GetWorld()->SpawnActor(leftHandBow));
 		bowWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
-		bowWeapon->weaponDamage = 50.0f;
+		bowWeapon->weaponDamage = rangedDamage;
 	}
 }
 
