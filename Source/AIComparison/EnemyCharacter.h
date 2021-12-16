@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
+#include "EnemyController.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called just before begin play - allows earl initialisation of enemies
-	void InitialiseEnemy(FString enemyType);
+	// Called just before begin play - allows early initialisation of enemies
+	void InitialiseEnemy();
+
+	// Enemy AI controller class
+	UClass* enemyControllerClass;
 };

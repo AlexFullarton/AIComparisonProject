@@ -50,15 +50,33 @@ AEnemyCharacter::AEnemyCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
 	leftHandBow = bowBP.Object->GeneratedClass;
+
+	// Set enemy controller class
+	enemyControllerClass = AEnemyController::StaticClass();
 }
 
-void AEnemyCharacter::InitialiseEnemy(FString enemyType)
+void AEnemyCharacter::InitialiseEnemy()
 {
-	// Depending on what is passed in from the enemy spawner, spawn different types of enemy (patrol vs. stationary)
-	// different AI implementations will be added via child enemy classes with different tick functions
-	// if (type1) AIControllerClass = 
-	// else AIControllerClass = 
-	// etc.
+	// Get enemy behaviour type passed in from main menu settings
+	int enemyType = Cast<UAIComparisonInstance>(GetGameInstance())->EnemyBehaviourType;
+
+	// Spawn enemy with different AI controller based on enemyType
+	switch (enemyType)
+	{
+	case 0:
+	{
+		AIControllerClass = enemyControllerClass;
+		break;
+	}
+		
+	case 1:
+		break;
+	case 2:
+		break;
+	default:
+		break;
+	}
+	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
 // Called when the game starts or when spawned

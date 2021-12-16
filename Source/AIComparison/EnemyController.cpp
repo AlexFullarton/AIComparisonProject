@@ -2,6 +2,7 @@
 
 
 #include "EnemyController.h"
+#include "EnemyCharacter.h"
 
 AEnemyController::AEnemyController()
 {
@@ -29,6 +30,8 @@ AEnemyController::AEnemyController()
 
 void AEnemyController::MoveToRandomLocationInDistance(FVector pawnLocation)
 {
+	// When patrolling to a random location, set character speed to be low
+	Cast<UCharacterMovementComponent>(GetPawn()->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
 	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem)
 	{
@@ -48,12 +51,11 @@ void AEnemyController::BeginPlay()
 void AEnemyController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Doesnt seem to be getting the location of the possessed actor
 	FVector pawnLocation = GetPawn()->GetActorLocation();
 	// If the pawn has reached the given destination
-	if ((pawnLocation - destination.Location).IsNearlyZero(tolerance))
+	if (GetMoveStatus() != EPathFollowingStatus::Moving)
 	{
+		// Give the pawn a new destination
 		MoveToRandomLocationInDistance(pawnLocation);
 	}
 }
