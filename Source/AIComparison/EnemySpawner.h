@@ -9,6 +9,7 @@
 #include "Engine/StaticMesh.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EnemyCharacter.h"
+#include "EnemyController.h"
 #include "EnemySpawner.generated.h"
 
 UCLASS()
@@ -31,6 +32,8 @@ public:
 	UClass* enemyClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spawn Metrics")
 	FString enemyType;
+
+	UClass* enemyControllerClass;
 
 protected:
 	// Called when the game starts or when spawned

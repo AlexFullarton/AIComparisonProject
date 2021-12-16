@@ -17,6 +17,8 @@ AEnemySpawner::AEnemySpawner()
 	static ConstructorHelpers::FClassFinder<AEnemyCharacter> enemyClassBP(TEXT("Blueprint'/Game/Blueprints/Characters/EnemyCharacterBP.EnemyCharacterBP_C'"));
 	enemyClass = enemyClassBP.Class;
 
+	enemyControllerClass = AEnemyController::StaticClass();
+
 	SceneComponent->bHiddenInGame = true;
 	objectMesh->bHiddenInGame = true;
 	SetActorHiddenInGame(true);
@@ -27,15 +29,19 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Create initial spawn location for the enemy
 	FTransform spawnTransform;
 	spawnTransform.SetTranslation(GetActorLocation());
 	spawnTransform.SetRotation(GetActorQuat());
 	spawnTransform.SetScale3D(GetActorScale3D());
 	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(enemyClass, spawnTransform);
 
-	// Set the enemy controller here
-
+	// Set the enemy controller here, and set controller to auto possess on spawn
+	enemy->AIControllerClass = enemyControllerClass;
+	enemy->AutoPossessAI = EAutoPossessAI::Spawned;
 	enemy->FinishSpawning(spawnTransform);
+	Cast<AEnemyController>(enemy->GetController())->MoveToRandomLocationInDistance(enemy->GetActorLocation());
 }
 
 
+	
