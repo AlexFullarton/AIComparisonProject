@@ -3,6 +3,11 @@
 
 #include "PlayerCharacterController.h"
 
+APlayerCharacterController::APlayerCharacterController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	TeamId = FGenericTeamId(1);
+}
 // Called to bind functionality to input
 void APlayerCharacterController::SetupInputComponent()
 {

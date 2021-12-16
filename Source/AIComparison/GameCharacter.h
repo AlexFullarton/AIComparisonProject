@@ -14,6 +14,8 @@
 #include "MeleeWeapon.h"
 #include "RangedWeapon.h"
 #include "AIComparisonInstance.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "GameCharacter.generated.h"
 
 UCLASS()
@@ -25,6 +27,41 @@ public:
 	// Sets default values for this character's properties
 	AGameCharacter();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Functions for movement of the PlayerCharacter
+	void MoveForward(float Val);
+	void MoveRight(float Val);
+	void TurnAtRate(float Rate);
+	void LookUpAtRate(float Rate);
+
+	// Function to modify health on damage from another character/object
+	UFUNCTION()
+	void ModifyHealth(float healthToSubtract);
+
+	// Functions for combat scenarios
+	void Block();
+	void StopBlocking();
+	void Attack();
+	virtual void FireArrow();
+	void SwapWeapons();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackDone();
+
+	UFUNCTION(BlueprintCallable)
+	void toggleWeaponCollider();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Allows this character to be detected by other AI controlled characters
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI)
+	UAIPerceptionStimuliSourceComponent* PerceptionStimuliSourceComponent;
+
 	// Equipped weapons
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	UClass* leftHandShield;
@@ -35,42 +72,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	UClass* leftHandBow;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// block functions
-	void Block();
-	void StopBlocking();
-
-	// attack functions
-	void Attack();
-	virtual void FireArrow();
-
-	void SwapWeapons();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackDone();
-
-	UFUNCTION(BlueprintCallable)
-	void toggleWeaponCollider();
-
-	// moving forward/backward
-	void MoveForward(float Val);
-
-	// movement left and right
-	void MoveRight(float Val);
-
-	//turn at given rate
-	void TurnAtRate(float Rate);
-
-	// look up/down at given rate
-	void LookUpAtRate(float Rate);
-
 	//turn rate, in deg/sec
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float TurnRate;
@@ -79,28 +80,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	float LookUpRate;
 
+	// Control bools for combat - used to enable state change in animation graph
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool isBlocking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool isAttacking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerStats")
-	float maxHealth;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerStats")
-	float currentHealth;
-
-	int attackCounter;
-
-	float meleeDamage;
-	float rangedDamage;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool turnRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 	bool turnLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	float maxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	float currentHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
 	bool isMelee;
@@ -111,10 +108,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
 	bool canFire;
 
-	// Function to modify health on damage
-	UFUNCTION()
-	void ModifyHealth(float healthToSubtract);
+	int attackCounter;
 
+	// Damage modifiers - set from the main menu
+	float meleeDamage;
+	float rangedDamage;
+
+	// Pointers to players weapons - weapons are destroyed/recreated on weapon swap
 	AMeleeWeapon* swordWeapon;
 	AMeleeWeapon* shieldWeapon;
 	ARangedWeapon* bowWeapon;

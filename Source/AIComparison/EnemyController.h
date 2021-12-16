@@ -9,6 +9,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "PlayerCharacter.h"
+#include "GenericTeamAgentInterface.h"
 #include "EnemyController.generated.h"
 
 class AEnemyCharacter;
@@ -26,12 +27,14 @@ public:
 
 	void MoveToRandomLocationInDistance(FVector pawnLocation);
 
+	void OnPossess(APawn* InPawn);
+
 	virtual void Tick(float DeltaTime);
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
 
-	void OnPossess(APawn* InPawn);
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 protected:
 	virtual void BeginPlay();
@@ -52,6 +55,10 @@ public:
 
 	// Has the enemy spotted the player
 	bool canSeePlayer;
+
+	// Arrays of sensed actors
+	TArray<AActor*> sensedFriendlies;
+	TArray<AActor*> sensedEnemies;
 
 	// Movement speed variables
 	float patrolSpeed;

@@ -8,6 +8,8 @@ AEnemyController::AEnemyController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetGenericTeamId(FGenericTeamId(2));
+
 	// Setup perception component
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 	sightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
@@ -66,7 +68,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	// Only setup sight config when the controller is possessing an enemy
 	sightConfig->SightRadius = 500.0f;
 	sightConfig->LoseSightRadius = sightConfig->SightRadius + 250.0f;
-	sightConfig->PeripheralVisionAngleDegrees = 135.0f;
+	sightConfig->PeripheralVisionAngleDegrees = 70.0f;
 	sightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	sightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	sightConfig->DetectionByAffiliation.bDetectNeutrals = true;
@@ -91,14 +93,61 @@ void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 {
 	for(auto actor : testActors)
 	{
-		if (Cast<APlayerCharacter>(actor))
+		switch (GetTeamAttitudeTowards(*actor))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "I see you!");
-		}
-		else if (Cast<AEnemyCharacter>(actor))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Hello friend!");
+			// When an enemy detects another enemy
+			case ETeamAttitude::Friendly:
+			{
+				if (sensedFriendlies.Contains(actor))
+				{
+					sensedFriendlies.Remove(actor);
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Goodbye friend!");
+				}
+				else
+				{
+					sensedFriendlies.Add(actor);
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Hello friend!");
+
+				}
+				break;
+			}
+			// When an enemy detects the player
+			case ETeamAttitude::Hostile:
+			{
+				if (sensedEnemies.Contains(actor))
+				{
+					sensedEnemies.Remove(actor);
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "You've gone!");
+				}
+				else
+				{
+					sensedEnemies.Add(actor);
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "I see you!");
+				}
+				break;
+			}
+			// When an enemy detects any other valid actor
+			case ETeamAttitude::Neutral:
+			default:
+				break;
 		}
 	}
-	
+}
+
+ETeamAttitude::Type AEnemyController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	// If the other actor is a pawn
+	const APawn* OtherPawn = Cast<APawn>(&Other);
+	if (OtherPawn)
+	{
+		// If the other actor is being controlled by a controller
+		const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController());
+		if (TeamAgent)
+		{ 
+			// Do the same again using the controller of the other actor
+			return IGenericTeamAgentInterface::GetTeamAttitudeTowards(*OtherPawn->GetController());
+		}
+	}
+	// Neutral behaviour for non-pawns
+	return ETeamAttitude::Neutral;
 }

@@ -7,16 +7,18 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "PlayerCharacter.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayerCharacterController.generated.h"
 
 UCLASS()
-class AICOMPARISON_API APlayerCharacterController : public APlayerController
+class AICOMPARISON_API APlayerCharacterController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
-	
-protected:
 
-	void Jump();
+public:
+	APlayerCharacterController();
+
+protected:
 
 	void MoveForward(float value);
 
@@ -42,4 +44,10 @@ protected:
 
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
+
+private:
+
+	FGenericTeamId TeamId;
+
+	FGenericTeamId GetGenericTeamId() const { return TeamId; }
 };
