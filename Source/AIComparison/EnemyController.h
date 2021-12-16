@@ -6,7 +6,12 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "PlayerCharacter.h"
 #include "EnemyController.generated.h"
+
+class AEnemyCharacter;
 
 /**
  * 
@@ -23,10 +28,21 @@ public:
 
 	virtual void Tick(float DeltaTime);
 
+	UFUNCTION()
+	void PerceptionUpdated(const TArray<AActor*>& testActors);
+
+	void OnPossess(APawn* InPawn);
+
 protected:
 	virtual void BeginPlay();
 
 public:
+	// AI Perception component - for enemy sight
+	UAIPerceptionComponent* PerceptionComponent;
+	UAISenseConfig_Sight* sightConfig;
+
+	// Controlled Enemy
+	AEnemyCharacter* controlledEnemy;
 	// Destination that the enemy is trying to path to
 	FNavLocation destination;
 	// Search distance for a new point to path to (radius)
@@ -35,7 +51,7 @@ public:
 	float tolerance;
 
 	// Has the enemy spotted the player
-	bool hasSpottedPlayer;
+	bool canSeePlayer;
 
 	// Movement speed variables
 	float patrolSpeed;
