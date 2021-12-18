@@ -11,7 +11,7 @@ class EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) = 0;
-	virtual void toggleState(AEnemyControllerFSM* enemy) = 0;
+	virtual void updateState(AEnemyControllerFSM* enemy) = 0;
 	virtual void exitState(AEnemyControllerFSM* enemy) = 0;
 	virtual ~EnemyState() {}
 };

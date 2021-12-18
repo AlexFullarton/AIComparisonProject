@@ -4,9 +4,10 @@
 #include "ConcreteEnemyStates.h"
 
 // Patrol state
-void EnemyPatrolState::toggleState(AEnemyControllerFSM* enemy)
+void EnemyPatrolState::updateState(AEnemyControllerFSM* enemy)
 {
-	// This is where we determine which state to change to
+	// This is where we determine which state to change to based on data from enemy
+	// e.g. if low health then defence, if player seen then chase, if really low health then run
 	enemy->setState(EnemyPatrolState::getInstance());
 }
 
@@ -17,7 +18,7 @@ EnemyState& EnemyPatrolState::getInstance()
 }
 
 // Chase state
-void EnemyChaseState::toggleState(AEnemyControllerFSM* enemy)
+void EnemyChaseState::updateState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyChaseState::getInstance());
@@ -30,7 +31,7 @@ EnemyState& EnemyChaseState::getInstance()
 }
 
 // Attack state
-void EnemyAttackState::toggleState(AEnemyControllerFSM* enemy)
+void EnemyAttackState::updateState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyAttackState::getInstance());
@@ -43,7 +44,7 @@ EnemyState& EnemyAttackState::getInstance()
 }
 
 // Retreat state
-void EnemyRetreatState::toggleState(AEnemyControllerFSM* enemy)
+void EnemyRetreatState::updateState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyRetreatState::getInstance());
@@ -56,7 +57,7 @@ EnemyState& EnemyRetreatState::getInstance()
 }
 
 // Defend state
-void EnemyDefendState::toggleState(AEnemyControllerFSM* enemy)
+void EnemyDefendState::updateState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyDefendState::getInstance());

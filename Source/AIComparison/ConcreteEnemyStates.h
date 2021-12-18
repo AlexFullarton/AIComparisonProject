@@ -10,7 +10,7 @@ class EnemyPatrolState : public EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) {};
-	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void updateState(AEnemyControllerFSM* enemy);
 	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 	
@@ -24,7 +24,7 @@ class EnemyChaseState : public EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) {};
-	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void updateState(AEnemyControllerFSM* enemy);
 	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
@@ -38,7 +38,7 @@ class EnemyAttackState : public EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) {};
-	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void updateState(AEnemyControllerFSM* enemy);
 	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
@@ -53,7 +53,7 @@ class EnemyRetreatState : public EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) {};
-	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void updateState(AEnemyControllerFSM* enemy);
 	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
@@ -67,7 +67,7 @@ class EnemyDefendState : public EnemyState
 {
 public:
 	virtual void enterState(AEnemyControllerFSM* enemy) {};
-	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void updateState(AEnemyControllerFSM* enemy);
 	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 

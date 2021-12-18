@@ -20,7 +20,7 @@ public:
 	virtual void Tick(float DeltaTime);
 
 	inline EnemyState* getCurrentState() const { return currentState; }
-	void toggleState();
+	void updateState();
 	void setState(EnemyState& newState);
 
 private:
