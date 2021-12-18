@@ -91,8 +91,20 @@ void EnemyAttackState::enterState(AEnemyControllerFSM* controller)
 
 void EnemyAttackState::updateState(AEnemyControllerFSM* controller)
 {
-	// This is where we determine which state to change to
-	controller->setState(EnemyAttackState::getInstance());
+	// If the enemy can no longer see the player
+	if (controller->sensedPlayer == nullptr)
+		controller->setState(EnemyPatrolState::getInstance());
+	// If the enemy can still see the player
+	else
+	{
+		// If the player is no longer in range for a melee attack
+		if (controller->getDistanceToPlayer() > controller->meleeAttackRange)
+			controller->MoveToPlayer();
+		// If the player is in range then attack
+		else
+			controller->Attack();
+	}
+	
 }
 
 EnemyState& EnemyAttackState::getInstance()

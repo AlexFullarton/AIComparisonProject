@@ -26,7 +26,12 @@ AEnemyController::AEnemyController()
 
 	canSeePlayer = false;
 	patrolSpeed = 100.0f;
-	chaseSpeed = 500.0f;
+	chaseSpeed = 400.0f;
+
+	// Max distance from player at which the enemy can melee attack
+	meleeAttackRange = 100.0f;
+	// Max distance from player at which the enemy can ranged attack
+	rangedAttackRange = 450.0f;
 
 	// How long to wait between each attack (minimum)
 	attackRate = 2.0f;
@@ -51,7 +56,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	controlledEnemy = Cast<AEnemyCharacter>(InPawn);
 
 	// Only setup sight config when the controller is possessing an enemy
-	sightConfig->SightRadius = 750.0f;
+	sightConfig->SightRadius = 500.0f;
 	sightConfig->LoseSightRadius = sightConfig->SightRadius + 250.0f;
 	sightConfig->PeripheralVisionAngleDegrees = 70.0f;
 	sightConfig->DetectionByAffiliation.bDetectEnemies = true;
@@ -92,6 +97,11 @@ void AEnemyController::MoveToPlayer()
 		// to the detected player actor
 		MoveToActor(sensedPlayer);
 	}
+}
+
+float AEnemyController::getDistanceToPlayer()
+{
+	return controlledEnemy->GetDistanceTo(sensedPlayer);
 }
 
 void AEnemyController::Attack()

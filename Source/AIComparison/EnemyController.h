@@ -33,6 +33,8 @@ public:
 
 	void MoveToPlayer();
 
+	float getDistanceToPlayer();
+
 	void Attack();
 
 	UFUNCTION()
@@ -71,6 +73,8 @@ public:
 	float chaseSpeed;
 
 	// Combat variables
+	float meleeAttackRange;
+	float rangedAttackRange;
 	float attackRate;
 	float blockChance;
 	bool isMelee;
