@@ -38,21 +38,6 @@ AEnemyController::AEnemyController()
 	isRanged = false;
 }
 
-void AEnemyController::MoveToRandomLocationInDistance(FVector pawnLocation)
-{
-	// When patrolling to a random location, set character speed to be low
-	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
-	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-	if (navSystem)
-	{
-		// Move the enemy to the given destination if a new location is found
-		if (navSystem->GetRandomReachablePointInRadius(pawnLocation, searchRadius, destination))
-		{
-			MoveToLocation(destination.Location, tolerance);
-		}
-	}
-}
-
 void AEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -66,7 +51,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	controlledEnemy = Cast<AEnemyCharacter>(InPawn);
 
 	// Only setup sight config when the controller is possessing an enemy
-	sightConfig->SightRadius = 500.0f;
+	sightConfig->SightRadius = 750.0f;
 	sightConfig->LoseSightRadius = sightConfig->SightRadius + 250.0f;
 	sightConfig->PeripheralVisionAngleDegrees = 70.0f;
 	sightConfig->DetectionByAffiliation.bDetectEnemies = true;
@@ -78,15 +63,45 @@ void AEnemyController::OnPossess(APawn* InPawn)
 void AEnemyController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector pawnLocation = controlledEnemy->GetActorLocation();
-	// If the pawn has reached the given destination
-	if (GetMoveStatus() != EPathFollowingStatus::Moving)
+	pawnLocation = controlledEnemy->GetActorLocation();
+}
+
+void AEnemyController::MoveToRandomLocationInDistance(FVector Location)
+{
+	// When patrolling to a random location, set character speed to be low
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
 	{
-		// Give the pawn a new destination
-		MoveToRandomLocationInDistance(pawnLocation);
+		// Move the enemy to the given destination if a new location is found
+		if (navSystem->GetRandomReachablePointInRadius(Location, searchRadius, destination))
+		{
+			MoveToLocation(destination.Location, tolerance);
+		}
 	}
 }
 
+void AEnemyController::MoveToPlayer()
+{
+	// When chasing the player, set the movement speed to be high
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = chaseSpeed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
+	{
+		// Move the enemy to the player character actor, using the reference
+		// to the detected player actor
+		MoveToActor(sensedPlayer);
+	}
+}
+
+void AEnemyController::Attack()
+{
+	controlledEnemy->Attack();
+}
+
+// Functions used for handling detection of other actors using the AI Perception Module
+
+// Fires when perception stimuli are either added or removed from the sight sense of the enemy
 void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 {
 	for(auto actor : testActors)
@@ -97,31 +112,18 @@ void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 			case ETeamAttitude::Friendly:
 			{
 				if (sensedFriendlies.Contains(actor))
-				{
 					sensedFriendlies.Remove(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Goodbye friend!");
-				}
 				else
-				{
 					sensedFriendlies.Add(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Hello friend!");
-
-				}
 				break;
 			}
 			// When an enemy detects the player
 			case ETeamAttitude::Hostile:
 			{
-				if (sensedEnemies.Contains(actor))
-				{
-					sensedEnemies.Remove(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "You've gone!");
-				}
+				if (sensedPlayer == actor)
+					sensedPlayer = nullptr;
 				else
-				{
-					sensedEnemies.Add(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "I see you!");
-				}
+					sensedPlayer = actor;
 				break;
 			}
 			// When an enemy detects any other valid actor
@@ -132,6 +134,7 @@ void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 	}
 }
 
+// Computes relationship between this actor and other actors it has percieved
 ETeamAttitude::Type AEnemyController::GetTeamAttitudeTowards(const AActor& Other) const
 {
 	// If the other actor is a pawn

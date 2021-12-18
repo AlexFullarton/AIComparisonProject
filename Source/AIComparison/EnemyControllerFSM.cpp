@@ -13,8 +13,8 @@ AEnemyControllerFSM::AEnemyControllerFSM()
 void AEnemyControllerFSM::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// Each time the controller is updated, check if we need to change state
-	currentState->updateState(this);
+	// Each time the controller is updated, update the state for the controlled enemy
+	updateState();
 }
 
 void AEnemyControllerFSM::setState(EnemyState& newState)

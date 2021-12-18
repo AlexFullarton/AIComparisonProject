@@ -25,11 +25,15 @@ class AICOMPARISON_API AEnemyController : public AAIController
 public:
 	AEnemyController();
 
-	void MoveToRandomLocationInDistance(FVector pawnLocation);
-
 	void OnPossess(APawn* InPawn);
 
 	virtual void Tick(float DeltaTime);
+
+	void MoveToRandomLocationInDistance(FVector pawnLocation);
+
+	void MoveToPlayer();
+
+	void Attack();
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
@@ -46,6 +50,8 @@ public:
 
 	// Controlled Enemy
 	AEnemyCharacter* controlledEnemy;
+	// Controlled Enemy's location
+	FVector pawnLocation;
 	// Destination that the enemy is trying to path to
 	FNavLocation destination;
 	// Search distance for a new point to path to (radius)
@@ -58,7 +64,7 @@ public:
 
 	// Arrays of sensed actors
 	TArray<AActor*> sensedFriendlies;
-	TArray<AActor*> sensedEnemies;
+	AActor* sensedPlayer;
 
 	// Movement speed variables
 	float patrolSpeed;

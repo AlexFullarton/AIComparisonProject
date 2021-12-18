@@ -3,12 +3,37 @@
 
 #include "ConcreteEnemyStates.h"
 
-// Patrol state
-void EnemyPatrolState::updateState(AEnemyControllerFSM* enemy)
+//////////////////
+// Patrol state //
+//////////////////
+
+// Fires on enemy controller transitioning to this state from another
+void EnemyPatrolState::enterState(AEnemyControllerFSM* controller)
+{
+	// When entering patrol state from another state, set enemy to find 
+	// new random location to patrol to
+	controller->MoveToRandomLocationInDistance(controller->pawnLocation);
+}
+
+void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 {
 	// This is where we determine which state to change to based on data from enemy
 	// e.g. if low health then defence, if player seen then chase, if really low health then run
-	enemy->setState(EnemyPatrolState::getInstance());
+
+	// If sensed enemies is anything other than zero, this enemy has
+	// detected a player character so must change state
+	if (controller->sensedPlayer != nullptr)
+	{
+		controller->setState(EnemyChaseState::getInstance());
+	}	
+	// if no enemies are detected, then the enemy can continue to patrol
+	else
+	{
+		// If the enemy has reached the previously set destination, give it a 
+		// new random destination
+		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+			controller->MoveToRandomLocationInDistance(controller->pawnLocation);
+	}
 }
 
 EnemyState& EnemyPatrolState::getInstance()
@@ -17,11 +42,33 @@ EnemyState& EnemyPatrolState::getInstance()
 	return singleton;
 }
 
-// Chase state
-void EnemyChaseState::updateState(AEnemyControllerFSM* enemy)
+/////////////////
+// Chase state //
+/////////////////
+
+// Fires on enemy controller transitioning to this state from another
+void EnemyChaseState::enterState(AEnemyControllerFSM* controller)
 {
-	// This is where we determine which state to change to
-	enemy->setState(EnemyChaseState::getInstance());
+	// When entering this state from any other, enemy needs to be set to chasing the player
+	// Maybe pass a variable here depending on ranged or melee, to allow larger distances between ranged enemies and the player
+	controller->MoveToPlayer();
+}
+
+void EnemyChaseState::updateState(AEnemyControllerFSM* controller)
+{
+	// If the player is no longer being detected by the enemy
+	// change state back to patrol state
+	if (controller->sensedPlayer == nullptr)
+	{
+		controller->setState(EnemyPatrolState::getInstance());
+	}
+	// If the enemy is still detecting and chasing the player
+	else
+	{
+		// If the enemy has reached the player, change to attack state
+		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+			controller->setState(EnemyAttackState::getInstance());
+	}
 }
 
 EnemyState& EnemyChaseState::getInstance()
@@ -30,11 +77,22 @@ EnemyState& EnemyChaseState::getInstance()
 	return singleton;
 }
 
-// Attack state
-void EnemyAttackState::updateState(AEnemyControllerFSM* enemy)
+//////////////////
+// Attack state //
+//////////////////
+
+// Fires on enemy controller transitioning to this state from another
+void EnemyAttackState::enterState(AEnemyControllerFSM* controller)
+{
+	// When enterine from any other state, first action should be to try
+	//  and attack the player
+	controller->Attack();
+}
+
+void EnemyAttackState::updateState(AEnemyControllerFSM* controller)
 {
 	// This is where we determine which state to change to
-	enemy->setState(EnemyAttackState::getInstance());
+	controller->setState(EnemyAttackState::getInstance());
 }
 
 EnemyState& EnemyAttackState::getInstance()
@@ -44,10 +102,10 @@ EnemyState& EnemyAttackState::getInstance()
 }
 
 // Retreat state
-void EnemyRetreatState::updateState(AEnemyControllerFSM* enemy)
+void EnemyRetreatState::updateState(AEnemyControllerFSM* controller)
 {
 	// This is where we determine which state to change to
-	enemy->setState(EnemyRetreatState::getInstance());
+	controller->setState(EnemyRetreatState::getInstance());
 }
 
 EnemyState& EnemyRetreatState::getInstance()
@@ -57,10 +115,10 @@ EnemyState& EnemyRetreatState::getInstance()
 }
 
 // Defend state
-void EnemyDefendState::updateState(AEnemyControllerFSM* enemy)
+void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
 {
 	// This is where we determine which state to change to
-	enemy->setState(EnemyDefendState::getInstance());
+	controller->setState(EnemyDefendState::getInstance());
 }
 
 EnemyState& EnemyDefendState::getInstance()
