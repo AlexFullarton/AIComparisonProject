@@ -52,7 +52,7 @@ AEnemyCharacter::AEnemyCharacter()
 	leftHandBow = bowBP.Object->GeneratedClass;
 
 	// Set enemy controller class
-	enemyControllerClass = AEnemyController::StaticClass();
+	enemyControllerClass = AEnemyControllerFSM::StaticClass();
 }
 
 void AEnemyCharacter::InitialiseEnemy()

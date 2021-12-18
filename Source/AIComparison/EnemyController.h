@@ -10,7 +10,6 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "PlayerCharacter.h"
 #include "GenericTeamAgentInterface.h"
-#include "EnemyState.h"
 #include "EnemyController.generated.h"
 
 class AEnemyCharacter;
@@ -36,10 +35,6 @@ public:
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
 
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-
-	inline EnemyState* getCurrentState() const { return currentState; }
-	void toggleState();
-	void setState(EnemyState& newState);
 
 protected:
 	virtual void BeginPlay();
@@ -74,7 +69,4 @@ public:
 	float blockChance;
 	bool isMelee;
 	bool isRanged;
-
-private:
-	EnemyState* currentState;
 };

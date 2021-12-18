@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EnemyController.h"
+#include "EnemyState.h"
 #include "EnemyControllerFSM.generated.h"
 
 class EnemyState;
@@ -12,4 +13,16 @@ UCLASS()
 class AICOMPARISON_API AEnemyControllerFSM : public AEnemyController
 {
 	GENERATED_BODY()
+
+public:
+	AEnemyControllerFSM();
+
+	virtual void Tick(float DeltaTime);
+
+	inline EnemyState* getCurrentState() const { return currentState; }
+	void toggleState();
+	void setState(EnemyState& newState);
+
+private:
+	EnemyState* currentState;
 };

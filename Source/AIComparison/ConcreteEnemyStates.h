@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "EnemyState.h"
-#include "EnemyController.h"
+#include "EnemyControllerFSM.h"
 
 class EnemyPatrolState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) {};
-	virtual void toggleState(AEnemyController* enemy);
-	virtual void exitState(AEnemyController* enemy) {};
+	virtual void enterState(AEnemyControllerFSM* enemy) {};
+	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 	
 private:
@@ -23,9 +23,9 @@ private:
 class EnemyChaseState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) {};
-	virtual void toggleState(AEnemyController* enemy);
-	virtual void exitState(AEnemyController* enemy) {};
+	virtual void enterState(AEnemyControllerFSM* enemy) {};
+	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
 private:
@@ -37,9 +37,9 @@ private:
 class EnemyAttackState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) {};
-	virtual void toggleState(AEnemyController* enemy);
-	virtual void exitState(AEnemyController* enemy) {};
+	virtual void enterState(AEnemyControllerFSM* enemy) {};
+	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
 private:
@@ -52,9 +52,9 @@ private:
 class EnemyRetreatState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) {};
-	virtual void toggleState(AEnemyController* enemy);
-	virtual void exitState(AEnemyController* enemy) {};
+	virtual void enterState(AEnemyControllerFSM* enemy) {};
+	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
 private:
@@ -66,9 +66,9 @@ private:
 class EnemyDefendState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) {};
-	virtual void toggleState(AEnemyController* enemy);
-	virtual void exitState(AEnemyController* enemy) {};
+	virtual void enterState(AEnemyControllerFSM* enemy) {};
+	virtual void toggleState(AEnemyControllerFSM* enemy);
+	virtual void exitState(AEnemyControllerFSM* enemy) {};
 	static EnemyState& getInstance();
 
 private:

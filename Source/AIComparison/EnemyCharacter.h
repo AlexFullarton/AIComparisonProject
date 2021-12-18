@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
-#include "EnemyController.h"
+#include "EnemyControllerFSM.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()

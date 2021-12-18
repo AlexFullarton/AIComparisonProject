@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 
-class AEnemyController;
+class AEnemyControllerFSM;
 
 // Pure abstract class - only instances of child classes of this will be created
 class EnemyState
 {
 public:
-	virtual void enterState(AEnemyController* enemy) = 0;
-	virtual void toggleState(AEnemyController* enemy) = 0;
-	virtual void exitState(AEnemyController* enemy) = 0;
+	virtual void enterState(AEnemyControllerFSM* enemy) = 0;
+	virtual void toggleState(AEnemyControllerFSM* enemy) = 0;
+	virtual void exitState(AEnemyControllerFSM* enemy) = 0;
 	virtual ~EnemyState() {}
 };

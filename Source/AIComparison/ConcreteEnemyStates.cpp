@@ -4,7 +4,7 @@
 #include "ConcreteEnemyStates.h"
 
 // Patrol state
-void EnemyPatrolState::toggleState(AEnemyController* enemy)
+void EnemyPatrolState::toggleState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyPatrolState::getInstance());
@@ -17,7 +17,7 @@ EnemyState& EnemyPatrolState::getInstance()
 }
 
 // Chase state
-void EnemyChaseState::toggleState(AEnemyController* enemy)
+void EnemyChaseState::toggleState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyChaseState::getInstance());
@@ -30,7 +30,7 @@ EnemyState& EnemyChaseState::getInstance()
 }
 
 // Attack state
-void EnemyAttackState::toggleState(AEnemyController* enemy)
+void EnemyAttackState::toggleState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyAttackState::getInstance());
@@ -43,7 +43,7 @@ EnemyState& EnemyAttackState::getInstance()
 }
 
 // Retreat state
-void EnemyRetreatState::toggleState(AEnemyController* enemy)
+void EnemyRetreatState::toggleState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyRetreatState::getInstance());
@@ -56,7 +56,7 @@ EnemyState& EnemyRetreatState::getInstance()
 }
 
 // Defend state
-void EnemyDefendState::toggleState(AEnemyController* enemy)
+void EnemyDefendState::toggleState(AEnemyControllerFSM* enemy)
 {
 	// This is where we determine which state to change to
 	enemy->setState(EnemyDefendState::getInstance());
