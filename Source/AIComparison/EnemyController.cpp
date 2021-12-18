@@ -3,6 +3,7 @@
 
 #include "EnemyController.h"
 #include "EnemyCharacter.h"
+#include "ConcreteEnemyStates.h"
 
 AEnemyController::AEnemyController()
 {
@@ -36,6 +37,9 @@ AEnemyController::AEnemyController()
 	// Enemies initially are melee
 	isMelee = true;
 	isRanged = false;
+
+	// Set enemy initial state to patrol
+	currentState = &EnemyPatrolState::getInstance();
 }
 
 void AEnemyController::MoveToRandomLocationInDistance(FVector pawnLocation)
@@ -73,8 +77,6 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	sightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	sightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	PerceptionComponent->ConfigureSense(*sightConfig);
-
-	//UAIPerceptionsystem::RegisterPerceptionStimuliSource();
 }
 
 void AEnemyController::Tick(float DeltaTime)
@@ -150,4 +152,20 @@ ETeamAttitude::Type AEnemyController::GetTeamAttitudeTowards(const AActor& Other
 	}
 	// Neutral behaviour for non-pawns
 	return ETeamAttitude::Neutral;
+}
+
+void AEnemyController::setState(EnemyState& newState)
+{
+	// Run some code before we exit the current state
+	currentState->exitState(this);
+	// Change state to the new state
+	currentState = &newState;
+	// Run some code on entering the new state
+	currentState->enterState(this);
+}
+
+void AEnemyController::toggleState()
+{
+	// Current state determines what the next state will be
+	currentState->toggleState(this);
 }
