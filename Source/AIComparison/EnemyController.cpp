@@ -24,7 +24,6 @@ AEnemyController::AEnemyController()
 	// Enemy can be 25 units away before searching for a new destination
 	tolerance = 25.0f;
 
-	canSeePlayer = false;
 	patrolSpeed = 100.0f;
 	chaseSpeed = 400.0f;
 
@@ -32,6 +31,11 @@ AEnemyController::AEnemyController()
 	meleeAttackRange = 100.0f;
 	// Max distance from player at which the enemy can ranged attack
 	rangedAttackRange = 450.0f;
+
+	// How close the enemies will move to the player in melee form before trying to attack
+	meleeTolerance = 10.0f;
+	// How close the enemies will move to the player in ranged form before trying to attack
+	rangedTolerance = 300.0f;
 
 	// How long to wait between each attack (minimum)
 	attackRate = 2.0f;
@@ -41,6 +45,8 @@ AEnemyController::AEnemyController()
 	// Enemies initially are melee
 	isMelee = true;
 	isRanged = false;
+
+	isDead = false;
 }
 
 void AEnemyController::BeginPlay()
@@ -86,7 +92,7 @@ void AEnemyController::MoveToRandomLocationInDistance(FVector Location)
 	}
 }
 
-void AEnemyController::MoveToPlayer()
+void AEnemyController::MoveToPlayer(float acceptanceRadius)
 {
 	// When chasing the player, set the movement speed to be high
 	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = chaseSpeed;
@@ -94,8 +100,8 @@ void AEnemyController::MoveToPlayer()
 	if (navSystem)
 	{
 		// Move the enemy to the player character actor, using the reference
-		// to the detected player actor
-		MoveToActor(sensedPlayer);
+		// to the detected player actor and acceptance radius
+		MoveToActor(sensedPlayer, acceptanceRadius);
 	}
 }
 
@@ -107,6 +113,19 @@ float AEnemyController::getDistanceToPlayer()
 void AEnemyController::Attack()
 {
 	controlledEnemy->Attack();
+}
+
+void AEnemyController::AttackRanged()
+{
+	controlledEnemy->Attack();
+	controlledEnemy->AttackRanged();
+}
+
+void AEnemyController::SwapWeapons()
+{
+	controlledEnemy->SwapWeapons();
+	isMelee = !isMelee;
+	isRanged = !isRanged;
 }
 
 // Functions used for handling detection of other actors using the AI Perception Module

@@ -128,4 +128,7 @@ void AEnemyCharacter::RagdollDeath()
 	Super::RagdollDeath();
 	// Hide healthbar
 	healthbarWidget->SetVisibility(false);
+	AEnemyControllerFSM* controller = Cast<AEnemyControllerFSM>(GetController());
+	controller->PerceptionComponent->Deactivate();
+	controller->isDead = true;
 }

@@ -45,17 +45,21 @@ void AGameCharacter::Attack()
 	isAttacking = true;
 }
 
-void AGameCharacter::FireArrow()
+void AGameCharacter::AttackRanged()
 {
 	if (isRanged)
 	{
 		// Bool for anim transition
 		canFire = true;
-		// Initial spawn location and rotation for arrow
-		FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
-		FRotator spawnRotation = GetActorRotation();
-		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
+}
+
+void AGameCharacter::FireArrow()
+{
+	// Initial spawn location and rotation for arrow
+	FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
+	FRotator spawnRotation = GetActorRotation();
+	bowWeapon->Fire(spawnLocation, spawnRotation);
 }
 
 void AGameCharacter::AttackDone()
@@ -172,11 +176,14 @@ void AGameCharacter::LookUpAtRate(float rate)
 
 void AGameCharacter::ModifyHealth(float healthToSubtract)
 {
-	if ((currentHealth - healthToSubtract) < 0.0f)
-		currentHealth = 0.0f;
-	else if ((currentHealth - healthToSubtract) > maxHealth)
-		currentHealth = maxHealth;
-	else
-		currentHealth -= healthToSubtract;
+	if (!isBlocking)
+	{
+		if ((currentHealth - healthToSubtract) < 0.0f)
+			currentHealth = 0.0f;
+		else if ((currentHealth - healthToSubtract) > maxHealth)
+			currentHealth = maxHealth;
+		else
+			currentHealth -= healthToSubtract;
+	}	
 }
 

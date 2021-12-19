@@ -17,6 +17,9 @@ void EnemyPatrolState::enterState(AEnemyControllerFSM* controller)
 
 void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 {
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
 	// This is where we determine which state to change to based on data from enemy
 	// e.g. if low health then defence, if player seen then chase, if really low health then run
 
@@ -36,6 +39,18 @@ void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 	}
 }
 
+void EnemyPatrolState::exitState(AEnemyControllerFSM* controller)
+{
+	// On leaving the patrol state when the player has been spotted,
+	// set this enemy to be either ranged or melee based on some ratio
+	//int attackType = FMath::RandRange(0, 4);
+	//if (attackType == 0)
+	{
+		// Enemies start out as melee so swapping will equip the bow
+		controller->SwapWeapons();
+	}
+}
+
 EnemyState& EnemyPatrolState::getInstance()
 {
 	static EnemyPatrolState singleton;
@@ -50,12 +65,19 @@ EnemyState& EnemyPatrolState::getInstance()
 void EnemyChaseState::enterState(AEnemyControllerFSM* controller)
 {
 	// When entering this state from any other, enemy needs to be set to chasing the player
-	// Maybe pass a variable here depending on ranged or melee, to allow larger distances between ranged enemies and the player
-	controller->MoveToPlayer();
+	// Value for acceptanceRadius passed to the controller is dependant on the enemy 
+	// being ranged or melee
+	if (controller->isMelee)
+		controller->MoveToPlayer(controller->meleeTolerance);
+	else
+		controller->MoveToPlayer(controller->rangedTolerance);
 }
 
 void EnemyChaseState::updateState(AEnemyControllerFSM* controller)
 {
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
 	// If the player is no longer being detected by the enemy
 	// change state back to patrol state
 	if (controller->sensedPlayer == nullptr)
@@ -67,7 +89,10 @@ void EnemyChaseState::updateState(AEnemyControllerFSM* controller)
 	{
 		// If the enemy has reached the player, change to attack state
 		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
-			controller->setState(EnemyAttackState::getInstance());
+			if (controller->isMelee)
+				controller->setState(EnemyMeleeAttackState::getInstance());
+			else
+				controller->setState(EnemyRangedAttackState::getInstance());
 	}
 }
 
@@ -77,20 +102,24 @@ EnemyState& EnemyChaseState::getInstance()
 	return singleton;
 }
 
-//////////////////
-// Attack state //
-//////////////////
+////////////////////////
+// Melee Attack state //
+////////////////////////
 
 // Fires on enemy controller transitioning to this state from another
-void EnemyAttackState::enterState(AEnemyControllerFSM* controller)
+void EnemyMeleeAttackState::enterState(AEnemyControllerFSM* controller)
 {
 	// When enterine from any other state, first action should be to try
-	//  and attack the player
+	// and attack the player as the enemy should already be within
+	// attacking distance
 	controller->Attack();
 }
 
-void EnemyAttackState::updateState(AEnemyControllerFSM* controller)
+void EnemyMeleeAttackState::updateState(AEnemyControllerFSM* controller)
 {
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
 	// If the enemy can no longer see the player
 	if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
@@ -99,17 +128,55 @@ void EnemyAttackState::updateState(AEnemyControllerFSM* controller)
 	{
 		// If the player is no longer in range for a melee attack
 		if (controller->getDistanceToPlayer() > controller->meleeAttackRange)
-			controller->MoveToPlayer();
+			controller->MoveToPlayer(controller->meleeTolerance);
 		// If the player is in range then attack
 		else
 			controller->Attack();
 	}
-	
 }
 
-EnemyState& EnemyAttackState::getInstance()
+EnemyState& EnemyMeleeAttackState::getInstance()
 {
-	static EnemyAttackState singleton;
+	static EnemyMeleeAttackState singleton;
+	return singleton;
+}
+
+/////////////////////////
+// Ranged Attack state //
+/////////////////////////
+
+// Fires on enemy controller transitioning to this state from another
+void EnemyRangedAttackState::enterState(AEnemyControllerFSM* controller)
+{
+	// When enterine from any other state, first action should be to try
+	// and attack the player as the enemy should already be within
+	// attacking distance
+	controller->AttackRanged();
+}
+
+void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
+{
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
+	// If the enemy can no longer see the player
+	if (controller->sensedPlayer == nullptr)
+		controller->setState(EnemyPatrolState::getInstance());
+	// If the enemy can still see the player
+	else
+	{
+		// If the player is no longer in range for a ranged attack
+		if (controller->getDistanceToPlayer() > controller->rangedAttackRange)
+			controller->MoveToPlayer(controller->rangedTolerance);
+		// If the player is in range then attack
+		else
+			controller->AttackRanged();
+	}
+}
+
+EnemyState& EnemyRangedAttackState::getInstance()
+{
+	static EnemyRangedAttackState singleton;
 	return singleton;
 }
 
@@ -129,6 +196,9 @@ EnemyState& EnemyRetreatState::getInstance()
 // Defend state
 void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
 {
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
 	// This is where we determine which state to change to
 	controller->setState(EnemyDefendState::getInstance());
 }
@@ -136,5 +206,17 @@ void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
 EnemyState& EnemyDefendState::getInstance()
 {
 	static EnemyDefendState singleton;
+	return singleton;
+}
+
+// Death state
+void EnemyDeathState::updateState(AEnemyControllerFSM* controller)
+{
+	// Once the enemy is in the death state, they can no longer change to any other states
+}
+
+EnemyState& EnemyDeathState::getInstance()
+{
+	static EnemyDeathState singleton;
 	return singleton;
 }

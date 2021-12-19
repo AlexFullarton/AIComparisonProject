@@ -31,11 +31,15 @@ public:
 
 	void MoveToRandomLocationInDistance(FVector pawnLocation);
 
-	void MoveToPlayer();
+	void MoveToPlayer(float acceptanceRadius);
 
 	float getDistanceToPlayer();
 
 	void Attack();
+
+	void AttackRanged();
+
+	void SwapWeapons();
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
@@ -61,9 +65,6 @@ public:
 	// Destination tolerance - how close does the enemy need to get before searching for a new destination
 	float tolerance;
 
-	// Has the enemy spotted the player
-	bool canSeePlayer;
-
 	// Arrays of sensed actors
 	TArray<AActor*> sensedFriendlies;
 	AActor* sensedPlayer;
@@ -75,8 +76,11 @@ public:
 	// Combat variables
 	float meleeAttackRange;
 	float rangedAttackRange;
+	float meleeTolerance;
+	float rangedTolerance;
 	float attackRate;
 	float blockChance;
 	bool isMelee;
 	bool isRanged;
+	bool isDead;
 };

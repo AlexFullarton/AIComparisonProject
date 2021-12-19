@@ -45,7 +45,11 @@ public:
 	void Block();
 	void StopBlocking();
 	void Attack();
+	void AttackRanged();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void FireArrow();
+
 	void SwapWeapons();
 	void RagdollDeath();
 

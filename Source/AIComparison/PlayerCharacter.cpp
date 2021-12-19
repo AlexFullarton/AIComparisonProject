@@ -118,8 +118,6 @@ void APlayerCharacter::FireArrow()
 {
 	if (isRanged)
 	{
-		// Bool for anim transition
-		canFire = true;
 		// Initial spawn location and rotation for arrow
 		FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
 		spawnLocation.Y -= 20.0f;
