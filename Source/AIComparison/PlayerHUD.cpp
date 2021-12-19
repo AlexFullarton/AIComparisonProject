@@ -2,17 +2,22 @@
 
 
 #include "PlayerHUD.h"
-#include "Engine/Canvas.h"
-#include "Engine/Texture2D.h"
-#include "TextureResource.h"
-#include "CanvasItem.h"
-#include "UObject/ConstructorHelpers.h"
 
 APlayerHUD::APlayerHUD()
 {
 	// Setup crosshair texture
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTextureObj(TEXT("Texture2D'/Game/Textures/HUD/FirstPersonCrosshair.FirstPersonCrosshair'"));
 	CrosshairTexture = CrosshairTextureObj.Object;
+
+	// Setup widget for healthbar
+	static ConstructorHelpers::FClassFinder<UUserWidget> healthbar(TEXT("WidgetBlueprint'/Game/Blueprints/UI/PlayerHealthbarWidget.PlayerHealthbarWidget_C'"));
+	healthbarClass = healthbar.Class;
+}
+
+void APlayerHUD::BeginPlay()
+{
+	playerHealthbar = CreateWidget<UEnemyHealthbar>(GetWorld(), healthbarClass, TEXT("HealthbarWidget"));
+	playerHealthbar->AddToViewport();
 }
 
 void APlayerHUD::DrawHUD()
@@ -29,6 +34,4 @@ void APlayerHUD::DrawHUD()
 		item.BlendMode = SE_BLEND_Translucent;
 		Canvas->DrawItem(item);
 	}
-	
-
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
 #include "EnemyControllerFSM.h"
+#include "Components/WidgetComponent.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
@@ -15,6 +16,13 @@ class AICOMPARISON_API AEnemyCharacter : public AGameCharacter
 public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
+
+	// Widget component for healthbar
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UWidgetComponent* healthbarWidget;
+
+	// healthbar widget
+	UEnemyHealthbar* healthbarObject;
 
 protected:
 	// Called when the game starts or when spawned

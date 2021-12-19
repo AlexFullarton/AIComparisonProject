@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Engine/Canvas.h"
+#include "Engine/Texture2D.h"
+#include "TextureResource.h"
+#include "CanvasItem.h"
+#include "UObject/ConstructorHelpers.h"
+#include "EnemyHealthbar.h"
 #include "PlayerHUD.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AICOMPARISON_API APlayerHUD : public AHUD
 {
@@ -17,10 +20,16 @@ class AICOMPARISON_API APlayerHUD : public AHUD
 public:
 	APlayerHUD();
 
+protected:
+	virtual void BeginPlay();
+
+public:
 	virtual void DrawHUD() override;
 
-private:
+	UEnemyHealthbar* playerHealthbar;
 
+	UClass* healthbarClass;
+
+private:
 	class UTexture2D* CrosshairTexture;
-	
 };
