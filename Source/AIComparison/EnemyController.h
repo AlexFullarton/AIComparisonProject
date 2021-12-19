@@ -39,6 +39,8 @@ public:
 
 	void AttackRanged();
 
+	bool IsEnemyAttacking();
+
 	void SwapWeapons();
 
 	UFUNCTION()

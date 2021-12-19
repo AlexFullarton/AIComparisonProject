@@ -168,8 +168,8 @@ void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
 		// If the player is no longer in range for a ranged attack
 		if (controller->getDistanceToPlayer() > controller->rangedAttackRange)
 			controller->MoveToPlayer(controller->rangedTolerance);
-		// If the player is in range then attack
-		else
+		// If the player is in range and not already attacking;
+		else if (!controller->IsEnemyAttacking())
 			controller->AttackRanged();
 	}
 }

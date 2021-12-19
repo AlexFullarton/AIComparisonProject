@@ -121,6 +121,11 @@ void AEnemyController::AttackRanged()
 	controlledEnemy->AttackRanged();
 }
 
+bool AEnemyController::IsEnemyAttacking()
+{
+	return controlledEnemy->isAttacking;
+}
+
 void AEnemyController::SwapWeapons()
 {
 	controlledEnemy->SwapWeapons();
