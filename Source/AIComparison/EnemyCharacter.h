@@ -27,6 +27,5 @@ public:
 	// Called just before begin play - allows early initialisation of enemies
 	void InitialiseEnemy();
 
-	// Enemy AI controller class
-	UClass* enemyControllerClass;
+	void RagdollDeath();
 };

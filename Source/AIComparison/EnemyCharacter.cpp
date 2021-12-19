@@ -107,5 +107,17 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	healthbarObject->UpdateHealth(currentHealth);
+	if (currentHealth == 0.0f && !isDead)
+	{
+		RagdollDeath();
+		isDead = true;
+	}
+}
 
+void AEnemyCharacter::RagdollDeath()
+{
+	Super::RagdollDeath();
+	// Hide healthbar
+	healthbarWidget->SetVisibility(false);
 }
