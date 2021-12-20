@@ -11,7 +11,7 @@ class EnemyPatrolState : public EnemyState
 public:
 	virtual void enterState(AEnemyControllerFSM* controller);
 	virtual void updateState(AEnemyControllerFSM* controller);
-	virtual void exitState(AEnemyControllerFSM* controller);
+	virtual void exitState(AEnemyControllerFSM* controller) {};
 	static EnemyState& getInstance();
 	
 private:
@@ -39,7 +39,7 @@ class EnemyMeleeAttackState : public EnemyState
 public:
 	virtual void enterState(AEnemyControllerFSM* controller);
 	virtual void updateState(AEnemyControllerFSM* controller);
-	virtual void exitState(AEnemyControllerFSM* controller) {};
+	virtual void exitState(AEnemyControllerFSM* controller);
 	static EnemyState& getInstance();
 
 private:
@@ -62,6 +62,19 @@ private:
 	//EnemyAttackState& operator=(const EnemyAttackState& state);
 };
 
+class EnemyDefendState : public EnemyState
+{
+public:
+	virtual void enterState(AEnemyControllerFSM* controller);
+	virtual void updateState(AEnemyControllerFSM* controller);
+	virtual void exitState(AEnemyControllerFSM* controller);
+	static EnemyState& getInstance();
+
+private:
+	EnemyDefendState() {}
+	//EnemyDefendState(const EnemyDefendState& state);
+	//EnemyDefendState& operator=(const EnemyDefendState& state);
+};
 
 class EnemyRetreatState : public EnemyState
 {
@@ -75,20 +88,6 @@ private:
 	EnemyRetreatState() {}
 	//EnemyRetreatState(const EnemyRetreatState& state);
 	//EnemyRetreatState& operator=(const EnemyRetreatState& state);
-};
-
-class EnemyDefendState : public EnemyState
-{
-public:
-	virtual void enterState(AEnemyControllerFSM* controller) {};
-	virtual void updateState(AEnemyControllerFSM* controller);
-	virtual void exitState(AEnemyControllerFSM* controller) {};
-	static EnemyState& getInstance();
-
-private:
-	EnemyDefendState() {}
-	//EnemyDefendState(const EnemyDefendState& state);
-	//EnemyDefendState& operator=(const EnemyDefendState& state);
 };
 
 class EnemyDeathState : public EnemyState

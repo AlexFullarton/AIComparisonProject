@@ -19,13 +19,15 @@ void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 {
 	// Check death state
 	if (controller->isDead)
+	{
 		controller->setState(EnemyDeathState::getInstance());
-	// This is where we determine which state to change to based on data from enemy
-	// e.g. if low health then defence, if player seen then chase, if really low health then run
+		// This is where we determine which state to change to based on data from enemy
+		// e.g. if low health then defence, if player seen then chase, if really low health then run
 
-	// If sensed enemies is anything other than zero, this enemy has
-	// detected a player character so must change state
-	if (controller->sensedPlayer != nullptr)
+		// If sensed enemies is anything other than zero, this enemy has
+		// detected a player character so must change state
+	}
+	else if (controller->sensedPlayer != nullptr)
 	{
 		controller->setState(EnemyChaseState::getInstance());
 	}	
@@ -36,18 +38,6 @@ void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 		// new random destination
 		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
 			controller->MoveToRandomLocationInDistance(controller->pawnLocation);
-	}
-}
-
-void EnemyPatrolState::exitState(AEnemyControllerFSM* controller)
-{
-	// On leaving the patrol state when the player has been spotted,
-	// set this enemy to be either ranged or melee based on some ratio
-	//int attackType = FMath::RandRange(0, 4);
-	//if (attackType == 0)
-	{
-		// Enemies start out as melee so swapping will equip the bow
-		controller->SwapWeapons();
 	}
 }
 
@@ -77,18 +67,23 @@ void EnemyChaseState::updateState(AEnemyControllerFSM* controller)
 {
 	// Check death state
 	if (controller->isDead)
+	{
 		controller->setState(EnemyDeathState::getInstance());
-	// If the player is no longer being detected by the enemy
-	// change state back to patrol state
-	if (controller->sensedPlayer == nullptr)
+		// If the player is no longer being detected by the enemy
+		// change state back to patrol state
+	}
+	else if (controller->sensedPlayer == nullptr)
 	{
 		controller->setState(EnemyPatrolState::getInstance());
 	}
 	// If the enemy is still detecting and chasing the player
 	else
 	{
+		// If the enemy can see 3+ friendlies attacking the player and is in range
+		if (controller->sensedFriendlies.Num() >= 3 && controller->getDistanceToPlayer() < controller->rangedAttackRange)
+			controller->setState(EnemyRangedAttackState::getInstance());
 		// If the enemy has reached the player, change to attack state
-		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+		else if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
 			if (controller->isMelee)
 				controller->setState(EnemyMeleeAttackState::getInstance());
 			else
@@ -113,6 +108,8 @@ void EnemyMeleeAttackState::enterState(AEnemyControllerFSM* controller)
 	// and attack the player as the enemy should already be within
 	// attacking distance
 	controller->Attack();
+	// Set the timer that counts how long until blocking is allowed by this enemy
+	controller->SetBlockTimer();
 }
 
 void EnemyMeleeAttackState::updateState(AEnemyControllerFSM* controller)
@@ -121,18 +118,26 @@ void EnemyMeleeAttackState::updateState(AEnemyControllerFSM* controller)
 	if (controller->isDead)
 		controller->setState(EnemyDeathState::getInstance());
 	// If the enemy can no longer see the player
-	if (controller->sensedPlayer == nullptr)
+	else if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
 	// If the enemy can still see the player
 	else
 	{
+		// If blocking has been allowed by the timer
+		if (controller->IsBlockAllowed())
+			controller->setState(EnemyDefendState::getInstance());
 		// If the player is no longer in range for a melee attack
-		if (controller->getDistanceToPlayer() > controller->meleeAttackRange)
-			controller->MoveToPlayer(controller->meleeTolerance);
+		else if (controller->getDistanceToPlayer() > controller->meleeAttackRange)
+			controller->setState(EnemyChaseState::getInstance());
 		// If the player is in range then attack
 		else
 			controller->Attack();
 	}
+}
+
+void EnemyMeleeAttackState::exitState(AEnemyControllerFSM* controller)
+{
+	controller->disallowAttack();
 }
 
 EnemyState& EnemyMeleeAttackState::getInstance()
@@ -160,7 +165,7 @@ void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
 	if (controller->isDead)
 		controller->setState(EnemyDeathState::getInstance());
 	// If the enemy can no longer see the player
-	if (controller->sensedPlayer == nullptr)
+	else if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
 	// If the enemy can still see the player
 	else
@@ -180,6 +185,49 @@ EnemyState& EnemyRangedAttackState::getInstance()
 	return singleton;
 }
 
+//////////////////
+// Defend state //
+//////////////////
+
+void EnemyDefendState::enterState(AEnemyControllerFSM* controller)
+{
+	// Entered from other state - immediately start blocking
+	controller->Block();
+	controller->SetAttackTimer();
+}
+
+void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
+{
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
+	// If the enemy can no longer see the player
+	else if (controller->sensedPlayer == nullptr)
+		controller->setState(EnemyPatrolState::getInstance());
+	// If the enemy can still see the player
+	else
+	{
+		// If blocking has been allowed by the timer
+		if (controller->IsAttackAllowed())
+			controller->setState(EnemyMeleeAttackState::getInstance());
+		// If the player is no longer in range for a melee attack
+		else if (controller->getDistanceToPlayer() > controller->meleeAttackRange)
+			controller->setState(EnemyChaseState::getInstance());
+	}
+}
+
+void EnemyDefendState::exitState(AEnemyControllerFSM* controller)
+{
+	controller->disallowBlock();
+	controller->StopBlocking();
+}
+
+EnemyState& EnemyDefendState::getInstance()
+{
+	static EnemyDefendState singleton;
+	return singleton;
+}
+
 // Retreat state
 void EnemyRetreatState::updateState(AEnemyControllerFSM* controller)
 {
@@ -190,22 +238,6 @@ void EnemyRetreatState::updateState(AEnemyControllerFSM* controller)
 EnemyState& EnemyRetreatState::getInstance()
 {
 	static EnemyRetreatState singleton;
-	return singleton;
-}
-
-// Defend state
-void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
-{
-	// Check death state
-	if (controller->isDead)
-		controller->setState(EnemyDeathState::getInstance());
-	// This is where we determine which state to change to
-	controller->setState(EnemyDefendState::getInstance());
-}
-
-EnemyState& EnemyDefendState::getInstance()
-{
-	static EnemyDefendState singleton;
 	return singleton;
 }
 

@@ -126,6 +126,48 @@ bool AEnemyController::IsEnemyAttacking()
 	return controlledEnemy->isAttacking;
 }
 
+void AEnemyController::SetAttackTimer()
+{
+	float rate = FMath::RandRange(9.0, 12.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowAttack, rate, false);
+}
+
+void AEnemyController::allowAttack()
+{
+	attackAllowed = true;
+}
+
+void AEnemyController::disallowAttack()
+{
+	attackAllowed = false;
+}
+
+void AEnemyController::Block()
+{
+	controlledEnemy->Block();
+}
+
+void AEnemyController::StopBlocking()
+{
+	controlledEnemy->StopBlocking();
+}
+
+void AEnemyController::SetBlockTimer()
+{
+	float rate = FMath::RandRange(3.0, 6.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowBlock, rate, false);
+}
+
+void AEnemyController::allowBlock()
+{ 
+	blockAllowed = true; 
+}
+
+void AEnemyController::disallowBlock()
+{ 
+	blockAllowed = false; 
+}
+
 void AEnemyController::SwapWeapons()
 {
 	controlledEnemy->SwapWeapons();

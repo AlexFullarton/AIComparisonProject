@@ -36,10 +36,19 @@ public:
 	float getDistanceToPlayer();
 
 	void Attack();
-
 	void AttackRanged();
-
 	bool IsEnemyAttacking();
+	void SetAttackTimer();
+	void allowAttack();
+	void disallowAttack();
+	bool IsAttackAllowed() { return attackAllowed; }
+
+	void Block();
+	void StopBlocking();
+	void SetBlockTimer();
+	void allowBlock();
+	void disallowBlock();
+	bool IsBlockAllowed() { return blockAllowed; }
 
 	void SwapWeapons();
 
@@ -82,7 +91,13 @@ public:
 	float rangedTolerance;
 	float attackRate;
 	float blockChance;
+
+	bool attackAllowed;
+	bool blockAllowed;
 	bool isMelee;
 	bool isRanged;
 	bool isDead;
+
+	// TimerHandle for block/attack timers
+	FTimerHandle TimerHandle;
 };
