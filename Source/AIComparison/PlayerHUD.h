@@ -4,10 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "Engine/Canvas.h"
-#include "Engine/Texture2D.h"
-#include "TextureResource.h"
-#include "CanvasItem.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EnemyHealthbar.h"
 #include "PlayerHUD.generated.h"
@@ -27,9 +23,7 @@ public:
 	virtual void DrawHUD() override;
 
 	UEnemyHealthbar* playerHealthbar;
-
+	UUserWidget* playerCrosshair;
 	UClass* healthbarClass;
-
-private:
-	class UTexture2D* CrosshairTexture;
+	UClass* crosshairClass;
 };

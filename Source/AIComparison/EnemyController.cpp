@@ -43,7 +43,7 @@ AEnemyController::AEnemyController()
 	// Enemies initially are melee
 	isMelee = true;
 	isRanged = false;
-
+	hasRetreated = false;
 	isDead = false;
 }
 
@@ -75,10 +75,10 @@ void AEnemyController::Tick(float DeltaTime)
 	pawnLocation = controlledEnemy->GetActorLocation();
 }
 
-void AEnemyController::MoveToRandomLocationInDistance(FVector Location)
+void AEnemyController::MoveToRandomLocationInDistance(FVector Location, float speed)
 {
 	// When patrolling to a random location, set character speed to be low
-	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = speed;
 	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem)
 	{
@@ -198,6 +198,14 @@ void AEnemyController::SwapWeapons()
 	controlledEnemy->SwapWeapons();
 	isMelee = controlledEnemy->isMelee;
 	isRanged = controlledEnemy->isRanged;
+}
+
+bool AEnemyController::IsCriticalHealth()
+{
+	if (controlledEnemy->currentHealth / controlledEnemy->maxHealth * 100.0f < 25.0f)
+		return true;
+	else
+		return false;
 }
 
 // Functions used for handling detection of other actors using the AI Perception Module

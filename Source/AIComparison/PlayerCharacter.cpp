@@ -126,3 +126,11 @@ void APlayerCharacter::FireArrow()
 		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
 }
+
+void APlayerCharacter::RagdollDeath()
+{
+	Super::RagdollDeath();
+	// Hide healthbar
+	HUD->playerHealthbar->SetVisibility(ESlateVisibility::Hidden);
+	HUD->playerCrosshair->SetVisibility(ESlateVisibility::Hidden);
+}

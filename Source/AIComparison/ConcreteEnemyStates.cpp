@@ -12,21 +12,19 @@ void EnemyPatrolState::enterState(AEnemyControllerFSM* controller)
 {
 	// When entering patrol state from another state, set enemy to find 
 	// new random location to patrol to
-	controller->MoveToRandomLocationInDistance(controller->pawnLocation);
+	controller->MoveToRandomLocationInDistance(controller->pawnLocation, controller->patrolSpeed);
 }
 
 void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 {
 	// Check death state
 	if (controller->isDead)
-	{
 		controller->setState(EnemyDeathState::getInstance());
-		// This is where we determine which state to change to based on data from enemy
-		// e.g. if low health then defence, if player seen then chase, if really low health then run
-
-		// If sensed enemies is anything other than zero, this enemy has
-		// detected a player character so must change state
-	}
+	// If enemy is low health then reatreat - only happens once per enemy
+	else if (controller->IsCriticalHealth() && !controller->hasRetreated)
+		controller->setState(EnemyRetreatState::getInstance());
+	// If sensed enemies is anything other than zero, this enemy has
+	// detected a player character so must change state
 	else if (controller->sensedPlayer != nullptr)
 	{
 		controller->setState(EnemyChaseState::getInstance());
@@ -37,7 +35,7 @@ void EnemyPatrolState::updateState(AEnemyControllerFSM* controller)
 		// If the enemy has reached the previously set destination, give it a 
 		// new random destination
 		if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
-			controller->MoveToRandomLocationInDistance(controller->pawnLocation);
+			controller->MoveToRandomLocationInDistance(controller->pawnLocation, controller->patrolSpeed);
 	}
 }
 
@@ -67,11 +65,12 @@ void EnemyChaseState::updateState(AEnemyControllerFSM* controller)
 {
 	// Check death state
 	if (controller->isDead)
-	{
 		controller->setState(EnemyDeathState::getInstance());
-		// If the player is no longer being detected by the enemy
-		// change state back to patrol state
-	}
+	// If enemy is low health then reatreat - only happens once per enemy
+	else if (controller->IsCriticalHealth() && !controller->hasRetreated)
+		controller->setState(EnemyRetreatState::getInstance());
+	// If the player is no longer being detected by the enemy
+	// change state back to patrol state
 	else if (controller->sensedPlayer == nullptr)
 	{
 		controller->setState(EnemyPatrolState::getInstance());
@@ -120,6 +119,9 @@ void EnemyMeleeAttackState::updateState(AEnemyControllerFSM* controller)
 	// Check death state
 	if (controller->isDead)
 		controller->setState(EnemyDeathState::getInstance());
+	// If enemy is low health then reatreat - only happens once per enemy
+	else if (controller->IsCriticalHealth() && !controller->hasRetreated)
+		controller->setState(EnemyRetreatState::getInstance());
 	// If the enemy can no longer see the player
 	else if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
@@ -170,6 +172,9 @@ void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
 	// Check death state
 	if (controller->isDead)
 		controller->setState(EnemyDeathState::getInstance());
+	// If enemy is low health then reatreat - only happens once per enemy
+	else if (controller->IsCriticalHealth() && !controller->hasRetreated)
+		controller->setState(EnemyRetreatState::getInstance());
 	// If the enemy can no longer see the player
 	else if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
@@ -210,6 +215,9 @@ void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
 	// Check death state
 	if (controller->isDead)
 		controller->setState(EnemyDeathState::getInstance());
+	// If enemy is low health then reatreat - only happens once per enemy
+	else if (controller->IsCriticalHealth() && !controller->hasRetreated)
+		controller->setState(EnemyRetreatState::getInstance());
 	// If the enemy can no longer see the player
 	else if (controller->sensedPlayer == nullptr)
 		controller->setState(EnemyPatrolState::getInstance());
@@ -237,11 +245,24 @@ EnemyState& EnemyDefendState::getInstance()
 	return singleton;
 }
 
-// Retreat state
+///////////////////
+// Retreat state //
+///////////////////
+
+void EnemyRetreatState::enterState(AEnemyControllerFSM* controller)
+{
+	controller->MoveToRandomLocationInDistance(controller->pawnLocation, controller->chaseSpeed);
+	controller->hasRetreated = true;
+}
+
 void EnemyRetreatState::updateState(AEnemyControllerFSM* controller)
 {
-	// This is where we determine which state to change to
-	controller->setState(EnemyRetreatState::getInstance());
+	// Check death state
+	if (controller->isDead)
+		controller->setState(EnemyDeathState::getInstance());
+	// If point has been reached
+	else if (controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+		controller->setState(EnemyPatrolState::getInstance());
 }
 
 EnemyState& EnemyRetreatState::getInstance()
@@ -250,7 +271,10 @@ EnemyState& EnemyRetreatState::getInstance()
 	return singleton;
 }
 
-// Death state
+/////////////////
+// Death state //
+/////////////////
+
 void EnemyDeathState::updateState(AEnemyControllerFSM* controller)
 {
 	// Once the enemy is in the death state, they can no longer change to any other states

@@ -28,7 +28,7 @@ public:
 	void OnPossess(APawn* InPawn);
 	virtual void Tick(float DeltaTime);
 
-	void MoveToRandomLocationInDistance(FVector pawnLocation);
+	void MoveToRandomLocationInDistance(FVector pawnLocation, float speed);
 	void MoveToPlayer(float acceptanceRadius);
 	float getDistanceToPlayer();
 	void RotateToFacePlayer();
@@ -53,6 +53,8 @@ public:
 	bool IsBlockAllowed() { return blockAllowed; }
 
 	void SwapWeapons();
+
+	bool IsCriticalHealth();
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
@@ -98,6 +100,7 @@ public:
 	bool blockAllowed;
 	bool isMelee;
 	bool isRanged;
+	bool hasRetreated;
 	bool isDead;
 
 	// TimerHandle for block/attack timers
