@@ -107,6 +107,9 @@ void EnemyMeleeAttackState::enterState(AEnemyControllerFSM* controller)
 	// When enterine from any other state, first action should be to try
 	// and attack the player as the enemy should already be within
 	// attacking distance
+	// Could be coming from a ranged attack state so check is enemy is melee or ranged
+	if (!controller->isMelee)
+		controller->SwapWeapons();
 	controller->Attack();
 	// Set the timer that counts how long until blocking is allowed by this enemy
 	controller->SetBlockTimer();
@@ -156,6 +159,9 @@ void EnemyRangedAttackState::enterState(AEnemyControllerFSM* controller)
 	// When enterine from any other state, first action should be to try
 	// and attack the player as the enemy should already be within
 	// attacking distance
+	// Could be coming from a melee attack state so check is enemy is melee or ranged
+	if (!controller->isRanged)
+		controller->SwapWeapons();
 	controller->AttackRanged();
 }
 
@@ -170,9 +176,12 @@ void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
 	// If the enemy can still see the player
 	else
 	{
+		// If the player has moved closed to this enemy
+		if (controller->getDistanceToPlayer() < controller->meleeAttackRange)
+			controller->setState(EnemyMeleeAttackState::getInstance());
 		// If the player is no longer in range for a ranged attack
 		if (controller->getDistanceToPlayer() > controller->rangedAttackRange)
-			controller->MoveToPlayer(controller->rangedTolerance);
+			controller->setState(EnemyChaseState::getInstance());
 		// If the player is in range and not already attacking;
 		else if (!controller->IsEnemyAttacking())
 			controller->AttackRanged();

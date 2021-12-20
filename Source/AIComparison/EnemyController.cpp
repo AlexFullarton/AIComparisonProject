@@ -128,7 +128,7 @@ bool AEnemyController::IsEnemyAttacking()
 
 void AEnemyController::SetAttackTimer()
 {
-	float rate = FMath::RandRange(9.0, 12.0f);
+	float rate = FMath::RandRange(3.0, 4.5f);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowAttack, rate, false);
 }
 
@@ -154,7 +154,7 @@ void AEnemyController::StopBlocking()
 
 void AEnemyController::SetBlockTimer()
 {
-	float rate = FMath::RandRange(3.0, 6.0f);
+	float rate = FMath::RandRange(1.5, 3.0f);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowBlock, rate, false);
 }
 

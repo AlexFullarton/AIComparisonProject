@@ -66,7 +66,7 @@ void AArrow::FireInDirection(const FVector& ShootDirection)
 
 void AArrow::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner()->GetOwner())
+	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner()->GetOwner() && OtherActor->GetClass() != Cast<ARangedWeapon>(GetOwner())->OwningPawn->GetClass())
 	{
 		Cast<AGameCharacter>(OtherActor)->ModifyHealth(Cast<ARangedWeapon>(GetOwner())->weaponDamage);
 		Destroy();
