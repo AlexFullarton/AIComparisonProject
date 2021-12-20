@@ -10,6 +10,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "PlayerCharacter.h"
 #include "GenericTeamAgentInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "EnemyController.generated.h"
 
 class AEnemyCharacter;
@@ -24,16 +25,13 @@ class AICOMPARISON_API AEnemyController : public AAIController
 
 public:
 	AEnemyController();
-
 	void OnPossess(APawn* InPawn);
-
 	virtual void Tick(float DeltaTime);
 
 	void MoveToRandomLocationInDistance(FVector pawnLocation);
-
 	void MoveToPlayer(float acceptanceRadius);
-
 	float getDistanceToPlayer();
+	void RotateToFacePlayer();
 
 	void Attack();
 	void AttackRanged();
@@ -42,6 +40,10 @@ public:
 	void allowAttack();
 	void disallowAttack();
 	bool IsAttackAllowed() { return attackAllowed; }
+	void SetRangedAttackTimer();
+	void allowRanged();
+	void disallowRanged();
+	bool IsRangedAllowed() { return rangedAllowed; }
 
 	void Block();
 	void StopBlocking();
@@ -90,9 +92,9 @@ public:
 	float meleeTolerance;
 	float rangedTolerance;
 	float attackRate;
-	float blockChance;
 
 	bool attackAllowed;
+	bool rangedAllowed;
 	bool blockAllowed;
 	bool isMelee;
 	bool isRanged;

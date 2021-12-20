@@ -183,7 +183,7 @@ void EnemyRangedAttackState::updateState(AEnemyControllerFSM* controller)
 		if (controller->getDistanceToPlayer() > controller->rangedAttackRange)
 			controller->setState(EnemyChaseState::getInstance());
 		// If the player is in range and not already attacking;
-		else if (!controller->IsEnemyAttacking())
+		else if (!controller->IsEnemyAttacking() && controller->IsRangedAllowed())
 			controller->AttackRanged();
 	}
 }

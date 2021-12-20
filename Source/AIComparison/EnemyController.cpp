@@ -38,9 +38,7 @@ AEnemyController::AEnemyController()
 	rangedTolerance = 300.0f;
 
 	// How long to wait between each attack (minimum)
-	attackRate = 2.0f;
-	// Percentage block chance (minimum)
-	blockChance = 33.3f;
+	attackRate = 3.0f;
 
 	// Enemies initially are melee
 	isMelee = true;
@@ -110,8 +108,17 @@ float AEnemyController::getDistanceToPlayer()
 	return controlledEnemy->GetDistanceTo(sensedPlayer);
 }
 
+void AEnemyController::RotateToFacePlayer()
+{
+	if (sensedPlayer)
+	{
+		controlledEnemy->SetActorRotation(FRotator(controlledEnemy->GetActorRotation().Pitch, FMath::RInterpTo(controlledEnemy->GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(controlledEnemy->GetActorLocation(), sensedPlayer->GetActorLocation()), GetWorld()->DeltaTimeSeconds, 20.0f).Yaw, controlledEnemy->GetActorRotation().Roll));
+	}
+}
+
 void AEnemyController::Attack()
 {
+	RotateToFacePlayer();
 	controlledEnemy->Attack();
 }
 
@@ -119,6 +126,8 @@ void AEnemyController::AttackRanged()
 {
 	controlledEnemy->Attack();
 	controlledEnemy->AttackRanged();
+	SetRangedAttackTimer();
+	disallowRanged();
 }
 
 bool AEnemyController::IsEnemyAttacking()
@@ -128,8 +137,14 @@ bool AEnemyController::IsEnemyAttacking()
 
 void AEnemyController::SetAttackTimer()
 {
-	float rate = FMath::RandRange(3.0, 4.5f);
+	float rate = FMath::RandRange(attackRate, attackRate + 1.5f);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowAttack, rate, false);
+}
+
+void AEnemyController::SetRangedAttackTimer()
+{
+	float rate = FMath::RandRange(attackRate, attackRate + 1.5f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowRanged, rate, false);
 }
 
 void AEnemyController::allowAttack()
@@ -140,6 +155,16 @@ void AEnemyController::allowAttack()
 void AEnemyController::disallowAttack()
 {
 	attackAllowed = false;
+}
+
+void AEnemyController::allowRanged()
+{
+	rangedAllowed = true;
+}
+
+void AEnemyController::disallowRanged()
+{
+	rangedAllowed = false;
 }
 
 void AEnemyController::Block()
@@ -171,8 +196,8 @@ void AEnemyController::disallowBlock()
 void AEnemyController::SwapWeapons()
 {
 	controlledEnemy->SwapWeapons();
-	isMelee = !isMelee;
-	isRanged = !isRanged;
+	isMelee = controlledEnemy->isMelee;
+	isRanged = controlledEnemy->isRanged;
 }
 
 // Functions used for handling detection of other actors using the AI Perception Module
