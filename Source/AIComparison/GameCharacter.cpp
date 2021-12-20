@@ -12,6 +12,8 @@ AGameCharacter::AGameCharacter()
 	// Set up AI perception component
 	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionSourceComponent"));
 	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
+
+	isDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -43,17 +45,21 @@ void AGameCharacter::Attack()
 	isAttacking = true;
 }
 
-void AGameCharacter::FireArrow()
+void AGameCharacter::AttackRanged()
 {
 	if (isRanged)
 	{
 		// Bool for anim transition
 		canFire = true;
-		// Initial spawn location and rotation for arrow
-		FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
-		FRotator spawnRotation = GetActorRotation();
-		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
+}
+
+void AGameCharacter::FireArrow()
+{
+	// Initial spawn location and rotation for arrow
+	FVector spawnLocation = GetMesh()->GetSocketLocation(TEXT("LeftHandSocket"));
+	FRotator spawnRotation = GetActorRotation();
+	bowWeapon->Fire(spawnLocation, spawnRotation);
 }
 
 void AGameCharacter::AttackDone()
@@ -93,6 +99,28 @@ void AGameCharacter::SwapWeapons()
 		bowWeapon = Cast<ARangedWeapon>(GetWorld()->SpawnActor(leftHandBow));
 		bowWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
 		bowWeapon->weaponDamage = rangedDamage;
+	}
+}
+
+// Called on the characters health being reduced to zero
+void AGameCharacter::RagdollDeath()
+{
+	// Stop simulating physics
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName(TEXT("GameCharacter"));
+	// Remove collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Disable any more animations
+	GetMesh()->SetAnimInstanceClass(nullptr);
+
+	if (isMelee)
+	{
+		swordWeapon->DropWeapon();
+		shieldWeapon->DropWeapon();
+	}
+	else
+	{
+		bowWeapon->DropWeapon();
 	}
 }
 
@@ -148,11 +176,14 @@ void AGameCharacter::LookUpAtRate(float rate)
 
 void AGameCharacter::ModifyHealth(float healthToSubtract)
 {
-	if ((currentHealth - healthToSubtract) < 0.0f)
-		currentHealth = 0.0f;
-	else if ((currentHealth - healthToSubtract) > maxHealth)
-		currentHealth = maxHealth;
-	else
-		currentHealth -= healthToSubtract;
+	if (!isBlocking)
+	{
+		if ((currentHealth - healthToSubtract) < 0.0f)
+			currentHealth = 0.0f;
+		else if ((currentHealth - healthToSubtract) > maxHealth)
+			currentHealth = maxHealth;
+		else
+			currentHealth -= healthToSubtract;
+	}	
 }
 

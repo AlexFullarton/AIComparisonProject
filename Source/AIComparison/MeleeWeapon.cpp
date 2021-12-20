@@ -20,7 +20,7 @@ void AMeleeWeapon::toggleCollider()
 
 void AMeleeWeapon::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner())
+	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner() && OtherActor->GetClass() != GetOwner()->GetClass())
 	{
 		Cast<AGameCharacter>(OtherActor)->ModifyHealth(weaponDamage);
 	}

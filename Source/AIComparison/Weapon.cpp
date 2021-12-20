@@ -48,6 +48,16 @@ void AWeapon::DetachWeapon()
 	Destroy();
 }
 
+void AWeapon::DropWeapon()
+{
+	// Drop weapon on death
+	FDetachmentTransformRules detachRules(EDetachmentRule::KeepWorld, false);
+	DetachFromActor(detachRules);
+	weaponMesh->SetSimulatePhysics(true);
+	weaponMesh->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	weaponMesh->SetCollisionProfileName(TEXT("Block"));
+}
+
 USkeletalMeshComponent* AWeapon::GetPawnSkeletalMesh(FString ComponentName)
 {
 	TArray<UActorComponent*> Components;

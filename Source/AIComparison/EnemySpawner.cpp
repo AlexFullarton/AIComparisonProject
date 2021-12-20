@@ -35,7 +35,6 @@ void AEnemySpawner::BeginPlay()
 	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(enemyClass, spawnTransform);
 	enemy->InitialiseEnemy();
 	enemy->FinishSpawning(spawnTransform);
-	Cast<AEnemyController>(enemy->GetController())->MoveToRandomLocationInDistance(enemy->GetActorLocation());
 }
 
 

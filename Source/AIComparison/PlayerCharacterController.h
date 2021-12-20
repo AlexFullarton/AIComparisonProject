@@ -38,7 +38,7 @@ protected:
 
 	void Attack();
 
-	void FireArrow();
+	void AttackRanged();
 
 	void SwapWeapons();
 

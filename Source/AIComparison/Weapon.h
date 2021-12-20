@@ -29,6 +29,8 @@ public:
 
 	virtual void DetachWeapon();
 
+	void DropWeapon();
+
 	// Get a pointer to the skeletal mesh of the owning pawn
 	virtual USkeletalMeshComponent* GetPawnSkeletalMesh(FString ComponentName);
 

@@ -16,6 +16,7 @@
 #include "AIComparisonInstance.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "EnemyHealthbar.h"
 #include "GameCharacter.generated.h"
 
 UCLASS()
@@ -44,8 +45,13 @@ public:
 	void Block();
 	void StopBlocking();
 	void Attack();
+	void AttackRanged();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void FireArrow();
+
 	void SwapWeapons();
+	void RagdollDeath();
 
 	UFUNCTION(BlueprintCallable)
 	void AttackDone();
@@ -107,6 +113,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
 	bool canFire;
+
+	bool isDead;
 
 	int attackCounter;
 

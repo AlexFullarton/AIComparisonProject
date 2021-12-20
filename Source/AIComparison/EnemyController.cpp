@@ -24,33 +24,27 @@ AEnemyController::AEnemyController()
 	// Enemy can be 25 units away before searching for a new destination
 	tolerance = 25.0f;
 
-	canSeePlayer = false;
 	patrolSpeed = 100.0f;
-	chaseSpeed = 500.0f;
+	chaseSpeed = 400.0f;
+
+	// Max distance from player at which the enemy can melee attack
+	meleeAttackRange = 100.0f;
+	// Max distance from player at which the enemy can ranged attack
+	rangedAttackRange = 450.0f;
+
+	// How close the enemies will move to the player in melee form before trying to attack
+	meleeTolerance = 10.0f;
+	// How close the enemies will move to the player in ranged form before trying to attack
+	rangedTolerance = 300.0f;
 
 	// How long to wait between each attack (minimum)
-	attackRate = 2.0f;
-	// Percentage block chance (minimum)
-	blockChance = 33.3f;
+	attackRate = 3.0f;
 
 	// Enemies initially are melee
 	isMelee = true;
 	isRanged = false;
-}
-
-void AEnemyController::MoveToRandomLocationInDistance(FVector pawnLocation)
-{
-	// When patrolling to a random location, set character speed to be low
-	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
-	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-	if (navSystem)
-	{
-		// Move the enemy to the given destination if a new location is found
-		if (navSystem->GetRandomReachablePointInRadius(pawnLocation, searchRadius, destination))
-		{
-			MoveToLocation(destination.Location, tolerance);
-		}
-	}
+	hasRetreated = false;
+	isDead = false;
 }
 
 void AEnemyController::BeginPlay()
@@ -73,22 +67,150 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	sightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	sightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	PerceptionComponent->ConfigureSense(*sightConfig);
-
-	//UAIPerceptionsystem::RegisterPerceptionStimuliSource();
 }
 
 void AEnemyController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector pawnLocation = controlledEnemy->GetActorLocation();
-	// If the pawn has reached the given destination
-	if (GetMoveStatus() != EPathFollowingStatus::Moving)
+	pawnLocation = controlledEnemy->GetActorLocation();
+}
+
+void AEnemyController::MoveToRandomLocationInDistance(FVector Location, float speed)
+{
+	// When patrolling to a random location, set character speed to be low
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = speed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
 	{
-		// Give the pawn a new destination
-		MoveToRandomLocationInDistance(pawnLocation);
+		// Move the enemy to the given destination if a new location is found
+		if (navSystem->GetRandomReachablePointInRadius(Location, searchRadius, destination))
+		{
+			MoveToLocation(destination.Location, tolerance);
+		}
 	}
 }
 
+void AEnemyController::MoveToPlayer(float acceptanceRadius)
+{
+	// When chasing the player, set the movement speed to be high
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = chaseSpeed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
+	{
+		// Move the enemy to the player character actor, using the reference
+		// to the detected player actor and acceptance radius
+		MoveToActor(sensedPlayer, acceptanceRadius);
+	}
+}
+
+float AEnemyController::getDistanceToPlayer()
+{
+	return controlledEnemy->GetDistanceTo(sensedPlayer);
+}
+
+void AEnemyController::RotateToFacePlayer()
+{
+	if (sensedPlayer)
+	{
+		controlledEnemy->SetActorRotation(FRotator(controlledEnemy->GetActorRotation().Pitch, FMath::RInterpTo(controlledEnemy->GetActorRotation(), UKismetMathLibrary::FindLookAtRotation(controlledEnemy->GetActorLocation(), sensedPlayer->GetActorLocation()), GetWorld()->DeltaTimeSeconds, 20.0f).Yaw, controlledEnemy->GetActorRotation().Roll));
+	}
+}
+
+void AEnemyController::Attack()
+{
+	RotateToFacePlayer();
+	controlledEnemy->Attack();
+}
+
+void AEnemyController::AttackRanged()
+{
+	controlledEnemy->Attack();
+	controlledEnemy->AttackRanged();
+	SetRangedAttackTimer();
+	disallowRanged();
+}
+
+bool AEnemyController::IsEnemyAttacking()
+{
+	return controlledEnemy->isAttacking;
+}
+
+void AEnemyController::SetAttackTimer()
+{
+	float rate = FMath::RandRange(attackRate, attackRate + 1.5f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowAttack, rate, false);
+}
+
+void AEnemyController::SetRangedAttackTimer()
+{
+	float rate = FMath::RandRange(attackRate, attackRate + 1.5f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowRanged, rate, false);
+}
+
+void AEnemyController::allowAttack()
+{
+	attackAllowed = true;
+}
+
+void AEnemyController::disallowAttack()
+{
+	attackAllowed = false;
+}
+
+void AEnemyController::allowRanged()
+{
+	rangedAllowed = true;
+}
+
+void AEnemyController::disallowRanged()
+{
+	rangedAllowed = false;
+}
+
+void AEnemyController::Block()
+{
+	controlledEnemy->Block();
+}
+
+void AEnemyController::StopBlocking()
+{
+	controlledEnemy->StopBlocking();
+}
+
+void AEnemyController::SetBlockTimer()
+{
+	float rate = FMath::RandRange(1.5, 3.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyController::allowBlock, rate, false);
+}
+
+void AEnemyController::allowBlock()
+{ 
+	blockAllowed = true; 
+}
+
+void AEnemyController::disallowBlock()
+{ 
+	blockAllowed = false; 
+}
+
+void AEnemyController::SwapWeapons()
+{
+	controlledEnemy->SwapWeapons();
+	isMelee = controlledEnemy->isMelee;
+	isRanged = controlledEnemy->isRanged;
+}
+
+bool AEnemyController::IsCriticalHealth()
+{
+	if (controlledEnemy->currentHealth / controlledEnemy->maxHealth * 100.0f < 25.0f)
+		return true;
+	else
+		return false;
+}
+
+// Functions used for handling detection of other actors using the AI Perception Module
+
+// Fires when perception stimuli are either added or removed from the sight sense of the enemy
 void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 {
 	for(auto actor : testActors)
@@ -99,31 +221,18 @@ void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 			case ETeamAttitude::Friendly:
 			{
 				if (sensedFriendlies.Contains(actor))
-				{
 					sensedFriendlies.Remove(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Goodbye friend!");
-				}
 				else
-				{
 					sensedFriendlies.Add(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, "Hello friend!");
-
-				}
 				break;
 			}
 			// When an enemy detects the player
 			case ETeamAttitude::Hostile:
 			{
-				if (sensedEnemies.Contains(actor))
-				{
-					sensedEnemies.Remove(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "You've gone!");
-				}
+				if (sensedPlayer == actor)
+					sensedPlayer = nullptr;
 				else
-				{
-					sensedEnemies.Add(actor);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "I see you!");
-				}
+					sensedPlayer = actor;
 				break;
 			}
 			// When an enemy detects any other valid actor
@@ -134,6 +243,7 @@ void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 	}
 }
 
+// Computes relationship between this actor and other actors it has percieved
 ETeamAttitude::Type AEnemyController::GetTeamAttitudeTowards(const AActor& Other) const
 {
 	// If the other actor is a pawn

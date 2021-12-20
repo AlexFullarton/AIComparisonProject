@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
-#include "EnemyController.h"
+#include "EnemyControllerFSM.h"
+#include "Components/WidgetComponent.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
@@ -15,6 +16,13 @@ class AICOMPARISON_API AEnemyCharacter : public AGameCharacter
 public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
+
+	// Widget component for healthbar
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UWidgetComponent* healthbarWidget;
+
+	// healthbar widget
+	UEnemyHealthbar* healthbarObject;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +35,5 @@ public:
 	// Called just before begin play - allows early initialisation of enemies
 	void InitialiseEnemy();
 
-	// Enemy AI controller class
-	UClass* enemyControllerClass;
+	void RagdollDeath();
 };

@@ -27,8 +27,8 @@ AArrow::AArrow()
 		// This component will be what controls the movement of the arrow projectile
 		ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 		ProjectileMovementComponent->SetUpdatedComponent(Collider);
-		ProjectileMovementComponent->InitialSpeed = 1000.0f;
-		ProjectileMovementComponent->MaxSpeed = 1000.0f;
+		ProjectileMovementComponent->InitialSpeed = 3000.0f;
+		ProjectileMovementComponent->MaxSpeed = 3000.0f;
 		ProjectileMovementComponent->bRotationFollowsVelocity = true;
 		ProjectileMovementComponent->bShouldBounce = false;
 		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
@@ -66,7 +66,7 @@ void AArrow::FireInDirection(const FVector& ShootDirection)
 
 void AArrow::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner()->GetOwner())
+	if (OtherComp->GetCollisionProfileName() == TEXT("Pawn") && OtherActor != GetOwner()->GetOwner() && OtherActor->GetClass() != Cast<ARangedWeapon>(GetOwner())->OwningPawn->GetClass())
 	{
 		Cast<AGameCharacter>(OtherActor)->ModifyHealth(Cast<ARangedWeapon>(GetOwner())->weaponDamage);
 		Destroy();

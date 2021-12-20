@@ -26,20 +26,29 @@ AEnemyCharacter::AEnemyCharacter()
 	isRanged = false;
 
 	// Setup a skeletal mesh component
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh3PObject(TEXT("SkeletalMesh'/Game/Meshes/Characters/ybot_enemy.ybot_enemy'"));
 	USkeletalMeshComponent* SkelMesh = GetMesh();
+	SkelMesh->SkeletalMesh = Mesh3PObject.Object;
 	SkelMesh->SetupAttachment(GetCapsuleComponent());
 	SkelMesh->bCastDynamicShadow = true;
 	SkelMesh->CastShadow = true;
 	SkelMesh->SetRelativeRotation(FRotator(0, 0, 0));
 	SkelMesh->SetRelativeLocation(FVector(0, 0, -100.0f));
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh3PObject(TEXT("SkeletalMesh'/Game/Meshes/Characters/ybot_enemy.ybot_enemy'"));
-	SkelMesh->SkeletalMesh = Mesh3PObject.Object;
-
+	
 	// Set animation blueprint for the third person mesh
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP'"));
 	SkelMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	SkelMesh->AnimClass = AnimationBP.Object->GeneratedClass;
+
+	// Setup widget component for healthbar
+	healthbarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthbarWidget"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> healthbar(TEXT("WidgetBlueprint'/Game/Blueprints/UI/EnemyHealthbarWidget.EnemyHealthbarWidget_C'"));
+	healthbarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 80.0f));
+	healthbarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	healthbarWidget->SetWidgetClass(healthbar.Class);
+	healthbarWidget->SetDrawSize(FVector2D(50.0f, 20.0f));
+	healthbarWidget->SetDrawAtDesiredSize(true);
+	healthbarWidget->SetupAttachment(RootComponent);
 	
 	// Gather weapon data for the enemy
 	static ConstructorHelpers::FObjectFinder<UBlueprint> swordBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Sword.Sword'"));
@@ -50,9 +59,6 @@ AEnemyCharacter::AEnemyCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
 	leftHandBow = bowBP.Object->GeneratedClass;
-
-	// Set enemy controller class
-	enemyControllerClass = AEnemyController::StaticClass();
 }
 
 void AEnemyCharacter::InitialiseEnemy()
@@ -65,7 +71,7 @@ void AEnemyCharacter::InitialiseEnemy()
 	{
 	case 0:
 	{
-		AIControllerClass = enemyControllerClass;
+		AIControllerClass = AEnemyControllerFSM::StaticClass();
 		break;
 	}
 		
@@ -90,6 +96,8 @@ void AEnemyCharacter::BeginPlay()
 	// Get health and damage values from main menu
 	maxHealth = instance->EnemyInitialHealth;
 	currentHealth = maxHealth;
+	healthbarObject = Cast<UEnemyHealthbar>(healthbarWidget->GetUserWidgetObject());
+	healthbarObject->SetMaxHealth(maxHealth);
 
 	meleeDamage = instance->EnemyMeleeDamage;
 	rangedDamage = instance->EnemyRangedDamage;
@@ -107,5 +115,20 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	healthbarObject->UpdateHealth(currentHealth);
+	if (currentHealth == 0.0f && !isDead)
+	{
+		RagdollDeath();
+		isDead = true;
+	}
+}
 
+void AEnemyCharacter::RagdollDeath()
+{
+	Super::RagdollDeath();
+	// Hide healthbar
+	healthbarWidget->SetVisibility(false);
+	AEnemyControllerFSM* controller = Cast<AEnemyControllerFSM>(GetController());
+	controller->PerceptionComponent->Deactivate();
+	controller->isDead = true;
 }

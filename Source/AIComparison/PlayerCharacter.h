@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "PlayerHUD.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -22,6 +23,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ThirdPersonCameraComponent;
 
+	APlayerHUD* HUD;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,4 +32,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void RagdollDeath();
 };
