@@ -67,7 +67,7 @@ void BehaviourTree::DecoratorTreeNode::SetChildNode(TreeNode* NewChild)
 // Root Node
 bool BehaviourTree::RootNode::RunNode()
 {
-	GetChildNode()->RunNode();
+	return GetChildNode()->RunNode();
 }
 
 // Inverter Node
@@ -116,10 +116,10 @@ bool BehaviourTree::RepeatUntilFailNode::RunNode()
 }
 
 // Action Node
-Action::Action(bool (*FunctionName)()) : FunctionPointer(FunctionName)
+Action::Action(std::function<bool()> FunctionName) : FunctionPointer(FunctionName)
 {}
 
 bool Action::RunNode()
 {
-	return (*FunctionPointer)();
+	return FunctionPointer();
 }

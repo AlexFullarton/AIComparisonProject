@@ -209,7 +209,6 @@ bool AEnemyController::IsCriticalHealth()
 }
 
 // Functions used for handling detection of other actors using the AI Perception Module
-
 // Fires when perception stimuli are either added or removed from the sight sense of the enemy
 void AEnemyController::PerceptionUpdated(const TArray<AActor*>& testActors)
 {

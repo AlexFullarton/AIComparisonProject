@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include <list>
 #include <initializer_list>
+#include <functional>
 
 class BehaviourTree
 {
@@ -116,10 +117,10 @@ public:
 class Action : public BehaviourTree::TreeNode
 {
 private:
-	// Pointer to the function that the action will run, function can take variable arguments
-	bool (*FunctionPointer)();
+	// Pointer to the function that the action will run
+	std::function<bool()> FunctionPointer;
 public:
-	Action(bool (*FunctionName)());
+	Action(std::function<bool()> FunctionName);
 
 private:
 	virtual bool RunNode() override;
