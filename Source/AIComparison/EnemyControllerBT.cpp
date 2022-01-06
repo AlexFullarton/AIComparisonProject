@@ -11,13 +11,13 @@ void AEnemyControllerBT::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	Action calculatePatrol(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this)), arrivedPatrol(std::bind(&AEnemyControllerBT::ArrivedAtPatrolLocation, this)), movePatrol(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this));
+	//Action calculatePatrol(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this)), arrivedPatrol(std::bind(&AEnemyControllerBT::ArrivedAtPatrolLocation, this)), movePatrol(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this));
 
 	// Create the structure of the behaviour tree for this instance of the enemy controller
 	behaviourTree.SetRootNodeChild(&selector_nodes[0]);
 	selector_nodes[0].AddChildNode(&repeater_node);
 	repeater_node.SetChildNode(&sequence_nodes[0]);
-	sequence_nodes[0].AddChildNodes({ &arrivedPatrol, &calculatePatrol, &movePatrol });
+	sequence_nodes[0].AddChildNodes({ &actions[0], &actions[1], &actions[2] });
 }
 
 void AEnemyControllerBT::Tick(float DeltaTime)

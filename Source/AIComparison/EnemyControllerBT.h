@@ -30,6 +30,8 @@ private:
 	BehaviourTree::SequenceTreeNode sequence_nodes[1];
 	BehaviourTree::RepeaterTreeNode repeater_node;
 
+	Action actions[3] = { Action(std::bind(&AEnemyControllerBT::ArrivedAtPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this)) };
+
 	// Action functions - passed as pointers to the action nodes/leaves of the tree
 	bool EnemyDeath();
 	bool CalculateNewPatrolLocation();
