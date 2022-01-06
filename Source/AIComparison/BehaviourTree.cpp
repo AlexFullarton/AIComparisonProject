@@ -11,7 +11,7 @@ void BehaviourTree::SetRootNodeChild(TreeNode* Node) const
 	Root->SetChildNode(Node);
 }
 
-bool BehaviourTree::Run() const
+NodeStatus BehaviourTree::Run() const
 {
 	return Root->RunNode();
 }
@@ -34,22 +34,22 @@ void BehaviourTree::CompositeTreeNode::AddChildNodes(std::initializer_list<TreeN
 }
 
 // Selector Node
-bool BehaviourTree::SelectorTreeNode::RunNode()
+NodeStatus BehaviourTree::SelectorTreeNode::RunNode()
 {
 	// Check each child node - only one needs to successfully run to avoid branch failure
 	for (TreeNode* ChildNode : GetChildNodes())
 		if (ChildNode->RunNode())
 			return true;
-	return false;
+	return NodeStatus::FAILURE;
 }
 
 // Sequence Node
-bool BehaviourTree::SequenceTreeNode::RunNode()
+NodeStatus BehaviourTree::SequenceTreeNode::RunNode()
 {
 	// Check each child node - each child node must successfully run to avoid branch failure
 	for (TreeNode* ChildNode : GetChildNodes())
 		if (!ChildNode->RunNode())
-			return false;
+			return NodeStatus::FAILURE;
 	return true;
 }
 
@@ -65,36 +65,36 @@ void BehaviourTree::DecoratorTreeNode::SetChildNode(TreeNode* NewChild)
 }
 
 // Root Node
-bool BehaviourTree::RootNode::RunNode()
+NodeStatus BehaviourTree::RootNode::RunNode()
 {
 	return GetChildNode()->RunNode();
 }
 
 // Inverter Node
-bool BehaviourTree::InverterTreeNode::RunNode()
+NodeStatus BehaviourTree::InverterTreeNode::RunNode()
 {
 	return !GetChildNode()->RunNode();
 }
 
 // Succeeder Node
-bool BehaviourTree::SucceederTreeNode::RunNode()
+NodeStatus BehaviourTree::SucceederTreeNode::RunNode()
 {
 	GetChildNode()->RunNode();
-	return true;
+	return NodeStatus::SUCCESS;
 }
 
 // Failer Node
-bool BehaviourTree::FailerTreeNode::RunNode()
+NodeStatus BehaviourTree::FailerTreeNode::RunNode()
 {
 	GetChildNode()->RunNode();
-	return false;
+	return NodeStatus::FAILURE;
 }
 
 // Repeater Node
 BehaviourTree::RepeaterTreeNode::RepeaterTreeNode(int NumRepeats) : NumberOfRepeats(NumRepeats)
 {}
 
-bool BehaviourTree::RepeaterTreeNode::RunNode()
+NodeStatus BehaviourTree::RepeaterTreeNode::RunNode()
 {
 	if (NumberOfRepeats == INDEFINITE_REPEAT)
 		// Repeat indefinitely
@@ -109,17 +109,17 @@ bool BehaviourTree::RepeaterTreeNode::RunNode()
 }
 
 // Repeat until fail Node
-bool BehaviourTree::RepeatUntilFailNode::RunNode()
+NodeStatus BehaviourTree::RepeatUntilFailNode::RunNode()
 {
 	while(GetChildNode()->RunNode()) {}
-	return true;
+	return NodeStatus::SUCCESS;
 }
 
 // Action Node
-Action::Action(std::function<bool()> FunctionName) : FunctionPointer(FunctionName)
+Action::Action(std::function<NodeStatus()> FunctionName) : FunctionPointer(FunctionName)
 {}
 
-bool Action::RunNode()
+NodeStatus Action::RunNode()
 {
 	return FunctionPointer();
 }

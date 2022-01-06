@@ -7,6 +7,14 @@
 #include <initializer_list>
 #include <functional>
 
+// Node status enum - used as a return type for tree action functions
+enum NodeStatus
+{
+	SUCCESS,
+	FAILURE,
+	RUNNING
+};
+
 class BehaviourTree
 {
 public:
@@ -14,7 +22,7 @@ public:
 	class TreeNode
 	{
 	public:
-		virtual bool RunNode() = 0;
+		virtual NodeStatus RunNode() = 0;
 	};
 
 	// Class for composite tree node - node contains a list of other sub-nodes
@@ -33,14 +41,14 @@ public:
 	class SelectorTreeNode : public CompositeTreeNode
 	{
 	public:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Class for sequence tree node - every child must succeed
 	class SequenceTreeNode : public CompositeTreeNode
 	{
 	public:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Class for decorator tree node - modifies the result of its child node in some way, can only have one child
@@ -61,14 +69,14 @@ public:
 	{
 	private:
 		friend class BehaviourTree;
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Inverter node - if child returns success, this returns fail
 	class InverterTreeNode : public DecoratorTreeNode
 	{
 	private:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Succeeder node - will always return success - doesnt depend on childs result
@@ -76,14 +84,14 @@ public:
 	class SucceederTreeNode : public DecoratorTreeNode
 	{
 	private:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Failer node - will always return fail, opposite of succeeder
 	class FailerTreeNode : public DecoratorTreeNode
 	{
 	private:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Repeater node - will run  child node a given number of times/indefinitely
@@ -95,14 +103,14 @@ public:
 	public:
 		RepeaterTreeNode(int NumRepeats = INDEFINITE_REPEAT);
 	private:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 	// Repeat until fail node - Similar to repeat, but will stop if the child fails, returning success to the parent
 	class RepeatUntilFailNode : public DecoratorTreeNode
 	{
 	private:
-		virtual bool RunNode() override;
+		virtual NodeStatus RunNode() override;
 	};
 
 private:
@@ -112,7 +120,7 @@ private:
 public:
 	BehaviourTree();
 	void SetRootNodeChild(TreeNode* Node) const;
-	bool Run() const;
+	NodeStatus Run() const;
 };
 
 // Action class - the "leaves" of the tree
@@ -120,11 +128,11 @@ class Action : public BehaviourTree::TreeNode
 {
 private:
 	// Pointer to the function that the action will run
-	std::function<bool()> FunctionPointer;
+	std::function<NodeStatus()> FunctionPointer;
 public:
-	Action(std::function<bool()> FunctionName);
+	Action(std::function<NodeStatus()> FunctionName);
 
 private:
-	virtual bool RunNode() override;
+	virtual NodeStatus RunNode() override;
 };
 

@@ -8,9 +8,6 @@
 #include <memory>
 #include "EnemyControllerBT.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AICOMPARISON_API AEnemyControllerBT : public AEnemyController
 {
