@@ -76,6 +76,7 @@ void AEnemyCharacter::InitialiseEnemy()
 	}
 		
 	case 1:
+		AIControllerClass = AEnemyControllerBT::StaticClass();
 		break;
 	case 2:
 		break;

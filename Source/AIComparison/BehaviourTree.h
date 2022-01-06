@@ -65,7 +65,7 @@ public:
 	};
 
 	// Inverter node - if child returns success, this returns fail
-	class InverterTreeNode : DecoratorTreeNode
+	class InverterTreeNode : public DecoratorTreeNode
 	{
 	private:
 		virtual bool RunNode() override;
@@ -73,26 +73,28 @@ public:
 
 	// Succeeder node - will always return success - doesnt depend on childs result
 	// Useful where failure is expected but the whole branch doesnt need to be abandoned
-	class SucceederTreeNode : DecoratorTreeNode
+	class SucceederTreeNode : public DecoratorTreeNode
 	{
 	private:
 		virtual bool RunNode() override;
 	};
 
 	// Failer node - will always return fail, opposite of succeeder
-	class FailerTreeNode : DecoratorTreeNode
+	class FailerTreeNode : public DecoratorTreeNode
 	{
 	private:
 		virtual bool RunNode() override;
 	};
 
 	// Repeater node - will run  child node a given number of times/indefinitely
-	class RepeaterTreeNode : DecoratorTreeNode
+	class RepeaterTreeNode : public DecoratorTreeNode
 	{
 	private:
 		int NumberOfRepeats;
 		static const int INDEFINITE_REPEAT = -1;
+	public:
 		RepeaterTreeNode(int NumRepeats = INDEFINITE_REPEAT);
+	private:
 		virtual bool RunNode() override;
 	};
 

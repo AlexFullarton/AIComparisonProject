@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EnemyController.h"
 #include "BehaviourTree.h"
+#include <memory>
 #include "EnemyControllerBT.generated.h"
 
 /**
@@ -17,10 +18,20 @@ class AICOMPARISON_API AEnemyControllerBT : public AEnemyController
 
 public:
 	AEnemyControllerBT();
-	
+
+	virtual void OnPossess(APawn* InPawn);
+	virtual void Tick(float DeltaTime);
+
 private:
+	// Custom classes that hold the structure of the behaviour tree - tree will be built at runtime
 	BehaviourTree behaviourTree;
 
+	BehaviourTree::SelectorTreeNode selector_nodes[1];
+	BehaviourTree::SequenceTreeNode sequence_nodes[1];
+	BehaviourTree::RepeaterTreeNode repeater_node;
+
+	// Action functions - passed as pointers to the action nodes/leaves of the tree
+	bool EnemyDeath();
 	bool CalculateNewPatrolLocation();
 	bool ArrivedAtPatrolLocation();
 	bool MoveToPatrolLocation();

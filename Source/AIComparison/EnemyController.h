@@ -25,7 +25,7 @@ class AICOMPARISON_API AEnemyController : public AAIController
 
 public:
 	AEnemyController();
-	void OnPossess(APawn* InPawn);
+	virtual void OnPossess(APawn* InPawn);
 	virtual void Tick(float DeltaTime);
 
 	void MoveToRandomLocationInDistance(FVector pawnLocation, float speed);

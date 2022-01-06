@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameCharacter.h"
 #include "EnemyControllerFSM.h"
+#include "EnemyControllerBT.h"
 #include "Components/WidgetComponent.h"
 #include "EnemyCharacter.generated.h"
 
