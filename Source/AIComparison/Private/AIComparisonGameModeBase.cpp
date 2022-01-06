@@ -2,9 +2,9 @@
 
 
 #include "AIComparisonGameModeBase.h"
-#include "PlayerHUD.h"
-#include "PlayerCharacter.h"
-#include "PlayerCharacterController.h"
+#include "Characters/Player/PlayerHUD.h"
+#include "Characters/Player/PlayerCharacter.h"
+#include "PlayerControllers/PlayerCharacterController.h"
 
 AAIComparisonGameModeBase::AAIComparisonGameModeBase()
 	: Super()

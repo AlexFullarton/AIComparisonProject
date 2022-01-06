@@ -2,8 +2,8 @@
 
 
 #include "AIComparisonMenuGameModeBase.h"
-#include "PlayerCharacter.h"
-#include "PlayerMenuController.h"
+#include "Characters/Player/PlayerCharacter.h"
+#include "PlayerControllers/PlayerMenuController.h"
 
 AAIComparisonMenuGameModeBase::AAIComparisonMenuGameModeBase()
 	: Super()
