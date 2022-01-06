@@ -30,8 +30,8 @@ private:
 	Action actions[3] = { Action(std::bind(&AEnemyControllerBT::ArrivedAtPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this)) };
 
 	// Action functions - passed as pointers to the action nodes/leaves of the tree
-	bool EnemyDeath();
-	bool CalculateNewPatrolLocation();
-	bool ArrivedAtPatrolLocation();
-	bool MoveToPatrolLocation();
+	NodeStatus EnemyDeath();
+	NodeStatus CalculateNewPatrolLocation();
+	NodeStatus ArrivedAtPatrolLocation();
+	NodeStatus MoveToPatrolLocation();
 };

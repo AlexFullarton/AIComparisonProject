@@ -38,9 +38,8 @@ NodeStatus BehaviourTree::SelectorTreeNode::RunNode()
 {
 	// Check each child node - only one needs to successfully run to avoid branch failure
 	for (TreeNode* ChildNode : GetChildNodes())
-		if (ChildNode->RunNode())
-			return true;
-	return NodeStatus::FAILURE;
+		return ChildNode->RunNode();
+	return NodeStatus::SUCCESS;
 }
 
 // Sequence Node
@@ -48,9 +47,8 @@ NodeStatus BehaviourTree::SequenceTreeNode::RunNode()
 {
 	// Check each child node - each child node must successfully run to avoid branch failure
 	for (TreeNode* ChildNode : GetChildNodes())
-		if (!ChildNode->RunNode())
-			return NodeStatus::FAILURE;
-	return true;
+		return ChildNode->RunNode();
+	return NodeStatus::FAILURE;
 }
 
 // Decorator Node
@@ -73,7 +71,11 @@ NodeStatus BehaviourTree::RootNode::RunNode()
 // Inverter Node
 NodeStatus BehaviourTree::InverterTreeNode::RunNode()
 {
-	return !GetChildNode()->RunNode();
+	if (GetChildNode()->RunNode() == NodeStatus::FAILURE)
+		return NodeStatus::SUCCESS;
+	if (GetChildNode()->RunNode() == NodeStatus::SUCCESS)
+		return NodeStatus::FAILURE;
+	return GetChildNode()->RunNode();
 }
 
 // Succeeder Node

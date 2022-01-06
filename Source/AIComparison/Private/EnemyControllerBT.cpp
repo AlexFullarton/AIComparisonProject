@@ -29,38 +29,38 @@ void AEnemyControllerBT::Tick(float DeltaTime)
 		behaviourTree.Run();
 }
 
-bool AEnemyControllerBT::CalculateNewPatrolLocation()
+NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 {
 	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem)
 	{
 		// Find a new location for the enemy to patrol to
 		if (navSystem->GetRandomReachablePointInRadius(controlledEnemy->GetActorLocation(), searchRadius, destination))
-			return true;
+			return NodeStatus::SUCCESS;
 	}
-	return false;
+	return NodeStatus::FAILURE;
 }
 
-bool AEnemyControllerBT::ArrivedAtPatrolLocation()
+NodeStatus AEnemyControllerBT::ArrivedAtPatrolLocation()
 {
 	// If the enemy has arrived at its stored destination
 	if (GetMoveStatus() != EPathFollowingStatus::Moving)
-		return true;
-	return false;
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
 }
 
-bool AEnemyControllerBT::MoveToPatrolLocation()
+NodeStatus AEnemyControllerBT::MoveToPatrolLocation()
 {
 	// Patrol to the new destination
 	if (MoveToLocation(destination.Location, tolerance))
-		return true;
-	return false;
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
 }
 
-bool AEnemyControllerBT::EnemyDeath()
+NodeStatus AEnemyControllerBT::EnemyDeath()
 {
 	if (isDead)
-		return true;
-	return false;
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
 }
 
