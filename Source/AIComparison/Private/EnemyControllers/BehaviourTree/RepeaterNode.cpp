@@ -6,43 +6,57 @@
 RepeaterNode::RepeaterNode(int NumRepeats) : NumberOfRepeats(NumRepeats)
 {}
 
-NodeStatus RepeaterNode::RunNode()
+void RepeaterNode::StartNode()
 {
-	if (NumberOfRepeats == INDEFINITE_REPEAT)
+	count = NumberOfRepeats;
+}
+
+bool RepeaterNode::LoopCondition()
+{
+	return (loop && count != 0);
+}
+
+void RepeaterNode::RunNode()
+{
+	loop = true;
+	// If there are still loops left to run
+	while (LoopCondition())
 	{
-		// Repeat indefinitely 
-		while (true)
+		//  If the child node is running then continue running child node
+		if (ChildNode->GetNodeStatus() == NodeStatus::RUNNING)
+			ChildNode->RunNode();
+		else
 		{
-			switch (GetChildNode()->RunNode())
-			{
-			case NodeStatus::FAILURE:
-				CurrentState = NodeStatus::FAILURE;
-			case NodeStatus::SUCCESS:
-				CurrentState = NodeStatus::SUCCESS;
-			case NodeStatus::RUNNING:
-				CurrentState = NodeStatus::RUNNING;
-			default:
-				CurrentState = NodeStatus::SUCCESS;
-			}
+			ChildNode->SetParentNode(this);
+			ChildNode->StartNode();
+			ChildNode->RunNode();
 		}
 	}
+}
+
+void RepeaterNode::ChildRunning(TreeNode* RunningNode, TreeNode* ReportingNode)
+{
+	DecoratorNode::ChildRunning(RunningNode, ReportingNode);
+	loop = false;
+}
+
+void RepeaterNode::ChildSuccess(TreeNode* Node)
+{
+	// If there are loops remaining, decrement count
+	if (count > 0)
+		count--;
+	// If all loops have completed, stop looping and return success
+	if (count == 0)
+	{
+		DecoratorNode::ChildSuccess(Node);
+		loop = false;
+	}
+	// Otherwide continue looping
 	else
-	{
-		// Repeat set amount of times
-		for (int i = 0; i < NumberOfRepeats - 1; i++)
-		{
-			switch (GetChildNode()->RunNode())
-			{
-			case NodeStatus::FAILURE:
-				CurrentState = NodeStatus::FAILURE;
-			case NodeStatus::SUCCESS:
-				CurrentState = NodeStatus::SUCCESS;
-			case NodeStatus::RUNNING:
-				CurrentState = NodeStatus::RUNNING;
-			default:
-				CurrentState = NodeStatus::SUCCESS;
-			}
-		}
-		return CurrentState;
-	}
+		loop = true;
+}
+
+void RepeaterNode::ChildFailure(TreeNode* Node)
+{
+	ChildSuccess(Node);
 }

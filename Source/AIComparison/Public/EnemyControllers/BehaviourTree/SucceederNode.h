@@ -8,5 +8,5 @@
 class SucceederNode : public DecoratorNode
 {
 private:
-	virtual NodeStatus RunNode() override;
+	virtual void ChildFailure(TreeNode* Node) override;
 };

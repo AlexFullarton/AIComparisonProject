@@ -3,30 +3,20 @@
 
 #include "EnemyControllers/BehaviourTree/SequenceNode.h"
 
-NodeStatus SequenceNode::RunNode()
+void SequenceNode::ChildSuccess(TreeNode* Node)
 {
-	bool ChildNodeRunning = false;
-	// Check each child node - any child failure results in failure of the entire node,
-	// and success is only returned when all children return success
-	for (TreeNode* ChildNode : GetChildNodes())
-	{
-		switch (ChildNode->RunNode())
-		{
-		case NodeStatus::FAILURE:
-			CurrentState = NodeStatus::FAILURE;
-			return CurrentState;
-		case NodeStatus::SUCCESS:
-			continue;
-		case NodeStatus::RUNNING:
-			ChildNodeRunning = true;
-			continue;
-		default:
-			CurrentState = NodeStatus::SUCCESS;
-			return CurrentState;
-		}
-	}
-	// If any of the child nodes returned running then return running for this node,
-	// otherwise all children have succeeded so return success
-	CurrentState = ChildNodeRunning ? NodeStatus::RUNNING : NodeStatus::SUCCESS;
-	return CurrentState;
+	CompositeNode::ChildSuccess(Node);
+	// previous node succeeded so move on to next node
+	if (++CurrentChildIndex < GetChildNodeCount())
+		RunNode();
+	// All children succeeded so return success
+	else
+		Success();
+}
+
+void SequenceNode::ChildFailure(TreeNode* Node)
+{
+	// If any child node of the sequence fails, then return fail
+	CompositeNode::ChildFailure(Node);
+	Failure();
 }

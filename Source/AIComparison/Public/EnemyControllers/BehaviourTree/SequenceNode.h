@@ -8,5 +8,6 @@
 class SequenceNode : public CompositeNode
 {
 public:
-	virtual NodeStatus RunNode() override;
+	virtual void ChildSuccess(TreeNode* Node) override;
+	virtual void ChildFailure(TreeNode* Node) override;
 };

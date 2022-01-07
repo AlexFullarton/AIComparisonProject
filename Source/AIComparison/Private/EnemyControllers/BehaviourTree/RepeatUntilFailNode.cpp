@@ -3,22 +3,41 @@
 
 #include "EnemyControllers/BehaviourTree/RepeatUntilFailNode.h"
 
-NodeStatus RepeatUntilFailNode::RunNode()
+void RepeatUntilFailNode::StartNode()
 {
-	// Repeat indefinitely 
-	while (true)
+
+}
+
+void RepeatUntilFailNode::RunNode()
+{
+	loop = true;
+	while (loop)
 	{
-		switch (GetChildNode()->RunNode())
+		//  If the child node is running then continue running child node
+		if (ChildNode->GetNodeStatus() == NodeStatus::RUNNING)
+			ChildNode->RunNode();
+		else
 		{
-		case NodeStatus::FAILURE:
-			CurrentState = NodeStatus::SUCCESS;
-			return CurrentState;
-		case NodeStatus::SUCCESS:
-			CurrentState = NodeStatus::SUCCESS;
-		case NodeStatus::RUNNING:
-			CurrentState = NodeStatus::RUNNING;
-		default:
-			CurrentState = NodeStatus::SUCCESS;
+			ChildNode->SetParentNode(this);
+			ChildNode->StartNode();
+			ChildNode->RunNode();
 		}
 	}
+}
+
+void RepeatUntilFailNode::ChildRunning(TreeNode* RunningNode, TreeNode* ReportingNode)
+{
+	DecoratorNode::ChildRunning(RunningNode, ReportingNode);
+	loop = false;
+}
+
+void RepeatUntilFailNode::ChildSuccess(TreeNode* Node)
+{
+	loop = true;
+}
+
+void RepeatUntilFailNode::ChildFailure(TreeNode* Node)
+{
+	Success();
+	loop = false;
 }

@@ -3,21 +3,12 @@
 
 #include "EnemyControllers/BehaviourTree/InverterNode.h"
 
-NodeStatus InverterNode::RunNode()
+void InverterNode::ChildSuccess(TreeNode* Node)
 {
-	switch (GetChildNode()->RunNode())
-	{
-	case NodeStatus::FAILURE:
-		CurrentState = NodeStatus::SUCCESS;
-		return CurrentState;
-	case NodeStatus::SUCCESS:
-		CurrentState = NodeStatus::FAILURE;
-		return CurrentState;
-	case NodeStatus::RUNNING:
-		CurrentState = NodeStatus::RUNNING;
-		return CurrentState;
-	default:
-		CurrentState = NodeStatus::SUCCESS;
-		return CurrentState;
-	}
+	DecoratorNode::ChildFailure(Node);
+}
+
+void InverterNode::ChildFailure(TreeNode* Node)
+{
+	DecoratorNode::ChildSuccess(Node);
 }

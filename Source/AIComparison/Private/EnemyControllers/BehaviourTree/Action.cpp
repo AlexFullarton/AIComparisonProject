@@ -6,21 +6,30 @@
 Action::Action(std::function<NodeStatus()> Func) : FunctionPointer(Func)
 {}
 
-NodeStatus Action::RunNode()
+NodeStatus Action::ExecuteNode()
+{ 
+	// Do action here - MUST RETURN NODE STATUS ENUM OF SOME TYPE
+	return FunctionPointer();
+}
+
+void Action::RunNode()
 {
-	switch (FunctionPointer())
+	// Execute the action of this leaf node
+	NodeStatus Status = ExecuteNode();
+	// Return NodeStatus dependent on result of leaf execution
+	switch (Status)
 	{
 	case NodeStatus::SUCCESS:
-		CurrentState = NodeStatus::SUCCESS;
-		return CurrentState;
+		Success();
+		return;
 	case NodeStatus::FAILURE:
-		CurrentState = NodeStatus::FAILURE;
-		return CurrentState;
+		Failure();
+		return;
 	case NodeStatus::RUNNING:
-		CurrentState = NodeStatus::RUNNING;
-		return CurrentState;
+		Running();
+		return;
 	default:
-		CurrentState = NodeStatus::FAILURE;
-		return CurrentState;
+		Failure();
+		return;
 	}
 }

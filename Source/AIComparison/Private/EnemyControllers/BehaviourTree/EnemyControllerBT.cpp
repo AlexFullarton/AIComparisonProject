@@ -5,7 +5,9 @@
 #include "Characters/Enemy/EnemyCharacter.h"
 
 AEnemyControllerBT::AEnemyControllerBT()
-{}
+{
+	Tree = this;
+}
 
 void AEnemyControllerBT::OnPossess(APawn* InPawn)
 {
@@ -21,7 +23,7 @@ void AEnemyControllerBT::Tick(float DeltaTime)
 
 	// Run behaviour tree only if controller is possessing a pawn
 	if (controlledEnemy)
-		RunTree();
+		TickTree();
 }
 
 void AEnemyControllerBT::BuildTree()
@@ -38,9 +40,23 @@ void AEnemyControllerBT::BuildTree()
 	RootNode.AddChildNodes({ &CheckIfDead, &PatrolNode });
 }
 
-NodeStatus AEnemyControllerBT::RunTree()
+void AEnemyControllerBT::TickTree()
 {
-	return RootNode.RunNode();
+	// If the root node returned a status of running last update
+	if (RootNode.GetNodeStatus() == NodeStatus::RUNNING)
+		RootNode.RunNode();
+	else
+	{ 
+		// If the root node is not running, start it
+		RootNode.SetParentNode(this);
+		RootNode.StartNode();
+		RootNode.RunNode();
+	}
+}
+
+void AEnemyControllerBT::RunNode()
+{
+	//RootNode.RunNode();
 }
 
 NodeStatus AEnemyControllerBT::EnemyDeath()
@@ -83,6 +99,29 @@ NodeStatus AEnemyControllerBT::MoveToPatrolLocation()
 	if (MoveToLocation(destination.Location, tolerance))
 		return NodeStatus::SUCCESS;
 	return NodeStatus::FAILURE;
+}
+
+void AEnemyControllerBT::ResetNode()
+{
+	TreeNode::ResetNode();
+	// or Tree = this; ???
+	SetParentNode(this);
+}
+
+void AEnemyControllerBT::NotifyStatusChanged(TreeNode* Node, NodeStatus status)
+{
+	for (Listener* listener : Listeners)
+	{
+		listener->StatusUpdated(Node, status);
+	}
+}
+
+void AEnemyControllerBT::NotifyChildAdded(TreeNode* Node, int index)
+{
+	for (Listener* listener : Listeners)
+	{
+		listener->ChildAdded(Node, index);
+	}
 }
 
 

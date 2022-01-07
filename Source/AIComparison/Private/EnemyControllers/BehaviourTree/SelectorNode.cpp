@@ -3,27 +3,20 @@
 
 #include "EnemyControllers/BehaviourTree/SelectorNode.h"
 
-NodeStatus SelectorNode::RunNode()
+void SelectorNode::ChildSuccess(TreeNode* Node)
 {
-	// Check each child node - only one needs to successfully run to avoid branch failure
-	for (TreeNode* ChildNode : GetChildNodes())
-	{
-		switch (ChildNode->RunNode())
-		{
-		case NodeStatus::FAILURE:
-			continue;
-		case NodeStatus::SUCCESS:
-			CurrentState = NodeStatus::SUCCESS;
-			return CurrentState;
-		case NodeStatus::RUNNING:
-			CurrentState = NodeStatus::RUNNING;
-			return CurrentState;
-		default:
-			continue;
-		}
-	}
-	CurrentState = NodeStatus::FAILURE;
-	return CurrentState;
-		
-	return NodeStatus::SUCCESS;
+	// On completion of any child with success, return success
+	CompositeNode::ChildSuccess(Node);
+	Success();
+}
+
+void SelectorNode::ChildFailure(TreeNode* Node)
+{
+	CompositeNode::ChildFailure(Node);
+	// previous child failed so increment child index
+	if (++CurrentChildIndex < GetChildNodeCount())
+		RunNode();
+	else
+		// If all child nodes ran without success
+		Failure();
 }

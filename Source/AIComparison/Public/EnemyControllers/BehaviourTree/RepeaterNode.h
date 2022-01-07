@@ -10,8 +10,24 @@ class RepeaterNode : public DecoratorNode
 {
 public:
 	RepeaterNode(int NumRepeats = INDEFINITE_REPEAT);
+
+	virtual void StartNode() override;
+	bool LoopCondition();
+
+protected:
+	// Should this decorator continue looping
+	bool loop;
 private:
+	// How many times this loop should repeat - defaults to infinite
 	int NumberOfRepeats;
 	static const int INDEFINITE_REPEAT = -1;
-	virtual NodeStatus RunNode() override;
+
+	// Which iteration of the loop is currently running
+	int count;
+
+	virtual void RunNode() override;
+
+	virtual void ChildRunning(TreeNode* RunningNode, TreeNode* ReportingNode) override;
+	virtual void ChildSuccess(TreeNode* Node) override;
+	virtual void ChildFailure(TreeNode* Node) override;
 };

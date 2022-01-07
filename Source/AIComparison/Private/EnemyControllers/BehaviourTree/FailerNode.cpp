@@ -3,9 +3,7 @@
 
 #include "EnemyControllers/BehaviourTree/FailerNode.h"
 
-NodeStatus FailerNode::RunNode()
+void FailerNode::ChildSuccess(TreeNode* Node)
 {
-	GetChildNode()->RunNode();
-	CurrentState = NodeStatus::FAILURE;
-	return CurrentState;
+	ChildFailure(Node);
 }

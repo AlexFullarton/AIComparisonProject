@@ -8,5 +8,7 @@
 class SelectorNode : public CompositeNode
 {
 public:
-	virtual NodeStatus RunNode() override;
+	// If any child succeeds, then this node also succeeds
+	virtual void ChildSuccess(TreeNode* Node) override;
+	virtual void ChildFailure(TreeNode* Node) override;
 };
