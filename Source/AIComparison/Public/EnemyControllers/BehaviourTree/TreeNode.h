@@ -4,12 +4,22 @@
 
 #include "CoreMinimal.h"
 
-/**
- * 
- */
-class AICOMPARISON_API TreeNode
+// Node status enum - used as a return type for tree action functions
+enum NodeStatus
+{
+	SUCCESS,
+	FAILURE,
+	RUNNING
+};
+
+// Abstract Class for behaviour tree nodes
+class TreeNode
 {
 public:
-	TreeNode();
-	~TreeNode();
+	virtual NodeStatus RunNode() = 0;
+
+	NodeStatus GetNodeStatus() { return CurrentState; }
+
+protected:
+	NodeStatus CurrentState;
 };

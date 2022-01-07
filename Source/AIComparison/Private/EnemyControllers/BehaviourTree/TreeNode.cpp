@@ -2,11 +2,3 @@
 
 
 #include "EnemyControllers/BehaviourTree/TreeNode.h"
-
-TreeNode::TreeNode()
-{
-}
-
-TreeNode::~TreeNode()
-{
-}
