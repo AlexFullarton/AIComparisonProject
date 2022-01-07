@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyControllers/BehaviourTree/InverterNode.h"
+#include "EnemyControllers/BehaviourTree/Decorator/InverterNode.h"
 
 void InverterNode::ChildSuccess(TreeNode* Node)
 {

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyControllers/BehaviourTree/RepeaterNode.h"
+#include "EnemyControllers/BehaviourTree/Decorator/RepeaterNode.h"
 
 RepeaterNode::RepeaterNode(int NumRepeats) : NumberOfRepeats(NumRepeats)
 {}

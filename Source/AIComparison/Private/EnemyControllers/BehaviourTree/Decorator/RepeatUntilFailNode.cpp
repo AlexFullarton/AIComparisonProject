@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyControllers/BehaviourTree/RepeatUntilFailNode.h"
+#include "EnemyControllers/BehaviourTree/Decorator/RepeatUntilFailNode.h"
 
 void RepeatUntilFailNode::StartNode()
 {

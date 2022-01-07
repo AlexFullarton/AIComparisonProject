@@ -61,6 +61,7 @@ NodeStatus AEnemyControllerBT::EnemyDeath()
 {
 	if (isDead)
 	{
+		EnemyKilled();
 		SetActorTickEnabled(false);
 		return NodeStatus::SUCCESS;
 	}

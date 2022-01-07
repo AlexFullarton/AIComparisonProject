@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyControllers/BehaviourTree/SelectorNode.h"
+#include "EnemyControllers/BehaviourTree/Composite/SelectorNode.h"
 
 void SelectorNode::ChildSuccess(TreeNode* Node)
 {

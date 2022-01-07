@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CompositeNode.h"
+#include "../CompositeNode.h"
 
 class SelectorNode : public CompositeNode
 {

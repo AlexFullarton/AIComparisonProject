@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyControllers/BehaviourTree/SucceederNode.h"
+#include "EnemyControllers/BehaviourTree/Decorator/SucceederNode.h"
 
 void SucceederNode::ChildFailure(TreeNode* Node)
 {

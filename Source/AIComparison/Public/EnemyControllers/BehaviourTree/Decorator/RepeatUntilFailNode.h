@@ -3,28 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DecoratorNode.h"
+#include "../DecoratorNode.h"
 
-// Repeater node - Repeats evaulates its child node for a set amount of iterations or indefinitely by default
-class RepeaterNode : public DecoratorNode
+// Repeat until fail node - Similar to repeat, but will repeat indefinitely and only stop if the child fails, returning success to the parent
+class RepeatUntilFailNode : public DecoratorNode
 {
 public:
-	RepeaterNode(int NumRepeats = INDEFINITE_REPEAT);
-
 	virtual void StartNode() override;
-	bool LoopCondition();
 
 protected:
 	// Should this decorator continue looping
 	bool loop;
+
 private:
-	// How many times this loop should repeat - defaults to infinite
-	int NumberOfRepeats;
-	static const int INDEFINITE_REPEAT = -1;
-
-	// Which iteration of the loop is currently running
-	int count;
-
 	virtual void RunNode() override;
 
 	virtual void ChildRunning(TreeNode* RunningNode, TreeNode* ReportingNode) override;

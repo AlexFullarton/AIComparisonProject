@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DecoratorNode.h"
+#include "../DecoratorNode.h"
 
-class InverterNode : public DecoratorNode
+class SucceederNode : public DecoratorNode
 {
 private:
-	virtual void ChildSuccess(TreeNode* Node) override;
 	virtual void ChildFailure(TreeNode* Node) override;
 };
