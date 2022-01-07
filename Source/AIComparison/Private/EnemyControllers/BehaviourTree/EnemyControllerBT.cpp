@@ -12,10 +12,7 @@ void AEnemyControllerBT::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	// Create the structure of the behaviour tree for this instance of the enemy controller
-	//behaviourTree.SetRootNodeChild(&selector_nodes[0]);
-	//selector_nodes[0].AddChildNode(&repeater_node);
-	//repeater_node.SetChildNode(&sequence_nodes[0]);
-	//sequence_nodes[0].AddChildNodes({ &actions[0], &actions[1], &actions[2] });
+	BuildTree();
 }
 
 void AEnemyControllerBT::Tick(float DeltaTime)
@@ -24,7 +21,36 @@ void AEnemyControllerBT::Tick(float DeltaTime)
 
 	// Run behaviour tree only if controller is possessing a pawn
 	if (controlledEnemy)
-		behaviourTree.Run();
+		RunTree();
+}
+
+void AEnemyControllerBT::BuildTree()
+{
+	// Form the structure of the tree starting with the leaf nodes and working up to the root
+	
+	// First: Does the enemy need to enter its death state due to low health?
+	
+	// Next: Has the enemy reached its previous patrol destination?
+	// If it has, calculate a new destination and move to that instead
+	PatrolNode.AddChildNodes({ &CalculatePatrolDestination, &MoveToPatrolDestination, &WaitForMove });
+
+	// Add to root node to complete the tree
+	RootNode.AddChildNodes({ &CheckIfDead, &PatrolNode });
+}
+
+NodeStatus AEnemyControllerBT::RunTree()
+{
+	return RootNode.RunNode();
+}
+
+NodeStatus AEnemyControllerBT::EnemyDeath()
+{
+	if (isDead)
+	{
+		SetActorTickEnabled(false);
+		return NodeStatus::SUCCESS;
+	}
+	return NodeStatus::FAILURE;
 }
 
 NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
@@ -39,8 +65,12 @@ NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 	return NodeStatus::FAILURE;
 }
 
-NodeStatus AEnemyControllerBT::ArrivedAtPatrolLocation()
+NodeStatus AEnemyControllerBT::CheckAtPatrolLocation()
 {
+	// If the enemy is still moving to its destination
+	if (GetMoveStatus() == EPathFollowingStatus::Moving)
+		return NodeStatus::RUNNING;
+	else
 	// If the enemy has arrived at its stored destination
 	if (GetMoveStatus() != EPathFollowingStatus::Moving)
 		return NodeStatus::SUCCESS;
@@ -55,10 +85,5 @@ NodeStatus AEnemyControllerBT::MoveToPatrolLocation()
 	return NodeStatus::FAILURE;
 }
 
-NodeStatus AEnemyControllerBT::EnemyDeath()
-{
-	if (isDead)
-		return NodeStatus::SUCCESS;
-	return NodeStatus::FAILURE;
-}
+
 

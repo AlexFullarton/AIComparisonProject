@@ -4,8 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "EnemyControllers/EnemyController.h"
-#include "EnemyControllers/BehaviourTree/BehaviourTree.h"
+#include <functional>
 #include <memory>
+#include "SelectorNode.h"
+#include "SequenceNode.h"
+#include "InverterNode.h"
+#include "SucceederNode.h"
+#include "FailerNode.h"
+#include "RepeaterNode.h"
+#include "RepeatUntilFailNode.h"
+#include "Action.h"
 #include "EnemyControllerBT.generated.h"
 
 UCLASS()
@@ -19,19 +27,30 @@ public:
 	virtual void OnPossess(APawn* InPawn);
 	virtual void Tick(float DeltaTime);
 
+	// Create the structure of the behaviour tree
+	void BuildTree();
+	// Evaulate the tree at run time
+	NodeStatus RunTree();
+
 private:
-	// Custom classes that hold the structure of the behaviour tree - tree will be built at runtime
-	BehaviourTree behaviourTree;
+	// Tree nodes that will be used to build the tree
+	SelectorNode RootNode;
+	SequenceNode PatrolNode;
 
-	//BehaviourTree::SelectorTreeNode selector_nodes[1];
-	//BehaviourTree::SequenceTreeNode sequence_nodes[1];
-	//BehaviourTree::RepeaterTreeNode repeater_node;
+	// Action nodes - these nodes are what add functionality to the tree
 
-	//Action actions[3] = { Action(std::bind(&AEnemyControllerBT::ArrivedAtPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this)), Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this)) };
+	// To check death state
+	Action CheckIfDead = Action(std::bind(&AEnemyControllerBT::EnemyDeath, this));
+
+	// To allow enemy to patrol to random location in set distance
+	Action CalculatePatrolDestination = Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this));
+	Action MoveToPatrolDestination = Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this));
+	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtPatrolLocation, this));
 
 	// Action functions - passed as pointers to the action nodes/leaves of the tree
 	NodeStatus EnemyDeath();
+
 	NodeStatus CalculateNewPatrolLocation();
-	NodeStatus ArrivedAtPatrolLocation();
 	NodeStatus MoveToPatrolLocation();
+	NodeStatus CheckAtPatrolLocation();
 };
