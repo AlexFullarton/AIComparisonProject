@@ -74,7 +74,6 @@ void AEnemyCharacter::InitialiseEnemy()
 		AIControllerClass = AEnemyControllerFSM::StaticClass();
 		break;
 	}
-		
 	case 1:
 		AIControllerClass = AEnemyControllerBT::StaticClass();
 		break;
@@ -99,6 +98,7 @@ void AEnemyCharacter::BeginPlay()
 	currentHealth = maxHealth;
 	healthbarObject = Cast<UEnemyHealthbar>(healthbarWidget->GetUserWidgetObject());
 	healthbarObject->SetMaxHealth(maxHealth);
+	healthbarObject->UpdateHealth(currentHealth);
 
 	meleeDamage = instance->EnemyMeleeDamage;
 	rangedDamage = instance->EnemyRangedDamage;
@@ -116,12 +116,17 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AEnemyCharacter::CharacterDeath()
+{
+	Cast<AEnemyController>(GetController())->isDead = true;
+}
+
+void AEnemyCharacter::ModifyHealth(float healthToSubtract)
+{
+	Super::ModifyHealth(healthToSubtract);
 	healthbarObject->UpdateHealth(currentHealth);
-	if (currentHealth == 0.0f && !isDead)
-	{
-		RagdollDeath();
-		isDead = true;
-	}
 }
 
 void AEnemyCharacter::RagdollDeath()
@@ -131,5 +136,5 @@ void AEnemyCharacter::RagdollDeath()
 	healthbarWidget->SetVisibility(false);
 	AEnemyController* controller = Cast<AEnemyController>(GetController());
 	controller->PerceptionComponent->Deactivate();
-	controller->isDead = true;
 }
+

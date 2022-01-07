@@ -39,7 +39,7 @@ public:
 
 	// Function to modify health on damage from another character/object
 	UFUNCTION()
-	void ModifyHealth(float healthToSubtract);
+	virtual void ModifyHealth(float healthToSubtract);
 
 	// Functions for combat scenarios
 	void Block();
@@ -51,6 +51,7 @@ public:
 	virtual void FireArrow();
 
 	void SwapWeapons();
+	virtual void CharacterDeath();
 	void RagdollDeath();
 
 	UFUNCTION(BlueprintCallable)
@@ -113,8 +114,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat)
 	bool canFire;
-
-	bool isDead;
 
 	int attackCounter;
 

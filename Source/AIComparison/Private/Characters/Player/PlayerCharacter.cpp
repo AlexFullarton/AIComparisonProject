@@ -85,7 +85,10 @@ void APlayerCharacter::BeginPlay()
 	HUD = Cast<APlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	// HUD isnt loaded in menu but the player character is - so this checks to avoid nullptr exception
 	if (HUD)
+	{
 		HUD->playerHealthbar->SetMaxHealth(maxHealth);
+		HUD->playerHealthbar->UpdateHealth(currentHealth);
+	}
 
 	meleeDamage = instance->PlayerMeleeDamage;
 	rangedDamage = instance->PlayerRangedDamage;
@@ -105,13 +108,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (HUD)
-		HUD->playerHealthbar->UpdateHealth(currentHealth);
-	if (currentHealth == 0.0f && !isDead)
-	{
-		RagdollDeath();
-		isDead = true;
-	}
 }
 
 void APlayerCharacter::FireArrow()
@@ -125,6 +121,20 @@ void APlayerCharacter::FireArrow()
 		spawnRotation.Pitch = ThirdPersonCameraComponent->GetRelativeRotation().Pitch;
 		bowWeapon->Fire(spawnLocation, spawnRotation);
 	}
+}
+
+void APlayerCharacter::ModifyHealth(float healthToSubtract)
+{
+	Super::ModifyHealth(healthToSubtract);
+	if (HUD)
+		HUD->playerHealthbar->UpdateHealth(currentHealth);
+}
+
+void APlayerCharacter::CharacterDeath()
+{
+	RagdollDeath();
+	// End game screen here and stop input
+	// Could maybe add this to ragdoll death?
 }
 
 void APlayerCharacter::RagdollDeath()

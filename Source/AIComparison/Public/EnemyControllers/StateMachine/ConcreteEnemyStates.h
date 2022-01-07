@@ -93,7 +93,7 @@ private:
 class EnemyDeathState : public EnemyState
 {
 public:
-	virtual void enterState(AEnemyControllerFSM* controller) {};
+	virtual void enterState(AEnemyControllerFSM* controller);
 	virtual void updateState(AEnemyControllerFSM* controller);
 	virtual void exitState(AEnemyControllerFSM* controller) {};
 	static EnemyState& getInstance();

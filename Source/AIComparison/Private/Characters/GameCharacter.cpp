@@ -12,8 +12,6 @@ AGameCharacter::AGameCharacter()
 	// Set up AI perception component
 	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionSourceComponent"));
 	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
-
-	isDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -102,26 +100,9 @@ void AGameCharacter::SwapWeapons()
 	}
 }
 
-// Called on the characters health being reduced to zero
-void AGameCharacter::RagdollDeath()
+void AGameCharacter::CharacterDeath()
 {
-	// Stop simulating physics
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetCollisionProfileName(TEXT("GameCharacter"));
-	// Remove collision
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	// Disable any more animations
-	GetMesh()->SetAnimInstanceClass(nullptr);
 
-	if (isMelee)
-	{
-		swordWeapon->DropWeapon();
-		shieldWeapon->DropWeapon();
-	}
-	else
-	{
-		bowWeapon->DropWeapon();
-	}
 }
 
 void AGameCharacter::MoveForward(float value)
@@ -184,6 +165,30 @@ void AGameCharacter::ModifyHealth(float healthToSubtract)
 			currentHealth = maxHealth;
 		else
 			currentHealth -= healthToSubtract;
-	}	
+	}
+	if (currentHealth == 0.0f)
+		CharacterDeath();
+}
+
+// Called on the characters health being reduced to zero
+void AGameCharacter::RagdollDeath()
+{
+	// Stop simulating physics
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName(TEXT("GameCharacter"));
+	// Remove collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Disable any more animations
+	GetMesh()->SetAnimInstanceClass(nullptr);
+
+	if (isMelee)
+	{
+		swordWeapon->DropWeapon();
+		shieldWeapon->DropWeapon();
+	}
+	else
+	{
+		bowWeapon->DropWeapon();
+	}
 }
 

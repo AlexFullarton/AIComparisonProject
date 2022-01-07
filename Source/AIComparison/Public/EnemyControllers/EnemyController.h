@@ -55,6 +55,7 @@ public:
 	void SwapWeapons();
 
 	bool IsCriticalHealth();
+	void EnemyKilled();
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);

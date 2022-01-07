@@ -18,6 +18,9 @@ public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
 
+	virtual void CharacterDeath() override;
+	virtual void ModifyHealth(float healthToSubtract) override;
+
 	// Widget component for healthbar
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* healthbarWidget;

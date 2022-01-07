@@ -55,9 +55,7 @@ void AEnemyControllerBT::TickTree()
 }
 
 void AEnemyControllerBT::RunNode()
-{
-	//RootNode.RunNode();
-}
+{}
 
 NodeStatus AEnemyControllerBT::EnemyDeath()
 {
@@ -71,6 +69,8 @@ NodeStatus AEnemyControllerBT::EnemyDeath()
 
 NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 {
+	// When patrolling to a random location, set character speed to be low
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = patrolSpeed;
 	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem)
 	{

@@ -275,6 +275,11 @@ EnemyState& EnemyRetreatState::getInstance()
 // Death state //
 /////////////////
 
+void EnemyDeathState::enterState(AEnemyControllerFSM* controller)
+{
+	controller->EnemyKilled();
+}
+
 void EnemyDeathState::updateState(AEnemyControllerFSM* controller)
 {
 	// Once the enemy is in the death state, they can no longer change to any other states

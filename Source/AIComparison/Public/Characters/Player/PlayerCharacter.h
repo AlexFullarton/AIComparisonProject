@@ -17,6 +17,9 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	virtual void ModifyHealth(float healthToSubtract) override;
+	virtual void CharacterDeath() override;
+
 	virtual void FireArrow() override;
 
 	// Third person camera - viewport
