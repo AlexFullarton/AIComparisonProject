@@ -3,6 +3,9 @@
 
 #include "EnemyControllers/BehaviourTree/Decorator/SucceederNode.h"
 
+SucceederNode::SucceederNode(TreeNode* ChildNode) : DecoratorNode(ChildNode)
+{}
+
 void SucceederNode::ChildFailure(TreeNode* Node)
 {
 	ChildSuccess(Node);

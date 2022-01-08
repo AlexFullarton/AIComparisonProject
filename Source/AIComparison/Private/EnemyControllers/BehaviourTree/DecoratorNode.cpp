@@ -3,9 +3,18 @@
 
 #include "EnemyControllers/BehaviourTree/DecoratorNode.h"
 
+DecoratorNode::DecoratorNode(TreeNode* ChildNode) : ChildNode(ChildNode)
+{}
+
 TreeNode* DecoratorNode::GetChildNode() const
 {
 	return ChildNode;
+}
+
+void DecoratorNode::AddChild(TreeNode* Node)
+{
+	if (ChildNode != nullptr)
+		ChildNode = Node;
 }
 
 void DecoratorNode::SetChildNode(TreeNode* Node)
@@ -45,4 +54,10 @@ void DecoratorNode::ChildSuccess(TreeNode* Node)
 void DecoratorNode::ChildFailure(TreeNode* Node)
 {
 	Failure();
+}
+
+void DecoratorNode::Reset()
+{
+	ChildNode = nullptr;
+	TreeNode::Reset();
 }

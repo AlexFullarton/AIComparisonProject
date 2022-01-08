@@ -7,6 +7,8 @@
 
 class FailerNode : public DecoratorNode
 {
+public:
+	FailerNode(TreeNode* ChildNode);
 private:
 	virtual void ChildSuccess(TreeNode* Node) override;
 };

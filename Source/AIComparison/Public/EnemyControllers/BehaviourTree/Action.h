@@ -25,6 +25,7 @@ public:
 	// Leaf node cannot have children
 	virtual int GetChildNodeCount() { return 0; }
 	virtual TreeNode* GetChildAtIndex(int i) { return nullptr; }
+	virtual void AddChild(TreeNode* Node) override {}
 
 private:
 	std::function<NodeStatus()> FunctionPointer;

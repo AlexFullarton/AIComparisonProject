@@ -7,6 +7,8 @@
 
 class InverterNode : public DecoratorNode
 {
+public:
+	InverterNode(TreeNode* ChildNode);
 private:
 	virtual void ChildSuccess(TreeNode* Node) override;
 	virtual void ChildFailure(TreeNode* Node) override;

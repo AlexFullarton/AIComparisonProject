@@ -3,6 +3,9 @@
 
 #include "EnemyControllers/BehaviourTree/Composite/SequenceNode.h"
 
+SequenceNode::SequenceNode(std::list<TreeNode*> Nodes) : CompositeNode(Nodes)
+{}
+
 void SequenceNode::ChildSuccess(TreeNode* Node)
 {
 	CompositeNode::ChildSuccess(Node);

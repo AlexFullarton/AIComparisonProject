@@ -3,6 +3,9 @@
 
 #include "EnemyControllers/BehaviourTree/Decorator/InverterNode.h"
 
+InverterNode::InverterNode(TreeNode* ChildNode) : DecoratorNode(ChildNode)
+{}
+
 void InverterNode::ChildSuccess(TreeNode* Node)
 {
 	DecoratorNode::ChildFailure(Node);

@@ -16,6 +16,19 @@ enum NodeStatus
 	CANCELLED
 };
 
+// Parallel Node type enums
+enum RunMode
+{
+	RESUME,
+	JOIN
+};
+
+enum RunType
+{
+	SEQUENCE,
+	SELECTOR
+};
+
 // Abstract Class for behaviour tree nodes
 class TreeNode
 {
@@ -43,6 +56,8 @@ public:
 	// Reset this node back to its original state
 	virtual void ResetNode();
 
+	virtual void Reset();
+
 	// Pure virtual functions - functionality will differ between node types
 	// Will be implemented for each type of node in derived classes
 	// Called every time this node updates
@@ -53,10 +68,13 @@ public:
 	virtual void ChildFailure(TreeNode* FailedNode) = 0;
 	virtual void ChildRunning(TreeNode* RunningNode, TreeNode* ReportingNode) = 0;
 
+	// Add a child node to this nodes list of child nodes
+	virtual void AddChild(TreeNode* Node) = 0;
 	// Gets the amount of child nodes this node has
 	virtual int GetChildNodeCount() = 0;
 	// Gets the child node at the given index
 	virtual TreeNode* GetChildAtIndex(int i) = 0;
+
 protected:
 	// Node status for evaluating tree at run time
 	NodeStatus CurrentState;
@@ -68,5 +86,5 @@ protected:
 	AEnemyControllerBT* Tree;
 
 	// Terminates any running child nodes
-	virtual void CancelRunningChildren();
+	virtual void CancelRunningChildren(int index);
 };

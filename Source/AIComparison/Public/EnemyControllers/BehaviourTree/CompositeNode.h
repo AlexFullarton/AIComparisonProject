@@ -13,14 +13,16 @@
 class CompositeNode : public TreeNode
 {
 public:
+	// Constructor
+	CompositeNode(std::list<TreeNode*> ChildNodes);
 	// Returns a list of all the child nodes of this node
 	const std::list<TreeNode*>& GetChildNodes() const;
 	// Returns the total amount of child nodes for this node
 	virtual int GetChildNodeCount() override;
-	// Returns a single shild node by index - EXPENSIVE SO AVOID IF POSSIBLE
+	// Returns a single child node by index
 	virtual TreeNode* GetChildAtIndex(int i) override;
 	// Add a child node to this node
-	void AddChildNode(TreeNode* Node);
+	virtual void AddChild(TreeNode* Node);
 	// Add a list of child nodes to this node
 	void AddChildNodes(std::initializer_list<TreeNode*>&& Nodes);
 
@@ -38,6 +40,8 @@ public:
 	// Called every time this node updates
 	virtual void RunNode() override;
 
+	virtual void Reset() override;
+
 protected:
 	// Child node that is in the running state -  null if none
 	TreeNode* RunningChild;
@@ -46,7 +50,7 @@ protected:
 	int CurrentChildIndex;
 
 	// Called when this node is cancelled, cancels all running children
-	virtual void CancelRunningChildren() override;
+	virtual void CancelRunningChildren(int index) override;
 private:
 	std::list<TreeNode*> ChildNodes;
 };

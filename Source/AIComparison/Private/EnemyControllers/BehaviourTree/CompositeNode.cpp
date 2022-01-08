@@ -3,6 +3,9 @@
 
 #include "EnemyControllers/BehaviourTree/CompositeNode.h"
 
+CompositeNode::CompositeNode(std::list<TreeNode*> ChildNodes) : ChildNodes(ChildNodes)
+{}
+
 const std::list<TreeNode*>& CompositeNode::GetChildNodes() const
 {
 	return ChildNodes;
@@ -16,13 +19,12 @@ int CompositeNode::GetChildNodeCount()
 TreeNode* CompositeNode::GetChildAtIndex(int i)
 {
 	// Lists do not have random access so must cycle throuh to find element at index
-	// Quite expensive so avoid of possible
 	auto list_front = ChildNodes.begin();
 	std::advance(list_front, i);
 	return *list_front;
 }
 
-void CompositeNode::AddChildNode(TreeNode* Node)
+void CompositeNode::AddChild(TreeNode* Node)
 {
 	ChildNodes.emplace_back(Node);
 }
@@ -30,7 +32,7 @@ void CompositeNode::AddChildNode(TreeNode* Node)
 void CompositeNode::AddChildNodes(std::initializer_list<TreeNode*>&& Nodes)
 {
 	for (TreeNode* Node : Nodes)
-		AddChildNode(Node);
+		AddChild(Node);
 }
 
 void CompositeNode::StartNode()
@@ -83,8 +85,16 @@ void CompositeNode::RunNode()
 	}
 }
 
-void CompositeNode::CancelRunningChildren()
+void CompositeNode::CancelRunningChildren(int index)
 {
-	TreeNode::CancelRunningChildren();
+	TreeNode::CancelRunningChildren(index);
 	RunningChild = nullptr;
+}
+
+void CompositeNode::Reset()
+{
+	CurrentChildIndex = 0;
+	RunningChild = nullptr;
+	ChildNodes.clear();
+	TreeNode::Reset();
 }

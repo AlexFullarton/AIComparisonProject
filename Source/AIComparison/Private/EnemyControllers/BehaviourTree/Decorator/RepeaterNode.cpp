@@ -3,7 +3,7 @@
 
 #include "EnemyControllers/BehaviourTree/Decorator/RepeaterNode.h"
 
-RepeaterNode::RepeaterNode(int NumRepeats) : NumberOfRepeats(NumRepeats)
+RepeaterNode::RepeaterNode(TreeNode* ChildNode, int NumRepeats) : DecoratorNode(ChildNode), NumberOfRepeats(NumRepeats)
 {}
 
 void RepeaterNode::StartNode()
@@ -59,4 +59,11 @@ void RepeaterNode::ChildSuccess(TreeNode* Node)
 void RepeaterNode::ChildFailure(TreeNode* Node)
 {
 	ChildSuccess(Node);
+}
+
+void RepeaterNode::Reset()
+{
+	count = 0;
+	NumberOfRepeats = -1;
+	DecoratorNode::Reset();
 }

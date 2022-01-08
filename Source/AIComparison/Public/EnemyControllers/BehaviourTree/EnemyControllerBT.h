@@ -9,13 +9,13 @@
 #include <list>
 #include "Composite/SelectorNode.h"
 #include "Composite/SequenceNode.h"
+#include "Composite/ParallelNode.h"
 #include "Decorator/InverterNode.h"
 #include "Decorator/SucceederNode.h"
 #include "Decorator/FailerNode.h"
 #include "Decorator/RepeaterNode.h"
 #include "Decorator/RepeatUntilFailNode.h"
 #include "Action.h"
-#include "Listener.h"
 #include "EnemyControllerBT.generated.h"
 
 UCLASS()
@@ -31,9 +31,6 @@ public:
 	// Called every game update
 	virtual void Tick(float DeltaTime);
 
-	// Create the structure of the behaviour tree
-	void BuildTree();
-
 	// Evaulate the tree at run time
 	virtual void RunNode() override;
 
@@ -45,31 +42,21 @@ public:
 	virtual void ChildSuccess(TreeNode* Node) override { Success(); }
 	virtual void ChildFailure(TreeNode* Node) override { Failure(); }
 
+	// Add a child node to this nodes list of child nodes
+	virtual void AddChild(TreeNode* Node) override {};
 	// Get amount of child nodes
 	virtual int GetChildNodeCount() override { return 1; }
 	// Get child node at index
-	virtual TreeNode* GetChildAtIndex(int i) override { return &RootNode; }
+	virtual TreeNode* GetChildAtIndex(int i) override { return nullptr; }
 
 	// Called in game loop to determine of the tree needs to be run
 	void TickTree();
 
-	// List of Listeners for the behaviour tree
-	std::list<Listener*> Listeners;
-
-	// Listener controller functions
-	void AddListener(Listener* l) { Listeners.emplace_back(l); }
-	void RemoveListener(Listener* l) { Listeners.remove(l); }
-	void RemoveAllListeners() { Listeners.clear(); }
-	void NotifyStatusChanged(TreeNode* Node, NodeStatus status);
-	void NotifyChildAdded(TreeNode* Node, int index);
-
+	virtual void Reset() override;
 private:
 	// Tree nodes that will be used to build the tree
-	// Each tree must have a root node
-	SelectorNode RootNode;
-	SequenceNode PatrolNode;
+	// Tree built from leaves up
 
-	// Action nodes - these nodes are what add functionality to the tree
 	// To check death state
 	Action CheckIfDead = Action(std::bind(&AEnemyControllerBT::EnemyDeath, this));
 
@@ -77,6 +64,10 @@ private:
 	Action CalculatePatrolDestination = Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this));
 	Action MoveToPatrolDestination = Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this));
 	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtPatrolLocation, this));
+	SequenceNode PatrolNode = SequenceNode({ &CalculatePatrolDestination, &MoveToPatrolDestination, &WaitForMove });
+
+	ParallelNode RootNode = ParallelNode({ &CheckIfDead, &PatrolNode }, RunMode::RESUME, RunType::SELECTOR);
+	
 
 	// Action functions - passed as pointers to the action nodes/leaves of the tree
 	NodeStatus EnemyDeath();

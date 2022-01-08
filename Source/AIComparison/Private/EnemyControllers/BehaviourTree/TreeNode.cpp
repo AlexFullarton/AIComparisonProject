@@ -16,10 +16,6 @@ void TreeNode::Success()
 	NodeStatus OldState = CurrentState;
 	CurrentState = NodeStatus::SUCCESS;
 
-	// If the tree this node belongs to is listening for node updates
-	if (Tree->Listeners.size() > 0)
-		// Notify tree that this node has changed state
-		Tree->NotifyStatusChanged(this, OldState);
 	// If this node has a parent node i.e. is not the root node of the tree
 	if (ParentNode != nullptr)
 		// Update the parent node with this nodes changed state
@@ -32,10 +28,6 @@ void TreeNode::Failure()
 	NodeStatus OldState = CurrentState;
 	CurrentState = NodeStatus::FAILURE;
 
-	// If the tree this node belongs to is listening for node updates
-	if (Tree->Listeners.size() > 0)
-		// Notify tree that this node has changed state
-		Tree->NotifyStatusChanged(this, OldState);
 	// If this node has a parent node i.e. is not the root node of the tree
 	if (ParentNode != nullptr)
 		// Update the parent node with this nodes changed state
@@ -48,10 +40,6 @@ void TreeNode::Running()
 	NodeStatus OldState = CurrentState;
 	CurrentState = NodeStatus::RUNNING;
 
-	// If the tree this node belongs to is listening for node updates
-	if (Tree->Listeners.size() > 0)
-		// Notify tree that this node has changed state
-		Tree->NotifyStatusChanged(this, OldState);
 	// If this node has a parent node i.e. is not the root node of the tree
 	if (ParentNode != nullptr)
 		// Update the parent node with this nodes changed state
@@ -61,19 +49,17 @@ void TreeNode::Running()
 void TreeNode::Cancel()
 {
 	// Cancel any running child nodes
-	CancelRunningChildren();
+	CancelRunningChildren(0);
 	NodeStatus OldState = CurrentState;
 	CurrentState = NodeStatus::CANCELLED;
-	if (Tree->Listeners.size() > 0)
-		Tree->NotifyStatusChanged(this, OldState);
 	EndNode();
 }
 
-void TreeNode::CancelRunningChildren()
+void TreeNode::CancelRunningChildren(int index)
 {
 	// Cycle through child nodes and terminate if running
 	int count = GetChildNodeCount();
-	for (int i = 0; i < count; i++)
+	for (int i = index; i < count; i++)
 	{
 		TreeNode* child = GetChildAtIndex(i);
 		if (child->GetNodeStatus() == NodeStatus::RUNNING)
@@ -93,4 +79,11 @@ void TreeNode::ResetNode()
 		GetChildAtIndex(i)->ResetNode();
 	}
 	CurrentState = NodeStatus::FRESH;
+}
+
+void TreeNode::Reset()
+{
+	ParentNode = nullptr;
+	CurrentState = NodeStatus::FRESH;
+	Tree = nullptr;
 }

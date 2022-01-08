@@ -12,9 +12,6 @@ AEnemyControllerBT::AEnemyControllerBT()
 void AEnemyControllerBT::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
-	// Create the structure of the behaviour tree for this instance of the enemy controller
-	BuildTree();
 }
 
 void AEnemyControllerBT::Tick(float DeltaTime)
@@ -24,20 +21,6 @@ void AEnemyControllerBT::Tick(float DeltaTime)
 	// Run behaviour tree only if controller is possessing a pawn
 	if (controlledEnemy)
 		TickTree();
-}
-
-void AEnemyControllerBT::BuildTree()
-{
-	// Form the structure of the tree starting with the leaf nodes and working up to the root
-	
-	// First: Does the enemy need to enter its death state due to low health?
-	
-	// Next: Has the enemy reached its previous patrol destination?
-	// If it has, calculate a new destination and move to that instead
-	PatrolNode.AddChildNodes({ &CalculatePatrolDestination, &MoveToPatrolDestination, &WaitForMove });
-
-	// Add to root node to complete the tree
-	RootNode.AddChildNodes({ &CheckIfDead, &PatrolNode });
 }
 
 void AEnemyControllerBT::TickTree()
@@ -56,6 +39,20 @@ void AEnemyControllerBT::TickTree()
 
 void AEnemyControllerBT::RunNode()
 {}
+
+void AEnemyControllerBT::ResetNode()
+{
+	TreeNode::ResetNode();
+	// or Tree = this; ???
+	SetParentNode(this);
+}
+
+void AEnemyControllerBT::Reset()
+{
+	ParallelNode NewRoot({}, RunMode::RESUME, RunType::SEQUENCE);
+	RootNode = NewRoot;
+	TreeNode::Reset();
+}
 
 NodeStatus AEnemyControllerBT::EnemyDeath()
 {
@@ -88,9 +85,9 @@ NodeStatus AEnemyControllerBT::CheckAtPatrolLocation()
 	if (GetMoveStatus() == EPathFollowingStatus::Moving)
 		return NodeStatus::RUNNING;
 	else
-	// If the enemy has arrived at its stored destination
-	if (GetMoveStatus() != EPathFollowingStatus::Moving)
-		return NodeStatus::SUCCESS;
+		// If the enemy has arrived at its stored destination
+		if (GetMoveStatus() != EPathFollowingStatus::Moving)
+			return NodeStatus::SUCCESS;
 	return NodeStatus::FAILURE;
 }
 
@@ -100,29 +97,6 @@ NodeStatus AEnemyControllerBT::MoveToPatrolLocation()
 	if (MoveToLocation(destination.Location, tolerance))
 		return NodeStatus::SUCCESS;
 	return NodeStatus::FAILURE;
-}
-
-void AEnemyControllerBT::ResetNode()
-{
-	TreeNode::ResetNode();
-	// or Tree = this; ???
-	SetParentNode(this);
-}
-
-void AEnemyControllerBT::NotifyStatusChanged(TreeNode* Node, NodeStatus status)
-{
-	for (Listener* listener : Listeners)
-	{
-		listener->StatusUpdated(Node, status);
-	}
-}
-
-void AEnemyControllerBT::NotifyChildAdded(TreeNode* Node, int index)
-{
-	for (Listener* listener : Listeners)
-	{
-		listener->ChildAdded(Node, index);
-	}
 }
 
 

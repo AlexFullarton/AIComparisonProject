@@ -3,6 +3,9 @@
 
 #include "EnemyControllers/BehaviourTree/Decorator/RepeatUntilFailNode.h"
 
+RepeatUntilFailNode::RepeatUntilFailNode(TreeNode* ChildNode) : DecoratorNode(ChildNode)
+{}
+
 void RepeatUntilFailNode::StartNode()
 {
 
@@ -40,4 +43,10 @@ void RepeatUntilFailNode::ChildFailure(TreeNode* Node)
 {
 	Success();
 	loop = false;
+}
+
+void RepeatUntilFailNode::Reset()
+{
+	loop = false;
+	DecoratorNode::Reset();
 }
