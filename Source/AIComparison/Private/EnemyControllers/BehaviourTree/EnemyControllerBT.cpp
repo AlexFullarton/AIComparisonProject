@@ -65,6 +65,48 @@ NodeStatus AEnemyControllerBT::EnemyDeath()
 	return NodeStatus::FAILURE;
 }
 
+NodeStatus AEnemyControllerBT::EnemyCriticalHealth()
+{
+	if (IsCriticalHealth())
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::CalculateRetreatLocation()
+{
+	// When retreating to a random location, set character speed to be high
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = chaseSpeed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
+	{
+		// Find a new location for the enemy to retreat to
+		if (navSystem->GetRandomReachablePointInRadius(controlledEnemy->GetActorLocation(), searchRadius, destination))
+			return NodeStatus::SUCCESS;
+	}
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::MoveToLocation()
+{
+	// Patrol to the new destination
+	if (AEnemyController::MoveToLocation(destination.Location, tolerance))
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::CheckAtLocation()
+{
+	// If the enemy is still moving to its destination
+	if (GetMoveStatus() == EPathFollowingStatus::Moving)
+		return NodeStatus::RUNNING;
+	else
+		// If the enemy has arrived at its stored destination
+		if (GetMoveStatus() != EPathFollowingStatus::Moving)
+			return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
+}
+
 NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 {
 	// When patrolling to a random location, set character speed to be low
@@ -79,25 +121,7 @@ NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 	return NodeStatus::FAILURE;
 }
 
-NodeStatus AEnemyControllerBT::CheckAtPatrolLocation()
-{
-	// If the enemy is still moving to its destination
-	if (GetMoveStatus() == EPathFollowingStatus::Moving)
-		return NodeStatus::RUNNING;
-	else
-		// If the enemy has arrived at its stored destination
-		if (GetMoveStatus() != EPathFollowingStatus::Moving)
-			return NodeStatus::SUCCESS;
-	return NodeStatus::FAILURE;
-}
 
-NodeStatus AEnemyControllerBT::MoveToPatrolLocation()
-{
-	// Patrol to the new destination
-	if (MoveToLocation(destination.Location, tolerance))
-		return NodeStatus::SUCCESS;
-	return NodeStatus::FAILURE;
-}
 
 
 

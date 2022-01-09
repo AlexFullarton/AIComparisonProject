@@ -15,6 +15,7 @@
 #include "Decorator/FailerNode.h"
 #include "Decorator/RepeaterNode.h"
 #include "Decorator/RepeatUntilFailNode.h"
+#include "Decorator/OnlyOnceNode.h"
 #include "Action.h"
 #include "EnemyControllerBT.generated.h"
 
@@ -60,19 +61,39 @@ private:
 	// To check death state
 	Action CheckIfDead = Action(std::bind(&AEnemyControllerBT::EnemyDeath, this));
 
+	// To allow enemy to retreat if health is low
+	Action CheckCriticalHealth = Action(std::bind(&AEnemyControllerBT::EnemyCriticalHealth, this));
+	Action GetRetreatLocation = Action(std::bind(&AEnemyControllerBT::CalculateRetreatLocation, this));
+	Action Retreat = Action(std::bind(&AEnemyControllerBT::MoveToLocation, this));
+	Action WaitForRetreat = Action(std::bind(&AEnemyControllerBT::CheckAtLocation, this));
+	// All actions must succeed in order for enemy to retreat so use Sequence node
+	SequenceNode RetreatNode = SequenceNode({ &CheckCriticalHealth, &GetRetreatLocation, &Retreat, &WaitForRetreat });
+	// Enemies are restricted to only retreating the first time they are able to so must
+	// parent Sequence node to only once node
+	OnlyOnceNode RetreatOnce = OnlyOnceNode(&RetreatNode);
+
 	// To allow enemy to patrol to random location in set distance
 	Action CalculatePatrolDestination = Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this));
-	Action MoveToPatrolDestination = Action(std::bind(&AEnemyControllerBT::MoveToPatrolLocation, this));
-	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtPatrolLocation, this));
+	Action MoveToPatrolDestination = Action(std::bind(&AEnemyControllerBT::MoveToLocation, this));
+	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtLocation, this));
+	// All actions must succeed in order for enemy to patrol so use Sequence node
 	SequenceNode PatrolNode = SequenceNode({ &CalculatePatrolDestination, &MoveToPatrolDestination, &WaitForMove });
 
-	ParallelNode RootNode = ParallelNode({ &CheckIfDead, &PatrolNode }, RunMode::RESUME, RunType::SELECTOR);
 	
 
+	// Root Node of the tree
+	ParallelNode RootNode = ParallelNode({ &CheckIfDead, &RetreatOnce, &PatrolNode }, RunMode::RESUME, RunType::SELECTOR);
+	
 	// Action functions - passed as pointers to the action nodes/leaves of the tree
+	// Death action
 	NodeStatus EnemyDeath();
 
+	// Retreat actions - Sequence parent as all need to complete
+	NodeStatus EnemyCriticalHealth();
+	NodeStatus CalculateRetreatLocation();
+	NodeStatus MoveToLocation();
+	NodeStatus CheckAtLocation();
+
+	// Patrol actions - Sequence parent as all need to complete
 	NodeStatus CalculateNewPatrolLocation();
-	NodeStatus MoveToPatrolLocation();
-	NodeStatus CheckAtPatrolLocation();
 };

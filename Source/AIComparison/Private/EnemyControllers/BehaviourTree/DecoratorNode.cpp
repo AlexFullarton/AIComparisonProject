@@ -6,25 +6,20 @@
 DecoratorNode::DecoratorNode(TreeNode* ChildNode) : ChildNode(ChildNode)
 {}
 
-TreeNode* DecoratorNode::GetChildNode() const
-{
-	return ChildNode;
-}
-
 void DecoratorNode::AddChild(TreeNode* Node)
 {
 	if (ChildNode != nullptr)
 		ChildNode = Node;
 }
 
-void DecoratorNode::SetChildNode(TreeNode* Node)
-{
-	ChildNode = Node;
-}
-
 int DecoratorNode::GetChildNodeCount()
 {
 	return ChildNode == nullptr ? 0 : 1;
+}
+
+TreeNode* DecoratorNode::GetChildAtIndex(int i)
+{
+	return (i == 0) ? ChildNode : nullptr;
 }
 
 void DecoratorNode::RunNode()

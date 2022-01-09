@@ -15,9 +15,6 @@
 
 class AEnemyCharacter;
 
-/**
- * 
- */
 UCLASS()
 class AICOMPARISON_API AEnemyController : public AAIController
 {
@@ -28,38 +25,68 @@ public:
 	virtual void OnPossess(APawn* InPawn);
 	virtual void Tick(float DeltaTime);
 
+	// Move enemy to destination
 	void MoveToRandomLocationInDistance(FVector pawnLocation, float speed);
+	// Move enemy to player location
 	void MoveToPlayer(float acceptanceRadius);
+	// Calculate distance between the controlled enemy and the player
 	float getDistanceToPlayer();
+	// Rotate the controlled enemy to face the players location
 	void RotateToFacePlayer();
 
+	// Initiate melee attack
 	void Attack();
+	// Initiate ranged attack
 	void AttackRanged();
+	// Checks if the controlled enemy is already attacking - used for playing anim montages
 	bool IsEnemyAttacking();
+	// Set a random amount of time for the current attack period to last for - based on enemy attack rate float
 	void SetAttackTimer();
+	// Set attack gate bool - prevents attacking again while already attacking/spam clicking for more ranged attacks etc.
 	void allowAttack();
+	// Unset attack gate bool
 	void disallowAttack();
+	// Get attack gate bool
 	bool IsAttackAllowed() { return attackAllowed; }
+	// Set a random amount of time for the current attack period to last for - based on enemy attack rate float
 	void SetRangedAttackTimer();
+	// Set attack gate bool - prevents attacking again while already attacking/spam clicking for more ranged attacks etc.
 	void allowRanged();
+	// Unset attack gate bool
 	void disallowRanged();
+	// Get ranged attack gate bool
 	bool IsRangedAllowed() { return rangedAllowed; }
 
+	// Initiate blocking
 	void Block();
+	// Cancel blocking
 	void StopBlocking();
+	// Set a random amount of time for the current block to last for (between 1.5 and 3 seconds)
 	void SetBlockTimer();
+	// Set block gate bool - prevents being abld to block while already blocking/spam clicking block
 	void allowBlock();
+	// Unset block gate bool
 	void disallowBlock();
+	// Get block gate bool
 	bool IsBlockAllowed() { return blockAllowed; }
 
+	// Switch attack states between melee and ranged
 	void SwapWeapons();
 
+	// Enemy death functions
+
+	// Checks enemy health percentage - flee at low hp
 	bool IsCriticalHealth();
+	// Check if enemy health has been reduced to zero
 	void EnemyKilled();
 
+	// Enemy perception functions
+
+	// Fires when the controlled enemy detects/undetects another pawn
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& testActors);
 
+	// Checks the controlled enemies team against the detected pawn
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 protected:

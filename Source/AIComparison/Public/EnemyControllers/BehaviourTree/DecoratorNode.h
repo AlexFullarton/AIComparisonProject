@@ -12,10 +12,13 @@ class DecoratorNode : public TreeNode
 public:
 	// Constructor
 	DecoratorNode(TreeNode* ChildNode);
-	void SetChildNode(TreeNode* Node);
 
 	// Return the amount of child nodes this node has - either 0 or 1 for decorator
 	virtual int GetChildNodeCount() override;
+	// Add a child to this node if there isnt one already
+	virtual void AddChild(TreeNode* Node) override;
+	// Gets the child node at the given index
+	virtual TreeNode* GetChildAtIndex(int i) override;
 
 	virtual void RunNode() override;
 
@@ -25,11 +28,6 @@ public:
 
 	virtual void Reset() override;
 protected:
-	// Gets this decorators child node
-	TreeNode* GetChildNode() const;
-
 	// Decorator nodes have only one child
-	TreeNode* ChildNode;
-
-	virtual void AddChild(TreeNode* Node) override;
+	TreeNode* ChildNode;	
 };
