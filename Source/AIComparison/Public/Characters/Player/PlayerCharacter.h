@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Characters/GameCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Characters/Player/PlayerHUD.h"
 #include "PlayerCharacter.generated.h"
 
@@ -25,13 +27,15 @@ public:
 	// Third person camera - viewport
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ThirdPersonCameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* SpringArmComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 
 	APlayerHUD* HUD;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

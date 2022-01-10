@@ -30,14 +30,20 @@ APlayerCharacter::APlayerCharacter()
 	isRanged = false;
 
 	// Initial Camera Offset
-	FVector cameraOffset(-200.0f, 20.0f, 70.0f);
+	FVector cameraOffset(50.0f, 20.0f, 20.0f);
+
+	// Create spring arm component to handle camera clipping
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
+	SpringArmComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 30.0f));
+	SpringArmComponent->bUsePawnControlRotation = true;
+	SpringArmComponent->TargetArmLength = 300.0f;
+	SpringArmComponent->bEnableCameraLag = true;
+
 
 	// Create third person camera component
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
-	ThirdPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	ThirdPersonCameraComponent->SetRelativeLocation(cameraOffset);
-	ThirdPersonCameraComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	ThirdPersonCameraComponent->bUsePawnControlRotation = true;
+	ThirdPersonCameraComponent->AttachToComponent(SpringArmComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	// Setup a skeletal mesh component for 3rd person view
 	USkeletalMeshComponent* SkelMesh = GetMesh();
@@ -99,9 +105,7 @@ void APlayerCharacter::BeginPlay()
 	swordWeapon->weaponDamage = meleeDamage;
 
 	shieldWeapon = Cast<AMeleeWeapon>(GetWorld()->SpawnActor(leftHandShield));
-	shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");
-
-	
+	shieldWeapon->AttachWeapon(this, GetMesh()->GetName(), "LeftHandSocket");	
 }
 
 // Called every frame
