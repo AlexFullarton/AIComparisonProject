@@ -11,15 +11,18 @@ void OnlyOnceNode::RunNode()
 	// If this nodes child node has already successfully run, then return failure
 	if (ChildNodeHasSucceeded)
 		DecoratorNode::ChildFailure(ChildNode);
-	// If this nodes child node is running, continue to run the node
-	if (ChildNode->GetNodeStatus() == NodeStatus::RUNNING)
-		ChildNode->RunNode();
-	// Child node is not running, so start
 	else
 	{
-		ChildNode->SetParentNode(this);
-		ChildNode->StartNode();
-		ChildNode->RunNode();
+		// If this nodes child node is running, continue to run the node
+		if (ChildNode->GetNodeStatus() == NodeStatus::RUNNING)
+			ChildNode->RunNode();
+		// Child node is not running, so start
+		else
+		{
+			ChildNode->SetParentNode(this);
+			ChildNode->StartNode();
+			ChildNode->RunNode();
+		}
 	}
 }
 
