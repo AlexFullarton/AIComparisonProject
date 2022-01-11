@@ -20,6 +20,9 @@ public:
 	// Sets default values for this actor's properties
 	AEnemySpawner();
 
+	UFUNCTION(BlueprintCallable)
+	void SpawnEnemy();
+
 	// Root component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Root)
 	USceneComponent* SceneComponent;

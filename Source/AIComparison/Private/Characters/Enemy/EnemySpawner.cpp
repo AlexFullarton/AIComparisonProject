@@ -22,11 +22,8 @@ AEnemySpawner::AEnemySpawner()
 	SetActorHiddenInGame(true);
 }
 
-// Called when the game starts or when spawned
-void AEnemySpawner::BeginPlay()
+void AEnemySpawner::SpawnEnemy()
 {
-	Super::BeginPlay();
-
 	// Create initial spawn location for the enemy
 	FTransform spawnTransform;
 	spawnTransform.SetTranslation(GetActorLocation());
@@ -35,6 +32,13 @@ void AEnemySpawner::BeginPlay()
 	AEnemyCharacter* enemy = GetWorld()->SpawnActorDeferred<AEnemyCharacter>(enemyClass, spawnTransform);
 	enemy->InitialiseEnemy();
 	enemy->FinishSpawning(spawnTransform);
+}
+
+// Called when the game starts or when spawned
+void AEnemySpawner::BeginPlay()
+{
+	Super::BeginPlay();
+	SpawnEnemy();
 }
 
 
