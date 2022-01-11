@@ -38,7 +38,6 @@ void AEnemySpawner::SpawnEnemy()
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnEnemy();
 }
 
 
