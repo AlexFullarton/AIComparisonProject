@@ -8,6 +8,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Characters/Player/PlayerCharacter.h"
 #include "GenericTeamAgentInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PlayerCharacterController.generated.h"
 
 UCLASS()
@@ -41,6 +42,8 @@ protected:
 	void AttackRanged();
 
 	void SwapWeapons();
+
+	void QuitGame();
 
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;

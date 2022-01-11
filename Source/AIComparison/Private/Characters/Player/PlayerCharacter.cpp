@@ -75,6 +75,10 @@ APlayerCharacter::APlayerCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
 	leftHandBow = bowBP.Object->GeneratedClass;
+
+	// Get the death screen widget class
+	static ConstructorHelpers::FClassFinder<UUserWidget> DeathScreen(TEXT("WidgetBlueprint'/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C'"));
+	DeathScreenWidgetClass = DeathScreen.Class;
 }
 
 // Called when the game starts or when spawned
@@ -147,4 +151,13 @@ void APlayerCharacter::RagdollDeath()
 	// Hide healthbar
 	HUD->playerHealthbar->SetVisibility(ESlateVisibility::Hidden);
 	HUD->playerCrosshair->SetVisibility(ESlateVisibility::Hidden);
+
+	// Pause the game to stop events from ticking and show the death screen
+	APlayerController* controller = Cast<APlayerController>(GetController());
+	FInputModeUIOnly UIInputMode;
+	UIInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	controller->SetInputMode(UIInputMode);
+	controller->SetShowMouseCursor(true);
+	UUserWidget* DeathWidget = CreateWidget(GetWorld(), DeathScreenWidgetClass, TEXT("DeathScreen"));
+	DeathWidget->AddToViewport();
 }

@@ -8,6 +8,7 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Characters/Player/PlayerHUD.h"
+#include "Blueprint/UserWidget.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -32,6 +33,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 
 	APlayerHUD* HUD;
+
+	UClass* DeathScreenWidgetClass;
 
 protected:
 	// Called when the game starts or when spawned

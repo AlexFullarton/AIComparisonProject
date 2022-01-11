@@ -35,6 +35,9 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAxis("TurnRate", this, &APlayerCharacterController::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &APlayerCharacterController::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &APlayerCharacterController::LookUpAtRate);
+
+	// Bind Quit event
+	InputComponent->BindAction("QuitGame", IE_Released, this, &APlayerCharacterController::QuitGame);
 }
 
 void APlayerCharacterController::MoveForward(float value)
@@ -145,4 +148,9 @@ void APlayerCharacterController::SwapWeapons()
 	{
 		player->SwapWeapons();
 	}
+}
+
+void APlayerCharacterController::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), this, EQuitPreference::Quit, true);
 }
