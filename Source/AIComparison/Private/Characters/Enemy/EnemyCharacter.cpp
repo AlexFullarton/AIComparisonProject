@@ -59,6 +59,10 @@ AEnemyCharacter::AEnemyCharacter()
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
 	leftHandBow = bowBP.Object->GeneratedClass;
+
+	// Get the death screen widget class
+	static ConstructorHelpers::FClassFinder<UUserWidget> DeathScreen(TEXT("WidgetBlueprint'/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C'"));
+	DeathScreenWidgetClass = DeathScreen.Class;
 }
 
 void AEnemyCharacter::InitialiseEnemy()
@@ -136,5 +140,20 @@ void AEnemyCharacter::RagdollDeath()
 	healthbarWidget->SetVisibility(false);
 	AEnemyController* controller = Cast<AEnemyController>(GetController());
 	controller->PerceptionComponent->Deactivate();
+
+	// Increment enemy kill counter
+	UAIComparisonInstance* GameInstance = Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance());
+	GameInstance->EnemiesKilled++;
+	// If all enemies are dead
+	if (GameInstance->EnemiesKilled == GameInstance->EnemyCount)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+		FInputModeUIOnly UIInputMode;
+		UIInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PlayerController->SetInputMode(UIInputMode);
+		PlayerController->SetShowMouseCursor(true);
+		UUserWidget* DeathWidget = CreateWidget(GetWorld(), DeathScreenWidgetClass, TEXT("DeathScreen"));
+		DeathWidget->AddToViewport();
+	}
 }
 

@@ -7,6 +7,7 @@
 #include "EnemyControllers/StateMachine/EnemyControllerFSM.h"
 #include "EnemyControllers/BehaviourTree/EnemyControllerBT.h"
 #include "Components/WidgetComponent.h"
+#include "../../AIComparisonInstance.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
@@ -27,6 +28,9 @@ public:
 
 	// healthbar widget
 	UEnemyHealthbar* healthbarObject;
+
+	// Death screen widget class
+	UClass* DeathScreenWidgetClass;
 
 protected:
 	// Called when the game starts or when spawned

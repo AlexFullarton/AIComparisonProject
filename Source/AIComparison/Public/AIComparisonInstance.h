@@ -33,4 +33,6 @@ public:
 	float EnemyMeleeDamage;
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
 	float EnemyRangedDamage;
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	int EnemiesKilled;
 };

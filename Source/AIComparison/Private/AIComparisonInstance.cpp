@@ -14,5 +14,8 @@ UAIComparisonInstance::UAIComparisonInstance()
 	EnemyInitialHealth = 100.0f;
 	EnemyMeleeDamage = 10.0f;
 	EnemyRangedDamage = 20.0f;
+
+	// Enemies killed to zero - acts as a counter for game end trigger
+	EnemiesKilled = 0;
 }
 
