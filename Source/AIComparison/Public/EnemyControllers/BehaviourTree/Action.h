@@ -13,6 +13,8 @@ public:
 	// Constructor - takes a  function pointer to whatever method this node will run
 	// Method must have a return type of NodeStatus
 	Action(std::function<NodeStatus()> Function);
+	// Copy constructor
+	Action(const Action& OldAction);
 
 	// Do the action of this node
 	NodeStatus ExecuteNode();

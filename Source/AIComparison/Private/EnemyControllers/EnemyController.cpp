@@ -126,8 +126,8 @@ void AEnemyController::AttackRanged()
 {
 	controlledEnemy->Attack();
 	controlledEnemy->AttackRanged();
-	SetRangedAttackTimer();
 	disallowRanged();
+	SetRangedAttackTimer();
 }
 
 bool AEnemyController::IsEnemyAttacking()

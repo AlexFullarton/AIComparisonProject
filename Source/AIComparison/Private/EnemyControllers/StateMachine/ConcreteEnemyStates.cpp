@@ -224,7 +224,7 @@ void EnemyDefendState::updateState(AEnemyControllerFSM* controller)
 	// If the enemy can still see the player
 	else
 	{
-		// If blocking has been allowed by the timer
+		// If attacking has been allowed by the timer
 		if (controller->IsAttackAllowed())
 			controller->setState(EnemyMeleeAttackState::getInstance());
 		// If the player is no longer in range for a melee attack

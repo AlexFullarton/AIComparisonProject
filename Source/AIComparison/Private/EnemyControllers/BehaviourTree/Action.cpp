@@ -6,6 +6,9 @@
 Action::Action(std::function<NodeStatus()> Func) : FunctionPointer(Func)
 {}
 
+Action::Action(const Action& OldAction) : FunctionPointer(OldAction.FunctionPointer)
+{}
+
 NodeStatus Action::ExecuteNode()
 { 
 	// Do action here - MUST RETURN NODE STATUS ENUM OF SOME TYPE

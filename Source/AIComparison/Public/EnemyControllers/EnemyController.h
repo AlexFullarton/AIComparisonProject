@@ -130,6 +130,7 @@ public:
 	bool isRanged;
 	bool hasRetreated;
 	bool isDead;
+	bool isRetreating;
 
 	// TimerHandle for block/attack timers
 	FTimerHandle TimerHandle;

@@ -68,7 +68,10 @@ NodeStatus AEnemyControllerBT::EnemyDeath()
 NodeStatus AEnemyControllerBT::EnemyCriticalHealth()
 {
 	if (IsCriticalHealth())
+	{
+		isRetreating = true;
 		return NodeStatus::SUCCESS;
+	}
 	else
 		return NodeStatus::FAILURE;
 }
@@ -107,6 +110,40 @@ NodeStatus AEnemyControllerBT::CheckAtLocation()
 	return NodeStatus::FAILURE;
 }
 
+NodeStatus AEnemyControllerBT::PlayerSpotted()
+{
+	if (sensedPlayer != nullptr && !isRetreating)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::IsEnemyRetreating()
+{
+	if (isRetreating)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::MoveToPlayer()
+{
+	// When chasing the player, set the movement speed to be high
+	Cast<UCharacterMovementComponent>(controlledEnemy->GetMovementComponent())->MaxWalkSpeed = chaseSpeed;
+	UNavigationSystemV1* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (navSystem)
+	{
+		// Move the enemy to the player character actor, using the reference
+		// to the detected player actor and acceptance radius
+		if (isMelee)
+			MoveToActor(sensedPlayer, meleeTolerance);
+		else
+			MoveToActor(sensedPlayer, rangedTolerance);
+		return NodeStatus::SUCCESS;
+	}
+	return NodeStatus::FAILURE;
+}
+
 NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 {
 	// When patrolling to a random location, set character speed to be low
@@ -121,7 +158,116 @@ NodeStatus AEnemyControllerBT::CalculateNewPatrolLocation()
 	return NodeStatus::FAILURE;
 }
 
+NodeStatus AEnemyControllerBT::EnemyHasRetreated()
+{
+	// If the enemy is still moving to its destination
+	if (GetMoveStatus() == EPathFollowingStatus::Moving)
+		return NodeStatus::RUNNING;
+	else
+		// If the enemy has arrived at its stored destination
+		if (GetMoveStatus() != EPathFollowingStatus::Moving)
+		{
+			isRetreating = false;
+			return NodeStatus::SUCCESS;
+		}
+	return NodeStatus::FAILURE;
+}
 
+NodeStatus AEnemyControllerBT::GetMeleeState()
+{
+	if (isMelee)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::GetRangedState()
+{
+	if (isRanged)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::MultipleAlliesDetected()
+{
+	// Multiple allies detected
+	if (sensedFriendlies.Num() >= 3)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::IsEnemyCloseToPlayer()
+{
+	if (getDistanceToPlayer() <= meleeAttackRange)
+		return NodeStatus::SUCCESS;
+	else
+		return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::SwapWeapons()
+{
+	Super::SwapWeapons();
+	return NodeStatus::SUCCESS;
+}
+
+NodeStatus AEnemyControllerBT::CheckInAttackRange()
+{
+	if (isMelee && getDistanceToPlayer() < meleeAttackRange)
+		return NodeStatus::SUCCESS;
+	else if (isRanged && getDistanceToPlayer() < rangedAttackRange)
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::CanEnemyAttack()
+{
+	//if (isMelee && !IsEnemyAttacking())
+	if (isMelee && !IsEnemyAttacking() && IsAttackAllowed())
+	{
+		disallowBlock();
+		return NodeStatus::SUCCESS;
+	}
+	//else if (isRanged && !IsEnemyAttacking())
+	else if (isRanged && !IsEnemyAttacking() && IsRangedAllowed())
+		return NodeStatus::SUCCESS;
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::AttackPlayer()
+{
+	RotateToFacePlayer();
+	if (isMelee)
+	{
+		Attack();
+		SetBlockTimer();
+		return NodeStatus::SUCCESS;
+	}
+	else if (isRanged)
+	{
+		AttackRanged();
+		return NodeStatus::SUCCESS;
+	}
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::CanEnemyBlock()
+{
+	if (IsBlockAllowed())
+	{
+		disallowAttack();
+		return NodeStatus::SUCCESS;
+	}
+	return NodeStatus::FAILURE;
+}
+
+NodeStatus AEnemyControllerBT::BlockAttack()
+{
+	Block();
+	SetAttackTimer();
+	return NodeStatus::SUCCESS;
+}
 
 
 
