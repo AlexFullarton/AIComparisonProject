@@ -77,21 +77,27 @@ private:
 	InverterNode CheckEnemyIsntRetreating = InverterNode(&CheckIfEnemyRetreating);
 
 	// Check if the player has been spotted by this enemy
-	Action CheckPlayerSpotted = Action(std::bind(&AEnemyControllerBT::PlayerSpotted, this));
-	
+	Action CheckPlayerSpottedSwap = Action(std::bind(&AEnemyControllerBT::PlayerSpotted, this));
+	Action CheckPlayerSpottedAttack = CheckPlayerSpottedSwap;
+
 	// Check if the controlled enemy needs to change weapon type this tick
 	Action CheckMeleeStatus = Action(std::bind(&AEnemyControllerBT::GetMeleeState, this));
-	Action CheckRangedStatus = Action(std::bind(&AEnemyControllerBT::GetRangedState, this));
-	Action CheckMultipleAllies = Action(std::bind(&AEnemyControllerBT::MultipleAlliesDetected, this));
-	Action CheckCloseToPlayer = Action(std::bind(&AEnemyControllerBT::IsEnemyCloseToPlayer, this));
+	Action CheckMultipleMeleeAllies = Action(std::bind(&AEnemyControllerBT::MultipleMeleeAlliesDetected, this));
 	Action SwapWeaponTypeRanged = Action(std::bind(&AEnemyControllerBT::SwapWeapons, this));
+	Action CheckRangedStatus = Action(std::bind(&AEnemyControllerBT::GetRangedState, this));
+	Action CheckCloseToPlayer = Action(std::bind(&AEnemyControllerBT::IsEnemyCloseToPlayer, this));
 	Action SwapWeaponTypeMelee = SwapWeaponTypeRanged;
-
-	SequenceNode SwapToRanged = SequenceNode({ &CheckMeleeStatus, &CheckMultipleAllies, &SwapWeaponTypeRanged });
+	// For the weapon swaps to complete, each node must run so parent to sequence node
+	SequenceNode SwapToRanged = SequenceNode({ &CheckMeleeStatus, &CheckMultipleMeleeAllies, &SwapWeaponTypeRanged });
 	SequenceNode SwapToMelee = SequenceNode({ &CheckRangedStatus, &CheckCloseToPlayer, &SwapWeaponTypeMelee });
 
+	// Only one weapon check needs to run each update to use selector to run only the first
+	// successful
 	SelectorNode VerifyAttackMode = SelectorNode({ &SwapToRanged, &SwapToMelee });
-	SucceederNode TryChangeAttackMode = SucceederNode(&VerifyAttackMode);
+	// Even if no weapon swaps take place, the rest of this node needs to process so parent
+	// to succeeder node that always returns true to its parent
+	SequenceNode CheckPlayerAndAttackBlock = SequenceNode({ &CheckPlayerSpottedSwap,  &VerifyAttackMode });
+	SucceederNode TryChangeAttackMode = SucceederNode(&CheckPlayerAndAttackBlock);
 
 	// Does the controlled enemy need to block or attack
 	Action CheckPlayerInAttackRange = Action(std::bind(&AEnemyControllerBT::CheckInAttackRange, this));
@@ -100,25 +106,44 @@ private:
 	Action CheckPlayerInBlockRange = CheckPlayerInAttackRange;
 	Action CheckIfEnemyCanBlock = Action(std::bind(&AEnemyControllerBT::CanEnemyBlock, this));
 	Action EnemyBlock = Action(std::bind(&AEnemyControllerBT::BlockAttack, this));
+	// For an attack to complete, each node must run successfully so use a sequence node
+	// for the attack process
 	SequenceNode AttackIfInRange = SequenceNode({ &CheckPlayerInAttackRange, &CheckIfEnemyCanAttack, &EnemyAttack });
+	// Similaryl for block, each node must succeed so use sequence again
 	SequenceNode BlockIfInRange = SequenceNode({ &CheckPlayerInBlockRange, &CheckIfEnemyCanBlock, &EnemyBlock });
-	ParallelNode BlockAndAttack = ParallelNode({&AttackIfInRange, &BlockIfInRange }, RunMode::RESUME, RunType::SELECTOR);
-	SucceederNode TryCombat = SucceederNode(&BlockAndAttack);
+	// Only one of block or attack can run at any given time so use selector node to pick
+	SelectorNode BlockAndAttack = SelectorNode({&AttackIfInRange, &BlockIfInRange });
+	// Even if block and attack fail, the rest of this node needs to process so parent
+	// to succeeder node that always returns true to its parent
+	SequenceNode CheckPlayerAndWeaponSwap = SequenceNode({ &CheckPlayerSpottedAttack, &BlockAndAttack });
+	SucceederNode TryAttack = SucceederNode(&CheckPlayerAndWeaponSwap);
 
+	// Combat sequence - see if this unit needs to change weapons, then check if it needs
+	// to attack the player
+	SequenceNode Combat = SequenceNode({ &TryChangeAttackMode, &TryAttack });
+	
 	// Does the controlled enemy need to chase the player
+	Action HasSpottedPlayer = CheckPlayerSpottedAttack;
 	Action MoveToPlayerLocation = Action(std::bind(&AEnemyControllerBT::MoveToPlayer, this));
 	// All actions of chase node must succeed in order for enemy to chase player
-	SequenceNode Combat = SequenceNode({ &CheckPlayerSpotted, &TryChangeAttackMode, &TryCombat, &MoveToPlayerLocation });
+	SequenceNode Chase = SequenceNode({ &HasSpottedPlayer, &MoveToPlayerLocation });
 
-	// patrol to random location in set distance
+	// Patrol to random location in set distance - runs if nothing else runs
+	Action CanSeePlayer = HasSpottedPlayer;
+	InverterNode CantSeePlayer = InverterNode(&CanSeePlayer);
+	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtLocation, this));
 	Action CalculatePatrolDestination = Action(std::bind(&AEnemyControllerBT::CalculateNewPatrolLocation, this));
 	Action MoveToPatrolDestination = Action(std::bind(&AEnemyControllerBT::MoveToLocation, this));
-	Action WaitForMove = Action(std::bind(&AEnemyControllerBT::CheckAtLocation, this));
 	// All actions must succeed in order for enemy to patrol so use Sequence node
-	SequenceNode Patrol = SequenceNode({ &CalculatePatrolDestination, &MoveToPatrolDestination, &WaitForMove });
+	SequenceNode Patrol = SequenceNode({ &CantSeePlayer, &CalculatePatrolDestination, &MoveToPatrolDestination,  &WaitForMove });
 
-	ParallelNode FightOrPatrol = ParallelNode({ &Combat, &Patrol }, RunMode::RESUME, RunType::SELECTOR);
-	SequenceNode OnlyIfEnemyIsntRetreating = SequenceNode({ &CheckEnemyIsntRetreating , &FightOrPatrol });
+	// Enemy is either patrolling or chasing the player so use selector node
+	ParallelNode ChaseOrPatrol = ParallelNode({ &Chase, &Patrol }, RunMode::RESUME, RunType::SELECTOR);
+
+	// Each update both the combat and movement status of the enemy needs to be evaluated
+	// but only if the enemy is not retreating due to low health
+	ParallelNode CombatAndMovement = ParallelNode({ &Combat, &ChaseOrPatrol }, RunMode::JOIN, RunType::SEQUENCE);
+	SequenceNode OnlyIfEnemyIsntRetreating = SequenceNode({ &CheckEnemyIsntRetreating , &CombatAndMovement });
 
 	// Root Node of the tree
 	ParallelNode RootNode = ParallelNode({ &CheckIfDead, &RetreatOnce, &OnlyIfEnemyIsntRetreating }, RunMode::RESUME, RunType::SELECTOR);
@@ -144,7 +169,7 @@ private:
 	// Combat actions
 	NodeStatus GetMeleeState();
 	NodeStatus GetRangedState();
-	NodeStatus MultipleAlliesDetected();
+	NodeStatus MultipleMeleeAlliesDetected();
 	NodeStatus IsEnemyCloseToPlayer();
 	NodeStatus SwapWeapons();
 	NodeStatus CheckInAttackRange();

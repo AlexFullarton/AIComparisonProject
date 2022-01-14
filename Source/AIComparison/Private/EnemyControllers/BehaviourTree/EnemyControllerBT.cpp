@@ -100,14 +100,11 @@ NodeStatus AEnemyControllerBT::MoveToLocation()
 
 NodeStatus AEnemyControllerBT::CheckAtLocation()
 {
-	// If the enemy is still moving to its destination
-	if (GetMoveStatus() == EPathFollowingStatus::Moving)
-		return NodeStatus::RUNNING;
+	FVector enemyLocation = controlledEnemy->GetActorLocation();
+	if (FVector(enemyLocation - destination).IsNearlyZero(tolerance))
+		return NodeStatus::SUCCESS;
 	else
-		// If the enemy has arrived at its stored destination
-		if (GetMoveStatus() != EPathFollowingStatus::Moving)
-			return NodeStatus::SUCCESS;
-	return NodeStatus::FAILURE;
+		return NodeStatus::RUNNING;
 }
 
 NodeStatus AEnemyControllerBT::PlayerSpotted()
@@ -189,13 +186,19 @@ NodeStatus AEnemyControllerBT::GetRangedState()
 		return NodeStatus::FAILURE;
 }
 
-NodeStatus AEnemyControllerBT::MultipleAlliesDetected()
+NodeStatus AEnemyControllerBT::MultipleMeleeAlliesDetected()
 {
-	// Multiple allies detected
-	if (sensedFriendlies.Num() >= 3)
-		return NodeStatus::SUCCESS;
-	else
-		return NodeStatus::FAILURE;
+	int meleeAlliesDetected = 0;
+	for (AActor* actor : sensedFriendlies)
+	{
+		// Double check that the sensed actor is in fact another enemy
+		AEnemyCharacter* enemy_ally = Cast<AEnemyCharacter>(actor);
+		// Count the total amount of melee allies detected by this pawn
+		if (enemy_ally->isMelee)
+			meleeAlliesDetected++;
+	}
+	// Return success when 3 or more melee allies are detected
+	return meleeAlliesDetected >= 3 ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
 }
 
 NodeStatus AEnemyControllerBT::IsEnemyCloseToPlayer()
