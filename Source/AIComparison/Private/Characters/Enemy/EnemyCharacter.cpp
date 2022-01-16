@@ -10,7 +10,8 @@ AEnemyCharacter::AEnemyCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set size for the enemy capsule collider
-	GetCapsuleComponent()->InitCapsuleSize(40.0f, 100.0f);
+	CapsuleColliderRadius = 40.0f;
+	GetCapsuleComponent()->InitCapsuleSize(CapsuleColliderRadius, 100.0f);
 	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(TEXT("Pawn"));
 
 	// Set enemy's max and current health defaults

@@ -22,21 +22,6 @@ public:
 	virtual void CharacterDeath() override;
 	virtual void ModifyHealth(float healthToSubtract) override;
 
-	// Widget component for healthbar
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UWidgetComponent* healthbarWidget;
-
-	// healthbar widget
-	UEnemyHealthbar* healthbarObject;
-
-	// Death screen widget class
-	UClass* DeathScreenWidgetClass;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -44,4 +29,25 @@ public:
 	void InitialiseEnemy();
 
 	void RagdollDeath();
+
+	float GetCapsuleColliderRadius() { return CapsuleColliderRadius; }
+
+	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	float CapsuleColliderRadius;
+
+public:	
+	// Widget component for healthbar
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UWidgetComponent* healthbarWidget;
+
+	// healthbar widget
+	UEnemyHealthbar* healthbarObject;
+
+	// Death screen widget class
+	UClass* DeathScreenWidgetClass;
+	
 };

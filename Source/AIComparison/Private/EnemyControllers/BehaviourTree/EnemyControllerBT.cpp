@@ -100,8 +100,10 @@ NodeStatus AEnemyControllerBT::MoveToLocation()
 
 NodeStatus AEnemyControllerBT::CheckAtLocation()
 {
-	FVector enemyLocation = controlledEnemy->GetActorLocation();
-	if (FVector(enemyLocation - destination).IsNearlyZero(tolerance))
+	FVector2D pawnLocation2D = FVector2D(pawnLocation.X, pawnLocation.Y);
+	FVector2D destination2D = FVector2D(destination.Location.X, destination.Location.Y);
+	float distanceToLocation =  (pawnLocation2D - destination2D).Size();
+	if (distanceToLocation <= (tolerance + controlledEnemy->GetCapsuleColliderRadius() + 5.0f))
 		return NodeStatus::SUCCESS;
 	else
 		return NodeStatus::RUNNING;
