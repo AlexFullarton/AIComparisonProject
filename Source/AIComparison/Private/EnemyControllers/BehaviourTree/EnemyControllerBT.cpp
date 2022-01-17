@@ -242,11 +242,17 @@ NodeStatus AEnemyControllerBT::CanEnemyAttack()
 
 NodeStatus AEnemyControllerBT::AttackPlayer()
 {
+	// If the block timer has not already been started
+	// When timer ends, the controlled enemy stops being locked out of the block action
+	if (!blockTimerRunning)
+	{
+		SetBlockTimer();
+		blockTimerRunning = true;
+	}
 	RotateToFacePlayer();
 	if (isMelee)
 	{
 		Attack();
-		SetBlockTimer();
 		return NodeStatus::SUCCESS;
 	}
 	else if (isRanged)
@@ -259,7 +265,7 @@ NodeStatus AEnemyControllerBT::AttackPlayer()
 
 NodeStatus AEnemyControllerBT::CanEnemyBlock()
 {
-	if (IsBlockAllowed())
+	if (isMelee && IsBlockAllowed())
 	{
 		disallowAttack();
 		return NodeStatus::SUCCESS;
@@ -269,10 +275,51 @@ NodeStatus AEnemyControllerBT::CanEnemyBlock()
 
 NodeStatus AEnemyControllerBT::BlockAttack()
 {
+	// If the attack timer has not already been started
+	// When the timer ends, the controlled enemy stops being locked out of the attack action
+	if (!attackTimerRunning)
+	{
+		SetAttackTimer();
+		attackTimerRunning = true;
+	}
 	Block();
-	SetAttackTimer();
 	return NodeStatus::SUCCESS;
 }
 
+void AEnemyControllerBT::allowAttack()
+{
+	attackTimerRunning = false;
+	StopBlocking();
+	Super::allowAttack();
+}
+
+void AEnemyControllerBT::allowBlock()
+{
+	blockTimerRunning = false;
+	Super::allowBlock();
+}
+
+void AEnemyControllerBT::allowRanged()
+{
+	rangedTimerRunning = false;
+	Super::allowRanged();
+}
+
+void AEnemyControllerBT::SetAttackTimer()
+{
+	float rate = FMath::RandRange(attackRate, attackRate + 1.5f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyControllerBT::allowAttack, rate, false);
+}
+
+void AEnemyControllerBT::SetBlockTimer()
+{
+	float rate = FMath::RandRange(1.5, 3.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemyControllerBT::allowBlock, rate, false);
+}
+
+void AEnemyControllerBT::SetRangedTimer()
+{
+
+}
 
 

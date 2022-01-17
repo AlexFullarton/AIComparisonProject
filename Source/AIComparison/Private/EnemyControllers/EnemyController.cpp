@@ -40,9 +40,20 @@ AEnemyController::AEnemyController()
 	// How long to wait between each attack (minimum)
 	attackRate = 3.0f;
 
+	// New enemies are always able to attack or block
+	attackTimerRunning = false;
+	blockTimerRunning = false;
+	rangedTimerRunning = false;
+
+	attackAllowed = true;
+	rangedAllowed = true;
+	blockAllowed = true;
+
 	// Enemies initially are melee
 	isMelee = true;
 	isRanged = false;
+
+	// New enemies have not retreated or died
 	hasRetreated = false;
 	isDead = false;
 }

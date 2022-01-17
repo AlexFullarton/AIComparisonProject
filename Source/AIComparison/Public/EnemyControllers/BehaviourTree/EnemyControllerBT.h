@@ -32,6 +32,14 @@ public:
 	// Called every game update
 	virtual void Tick(float DeltaTime);
 
+	virtual void allowAttack();
+	virtual void allowBlock();
+	virtual void allowRanged();
+
+	virtual void SetAttackTimer();
+	virtual void SetBlockTimer();
+	virtual void SetRangedTimer();
+
 	// Evaulate the tree at run time
 	virtual void RunNode() override;
 

@@ -41,15 +41,15 @@ public:
 	// Checks if the controlled enemy is already attacking - used for playing anim montages
 	bool IsEnemyAttacking();
 	// Set a random amount of time for the current attack period to last for - based on enemy attack rate float
-	void SetAttackTimer();
+	virtual void SetAttackTimer();
 	// Set attack gate bool - prevents attacking again while already attacking/spam clicking for more ranged attacks etc.
-	void allowAttack();
+	virtual void allowAttack();
 	// Unset attack gate bool
 	void disallowAttack();
 	// Get attack gate bool
 	bool IsAttackAllowed() { return attackAllowed; }
 	// Set a random amount of time for the current attack period to last for - based on enemy attack rate float
-	void SetRangedAttackTimer();
+	virtual void SetRangedAttackTimer();
 	// Set attack gate bool - prevents attacking again while already attacking/spam clicking for more ranged attacks etc.
 	void allowRanged();
 	// Unset attack gate bool
@@ -62,7 +62,7 @@ public:
 	// Cancel blocking
 	void StopBlocking();
 	// Set a random amount of time for the current block to last for (between 1.5 and 3 seconds)
-	void SetBlockTimer();
+	virtual void SetBlockTimer();
 	// Set block gate bool - prevents being abld to block while already blocking/spam clicking block
 	void allowBlock();
 	// Unset block gate bool
@@ -123,15 +123,22 @@ public:
 	float rangedTolerance;
 	float attackRate;
 
-	bool attackAllowed;
-	bool rangedAllowed;
-	bool blockAllowed;
 	bool isMelee;
 	bool isRanged;
 	bool hasRetreated;
 	bool isDead;
 	bool isRetreating;
 
+protected:
+	bool attackTimerRunning;
+	bool blockTimerRunning;
+	bool rangedTimerRunning;
+
 	// TimerHandle for block/attack timers
 	FTimerHandle TimerHandle;
+
+private:
+	bool attackAllowed;
+	bool rangedAllowed;
+	bool blockAllowed;
 };

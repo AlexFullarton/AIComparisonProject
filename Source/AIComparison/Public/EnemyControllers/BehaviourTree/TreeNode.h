@@ -33,6 +33,8 @@ enum RunType
 class TreeNode
 {
 public:	
+	// Destructor
+	virtual ~TreeNode() = default;
 	// Returns node status
 	NodeStatus GetNodeStatus() { return CurrentState; }
 
