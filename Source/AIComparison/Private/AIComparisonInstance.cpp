@@ -38,6 +38,7 @@ void UAIComparisonInstance::ResetInstance()
 
 	FPSData.Reset();
 	CPUPercentageData.Reset();
+	MemoryData.Reset();
 
 	shouldGatherData = false;
 }
@@ -46,12 +47,14 @@ void UAIComparisonInstance::CalculateDataAverages()
 {
 	FPSData.CalculateAverage();
 	CPUPercentageData.CalculateAverage();
+	MemoryData.CalculateAverage();
 }
 
 void UAIComparisonInstance::CalculateDataStdDevs()
 {
 	FPSData.CalculateStandardDeviation();
 	CPUPercentageData.CalculateStandardDeviation();
+	MemoryData.CalculateStandardDeviation();
 }
 
 void UAIComparisonInstance::RecordFPSData(float DeltaTime)
@@ -72,6 +75,18 @@ void UAIComparisonInstance::RecordCPUPercentageData()
 	else if (lastCPUTime.CPUTimePct < CPUPercentageData.lowest)
 		CPUPercentageData.lowest = lastCPUTime.CPUTimePct;
 	CPUPercentageData.Values.Add(lastCPUTime.CPUTimePct);
+}
+
+void UAIComparisonInstance::RecordMemoryUseageData()
+{
+	// Get current memory stats - values are in bytes so must convert
+	FPlatformMemoryStats lastMemoryStats = FWindowsPlatformMemory::GetStats();
+	float memoryUsedInGB = (lastMemoryStats.UsedPhysical * 1.0f)/ ByteToGigabyte;
+	if (memoryUsedInGB > MemoryData.highest)
+		MemoryData.highest = memoryUsedInGB;
+	else if (memoryUsedInGB < MemoryData.lowest)
+		MemoryData.lowest = memoryUsedInGB;
+	MemoryData.Values.Add(memoryUsedInGB);
 }
 
 FCollectedData::FCollectedData()

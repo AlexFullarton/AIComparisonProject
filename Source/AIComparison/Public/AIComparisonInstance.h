@@ -53,6 +53,8 @@ public:
 	void RecordFPSData(float deltaTime);
 	UFUNCTION(BlueprintCallable)
 	void RecordCPUPercentageData();
+	UFUNCTION(BlueprintCallable)
+	void RecordMemoryUseageData();
 
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
 	int EnemyCount;
@@ -78,8 +80,13 @@ public:
 	FCollectedData FPSData;
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
 	FCollectedData CPUPercentageData;
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	FCollectedData MemoryData;
 
 	// Gate bool for gathering data
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
 	bool shouldGatherData;
+
+	// conversion from bytes to gigabytes - used for manipulating RAM data
+	const static int ByteToGigabyte = 1073741824;
 };

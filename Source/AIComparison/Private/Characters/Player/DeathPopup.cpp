@@ -4,7 +4,7 @@
 #include "Characters/Player/DeathPopup.h"
 #include "Characters/Player/PlayerCharacter.h"
 
-void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollectedData CPUPercentageData)
+void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollectedData CPUPercentageData, FCollectedData MemoryData)
 {
 	// Get the programs current directory location
 	std::string location = TCHAR_TO_UTF8(*FPaths::ProjectDir());
@@ -79,9 +79,9 @@ void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollected
 		osstream << "\t\t\t\t{ \"MaximumFPS\" : \"" << FPSData.highest << "\" },\n";
 		osstream << "\t\t\t\t{ \"MeanFPS\" : \"" << FPSData.average << "\" },\n";
 		osstream << "\t\t\t\t{ \"StdDevFPS\" : \"" << FPSData.stdDev << "\" },\n";
+		// Record each gathered fps entry into an array structure in json format
 		osstream << "\t\t\t\t{";
 		osstream << "\t\t\t\t\t\"FPSData\" : [\n";
-		// Record each gathered fps entry into an array structure in json format
 		int count = FPSData.Values.Num();
 		for (int i = 0; i < count; i++)
 		{
@@ -101,9 +101,9 @@ void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollected
 		osstream << "\t\t\t\t{ \"MaximumCPU%\" : \"" << CPUPercentageData.highest << "\" },\n";
 		osstream << "\t\t\t\t{ \"MeanCPU%\" : \"" << CPUPercentageData.average << "\" },\n";
 		osstream << "\t\t\t\t{ \"StdDevCPU%\" : \"" << CPUPercentageData.stdDev << "\" },\n";
+		// Record each gathered CPU Percentage entry into an array structure in json format
 		osstream << "\t\t\t\t{";
 		osstream << "\t\t\t\t\t\"CPU%Data\" : [\n";
-		// Record each gathered CPU Percentage entry into an array structure in json format
 		count = CPUPercentageData.Values.Num();
 		for (int i = 0; i < count; i++)
 		{
@@ -116,7 +116,31 @@ void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollected
 		}
 		osstream << "\t\t\t\t\t]\n";
 		osstream << "\t\t\t\t}\n";
+		osstream << "\t\t\t],\n";
+		// Record Memory data gathered in the test
+		osstream << "\t\t\t\"MemoryUseage\" : [\n";
+		osstream << "\t\t\t\t{ \"MinimumMemoryUseage\" : \"" << MemoryData.lowest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MaximumMemoryUseage\" : \"" << MemoryData.highest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MeanMemoryUseage\" : \"" << MemoryData.average << "\" },\n";
+		osstream << "\t\t\t\t{ \"StdDevMemoryUseage\" : \"" << MemoryData.stdDev << "\" },\n";
+		// Record each gathered memory useage entry into an array structure in json format
+		osstream << "\t\t\t\t{";
+		osstream << "\t\t\t\t\t\"MemoryUseageData\" : [\n";
+		count = MemoryData.Values.Num();
+		for (int i = 0; i < count; i++)
+		{
+			// Each element but the last has the same structure
+			if (i != count - 1)
+				osstream << "\t\t\t\t\t\t{ \"MemoryUseage\" : \"" << MemoryData.Values[i] << "\" },\n";
+			// Last element has no comma
+			else
+				osstream << "\t\t\t\t\t\t{ \"MemoryUseage\" : \"" << MemoryData.Values[i] << "\" }\n";
+		}
+		osstream << "\t\t\t\t\t]\n";
+		osstream << "\t\t\t\t}\n";
 		osstream << "\t\t\t]\n";
+
+		// Close json structure
 		osstream << "\t\t}\n";
 		osstream << "\t]\n";
 		osstream << "}\n";
