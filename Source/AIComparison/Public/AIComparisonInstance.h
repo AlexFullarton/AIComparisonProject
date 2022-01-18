@@ -8,6 +8,33 @@
 #include <algorithm>
 #include "AIComparisonInstance.generated.h"
 
+USTRUCT(BlueprintType)
+struct FCollectedData
+{
+	GENERATED_BODY()
+public:
+	FCollectedData();
+
+	void Reset();
+
+	void CalculateAverage();
+	void CalculateStandardDeviation();
+
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	float highest;
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	float lowest;
+	// Average fps, calculated on quit or return to menu
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	float average;
+	// Standard deviation of the collected fps values
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	float stdDev;
+	// array of each ticks fps data
+	UPROPERTY(BlueprintReadWrite, Category = Globals)
+	TArray<float> Values;
+};
+
 UCLASS()
 class AICOMPARISON_API UAIComparisonInstance : public UGameInstance
 {
@@ -18,10 +45,14 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void ResetInstance();
+
+	void CalculateDataAverages();
+	void CalculateDataStdDevs();
+
 	UFUNCTION(BlueprintCallable)
-	void CalculateAverageFPS();
+	void RecordFPSData(float deltaTime);
 	UFUNCTION(BlueprintCallable)
-	void CalculateStandardDeviationFPS();
+	void RecordCPUPercentageData();
 
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
 	int EnemyCount;
@@ -44,18 +75,9 @@ public:
 
 	// Profiling data
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
-	float highestFPS;
+	FCollectedData FPSData;
 	UPROPERTY(BlueprintReadWrite, Category = Globals)
-	float lowestFPS;
-	// Average fps, calculated on quit or return to menu
-	UPROPERTY(BlueprintReadWrite, Category = Globals)
-	float averageFPS;
-	// Standard deviation of the collected fps values
-	UPROPERTY(BlueprintReadWrite, Category = Globals)
-	float stdDevFPS;
-	// array of each ticks fps data
-	UPROPERTY(BlueprintReadWrite, Category = Globals)
-	TArray<float> FPSValues;
+	FCollectedData CPUPercentageData;
 
 	// Gate bool for gathering data
 	UPROPERTY(BlueprintReadWrite, Category = Globals)

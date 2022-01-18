@@ -4,7 +4,7 @@
 #include "Characters/Player/DeathPopup.h"
 #include "Characters/Player/PlayerCharacter.h"
 
-void UDeathPopup::OutputPerformanceDataToFile(float highestFPS, float lowestFPS, float averageFPS, float stdDevFPS, const TArray<float>& FPSValues)
+void UDeathPopup::OutputPerformanceDataToFile(FCollectedData FPSData, FCollectedData CPUPercentageData)
 {
 	// Get the programs current directory location
 	std::string location = TCHAR_TO_UTF8(*FPaths::ProjectDir());
@@ -72,25 +72,50 @@ void UDeathPopup::OutputPerformanceDataToFile(float highestFPS, float lowestFPS,
 
 		// Record total amount of enemies used for the test
 		osstream << "\t\t\t\"EnemyCount\" : \"" << instance->EnemyCount << "\",\n";
-		// Record fps data gathered in the test
-		osstream << "\t\t\t\"MinimumFPS\" : \"" << lowestFPS << "\",\n";
-		osstream << "\t\t\t\"MaximumFPS\" : \"" << highestFPS << "\",\n";
-		osstream << "\t\t\t\"MeanFPS\" : \"" << averageFPS << "\",\n";
-		osstream << "\t\t\t\"StdDevFPS\" : \"" << stdDevFPS << "\",\n";
-		osstream << "\t\t\t\"FPSData\" : [\n";
 
+		// Record fps data gathered in the test
+		osstream << "\t\t\t\"FPS\" : [\n";
+		osstream << "\t\t\t\t{ \"MinimumFPS\" : \"" << FPSData.lowest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MaximumFPS\" : \"" << FPSData.highest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MeanFPS\" : \"" << FPSData.average << "\" },\n";
+		osstream << "\t\t\t\t{ \"StdDevFPS\" : \"" << FPSData.stdDev << "\" },\n";
+		osstream << "\t\t\t\t{";
+		osstream << "\t\t\t\t\t\"FPSData\" : [\n";
 		// Record each gathered fps entry into an array structure in json format
-		TArray<float> FPSData = FPSValues;
-		int count = FPSData.Num();
+		int count = FPSData.Values.Num();
 		for (int i = 0; i < count; i++)
 		{
 			// Each element but the last has the same structure
 			if (i != count - 1)
-				osstream << "\t\t\t\t{ \"FramesPerSecond\" : \"" << FPSData[i] << "\" },\n";
+				osstream << "\t\t\t\t\t\t{ \"FramesPerSecond\" : \"" << FPSData.Values[i] << "\" },\n";
 			// Last element has no comma
 			else
-				osstream << "\t\t\t\t{ \"FramesPerSecond\" : \"" << FPSData[i] << "\" }\n";
+				osstream << "\t\t\t\t\t\t{ \"FramesPerSecond\" : \"" << FPSData.Values[i] << "\" }\n";
 		}
+		osstream << "\t\t\t\t\t]\n";
+		osstream << "\t\t\t\t}\n";
+		osstream << "\t\t\t],\n";
+		// Record CPU data gathered in the test
+		osstream << "\t\t\t\"CPU%\" : [\n";
+		osstream << "\t\t\t\t{ \"MinimumCPU%\" : \"" << CPUPercentageData.lowest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MaximumCPU%\" : \"" << CPUPercentageData.highest << "\" },\n";
+		osstream << "\t\t\t\t{ \"MeanCPU%\" : \"" << CPUPercentageData.average << "\" },\n";
+		osstream << "\t\t\t\t{ \"StdDevCPU%\" : \"" << CPUPercentageData.stdDev << "\" },\n";
+		osstream << "\t\t\t\t{";
+		osstream << "\t\t\t\t\t\"CPU%Data\" : [\n";
+		// Record each gathered CPU Percentage entry into an array structure in json format
+		count = CPUPercentageData.Values.Num();
+		for (int i = 0; i < count; i++)
+		{
+			// Each element but the last has the same structure
+			if (i != count - 1)
+				osstream << "\t\t\t\t\t\t{ \"CPU%Useage\" : \"" << CPUPercentageData.Values[i] << "\" },\n";
+			// Last element has no comma
+			else
+				osstream << "\t\t\t\t\t\t{ \"CPU%Useage\" : \"" << CPUPercentageData.Values[i] << "\" }\n";
+		}
+		osstream << "\t\t\t\t\t]\n";
+		osstream << "\t\t\t\t}\n";
 		osstream << "\t\t\t]\n";
 		osstream << "\t\t}\n";
 		osstream << "\t]\n";

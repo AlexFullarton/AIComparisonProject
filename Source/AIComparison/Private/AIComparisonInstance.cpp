@@ -18,9 +18,6 @@ UAIComparisonInstance::UAIComparisonInstance()
 	// Enemies killed to zero - acts as a counter for game end trigger
 	EnemiesKilled = 0;
 
-	highestFPS = 0.0f;
-	lowestFPS = 999999.0f;
-
 	shouldGatherData = false;
 }
 
@@ -39,30 +36,74 @@ void UAIComparisonInstance::ResetInstance()
 	// Enemies killed to zero - acts as a counter for game end trigger
 	EnemiesKilled = 0;
 
-	highestFPS = 0.0f;
-	lowestFPS = 999999.0f;
-	averageFPS = 0.0f;
-	stdDevFPS = 0.0f;
-	FPSValues.Empty();
+	FPSData.Reset();
+	CPUPercentageData.Reset();
 
 	shouldGatherData = false;
 }
 
-void UAIComparisonInstance::CalculateAverageFPS()
+void UAIComparisonInstance::CalculateDataAverages()
 {
-	// Sum all the recorded fps values, then divide by the amount
-	averageFPS = 0.0f;
-	for (auto result : FPSValues)
-		averageFPS += result;
-	averageFPS = averageFPS / FPSValues.Num();
+	FPSData.CalculateAverage();
+	CPUPercentageData.CalculateAverage();
 }
 
-void UAIComparisonInstance::CalculateStandardDeviationFPS()
+void UAIComparisonInstance::CalculateDataStdDevs()
+{
+	FPSData.CalculateStandardDeviation();
+	CPUPercentageData.CalculateStandardDeviation();
+}
+
+void UAIComparisonInstance::RecordFPSData(float DeltaTime)
+{
+	float lastFPS = 1.0f / DeltaTime;
+	if (lastFPS > FPSData.highest)
+		FPSData.highest = lastFPS;
+	else if (lastFPS < FPSData.lowest)
+		FPSData.lowest = lastFPS;
+	FPSData.Values.Add(lastFPS);
+}
+
+void UAIComparisonInstance::RecordCPUPercentageData()
+{
+	FCPUTime lastCPUTime = FWindowsPlatformTime::GetCPUTime();
+	if (lastCPUTime.CPUTimePct > CPUPercentageData.highest)
+		CPUPercentageData.highest = lastCPUTime.CPUTimePct;
+	else if (lastCPUTime.CPUTimePct < CPUPercentageData.lowest)
+		CPUPercentageData.lowest = lastCPUTime.CPUTimePct;
+	CPUPercentageData.Values.Add(lastCPUTime.CPUTimePct);
+}
+
+FCollectedData::FCollectedData()
+{
+	highest = 0.0f;
+	lowest = FLT_MAX;
+}
+
+void FCollectedData::Reset()
+{
+	highest = 0.0f;
+	lowest = FLT_MAX;
+	average = 0.0f;
+	stdDev = 0.0f;
+	Values.Empty();
+}
+
+void FCollectedData::CalculateAverage()
+{
+	// Sum all the recorded values, then divide by the count
+	average = 0.0f;
+	for (auto result : Values)
+		average += result;
+	average = average / Values.Num();
+}
+
+void FCollectedData::CalculateStandardDeviation()
 {
 	// Use sample version of standard deviation equation as the mean has been calculated from generated data
 	float sum = 0.0f;
-	for (auto result : FPSValues)
-		sum += (result - averageFPS) * (result - averageFPS);
-	stdDevFPS = sqrt(sum / (FPSValues.Num() - 1));
+	for (auto result : Values)
+		sum += (result - average) * (result - average);
+	stdDev = sqrt(sum / (Values.Num() - 1));
 }
 

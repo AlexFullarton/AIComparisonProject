@@ -150,8 +150,9 @@ void AEnemyCharacter::RagdollDeath()
 	if (GameInstance->EnemiesKilled == GameInstance->EnemyCount)
 	{
 		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->shouldGatherData = false;
-		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateAverageFPS();
-		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateStandardDeviationFPS();
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateDataAverages();
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateDataStdDevs();
+
 
 		APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 		FInputModeUIOnly UIInputMode;

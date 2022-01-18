@@ -17,5 +17,5 @@ class AICOMPARISON_API UDeathPopup : public UUserWidget
 		
 public:
 	UFUNCTION(BlueprintCallable)
-	void OutputPerformanceDataToFile(float highestFPS, float lowestFPS, float averageFPS, float stdDevFPS, const TArray<float>& FPSValues);
+		void OutputPerformanceDataToFile(FCollectedData FPSData, FCollectedData CPUPercentageData);
 };
