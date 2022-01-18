@@ -35,6 +35,7 @@ AEnemyCharacter::AEnemyCharacter()
 	SkelMesh->CastShadow = true;
 	SkelMesh->SetRelativeRotation(FRotator(0, 0, 0));
 	SkelMesh->SetRelativeLocation(FVector(0, 0, -100.0f));
+	SkelMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	
 	// Set animation blueprint for the third person mesh
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP'"));
