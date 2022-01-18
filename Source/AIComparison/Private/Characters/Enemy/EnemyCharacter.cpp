@@ -148,6 +148,10 @@ void AEnemyCharacter::RagdollDeath()
 	// If all enemies are dead
 	if (GameInstance->EnemiesKilled == GameInstance->EnemyCount)
 	{
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->shouldGatherData = false;
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateAverageFPS();
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateStandardDeviationFPS();
+
 		APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 		FInputModeUIOnly UIInputMode;
 		UIInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);

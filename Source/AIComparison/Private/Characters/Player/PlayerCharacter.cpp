@@ -6,6 +6,7 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
+	SetActorTickEnabled(true);
  	// Set size for the player capsule collider
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 100.0f);
 	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(TEXT("Pawn"));
@@ -85,7 +86,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SetActorTickEnabled(true);
 	// Get game instance to retrieve data from main menu
 	UAIComparisonInstance* instance = Cast<UAIComparisonInstance>(GetGameInstance());
 
@@ -140,9 +141,11 @@ void APlayerCharacter::ModifyHealth(float healthToSubtract)
 
 void APlayerCharacter::CharacterDeath()
 {
+	SetActorTickEnabled(false);
+	Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->shouldGatherData = false;
+	Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateAverageFPS();
+	Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateStandardDeviationFPS();
 	RagdollDeath();
-	// End game screen here and stop input
-	// Could maybe add this to ragdoll death?
 }
 
 void APlayerCharacter::RagdollDeath()
