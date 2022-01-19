@@ -93,6 +93,8 @@ FCollectedData::FCollectedData()
 {
 	highest = 0.0f;
 	lowest = FLT_MAX;
+	average = 0.0f;
+	stdDev = 0.0f;
 }
 
 void FCollectedData::Reset()

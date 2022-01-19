@@ -14,8 +14,8 @@ AEnemySpawner::AEnemySpawner()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> cylinderMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder'"));
 	objectMesh->SetStaticMesh(cylinderMesh.Object);
 
-	static ConstructorHelpers::FClassFinder<AEnemyCharacter> enemyClassBP(TEXT("Blueprint'/Game/Blueprints/Characters/EnemyCharacterBP.EnemyCharacterBP_C'"));
-	enemyClass = enemyClassBP.Class;
+	static ConstructorHelpers::FObjectFinder<UClass> enemyClassBP(TEXT("/Game/Blueprints/Characters/EnemyCharacterBP.EnemyCharacterBP_C"));
+	enemyClass = enemyClassBP.Object;
 
 	SceneComponent->bHiddenInGame = true;
 	objectMesh->bHiddenInGame = true;

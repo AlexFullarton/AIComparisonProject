@@ -58,9 +58,9 @@ APlayerCharacter::APlayerCharacter()
 	SkelMesh->SkeletalMesh = Mesh3PObject.Object;
 
 	// Set animation blueprint for the third person mesh
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP'"));
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimationBP(TEXT("/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP_C"));
 	SkelMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	SkelMesh->AnimClass = AnimationBP.Object->GeneratedClass;
+	SkelMesh->AnimClass = AnimationBP.Object;
 
 	// Setup player movement component acceleration/deceleration coefficients
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->MaxAcceleration = 800.0f;
@@ -68,18 +68,18 @@ APlayerCharacter::APlayerCharacter()
 	Cast<UCharacterMovementComponent>(GetMovementComponent())->BrakingFriction = 0.01f;
 
 	// Gather weapon data for the player
-	static ConstructorHelpers::FObjectFinder<UBlueprint> swordBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Sword.Sword'"));
-	rightHandSword = swordBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> swordBP(TEXT("/Game/Blueprints/Weapons/Sword.Sword_C"));
+	rightHandSword = swordBP.Object;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> shieldBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Shield.Shield'"));
-	leftHandShield = shieldBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> shieldBP(TEXT("/Game/Blueprints/Weapons/Shield.Shield_C"));
+	leftHandShield = shieldBP.Object;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
-	leftHandBow = bowBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> bowBP(TEXT("/Game/Blueprints/Weapons/Bow.Bow_C"));
+	leftHandBow = bowBP.Object;
 
 	// Get the death screen widget class
-	static ConstructorHelpers::FClassFinder<UUserWidget> DeathScreen(TEXT("WidgetBlueprint'/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C'"));
-	DeathScreenWidgetClass = DeathScreen.Class;
+	static ConstructorHelpers::FObjectFinder<UClass> DeathScreen(TEXT("/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C"));
+	DeathScreenWidgetClass = DeathScreen.Object;
 }
 
 // Called when the game starts or when spawned
