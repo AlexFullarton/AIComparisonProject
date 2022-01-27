@@ -15,9 +15,6 @@ public:
 	//Constructor
 	ParallelNode(std::list<TreeNode*> Nodes, RunMode Mode, RunType Type);
 	
-	RunMode NodeRunMode;
-	RunType NodeRunType;
-	
 	// Returns a list of all the child nodes of this node
 	const std::list<TreeNode*>& GetChildNodes() const;
 	// Returns the total amount of child nodes for this node
@@ -68,4 +65,8 @@ private:
 	// way as a standard selector node - this task fails of all children fail
 	NodeStatus SelectorChildSuccess();
 	NodeStatus SelectorChildFailure();
+
+public:
+	RunMode NodeRunMode;
+	RunType NodeRunType;
 };

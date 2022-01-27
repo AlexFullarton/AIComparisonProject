@@ -3,7 +3,7 @@
 
 #include "EnemyControllers/BehaviourTree/Composite/ParallelNode.h"
 
-ParallelNode::ParallelNode(std::list<TreeNode*> Nodes , RunMode Mode, RunType Type) : ChildNodes(Nodes), NodeRunMode(Mode), NodeRunType(Type)
+ParallelNode::ParallelNode(std::list<TreeNode*> Nodes, RunMode Mode, RunType Type) : ChildNodes(Nodes), NodeRunMode(Mode), NodeRunType(Type)
 {}
 
 const std::list<TreeNode*>& ParallelNode::GetChildNodes() const

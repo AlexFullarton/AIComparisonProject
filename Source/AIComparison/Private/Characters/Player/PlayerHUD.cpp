@@ -6,12 +6,12 @@
 APlayerHUD::APlayerHUD()
 {
 	// Setup crosshair texture
-	static ConstructorHelpers::FClassFinder<UUserWidget> crosshair(TEXT("WidgetBlueprint'/Game/Blueprints/UI/CrosshairWidget.CrosshairWidget_C'"));
-	crosshairClass = crosshair.Class;
+	static ConstructorHelpers::FObjectFinder<UClass> crosshair(TEXT("/Game/Blueprints/UI/CrosshairWidget.CrosshairWidget_C"));
+	crosshairClass = crosshair.Object;
 
 	// Setup widget for healthbar
-	static ConstructorHelpers::FClassFinder<UUserWidget> healthbar(TEXT("WidgetBlueprint'/Game/Blueprints/UI/PlayerHealthbarWidget.PlayerHealthbarWidget_C'"));
-	healthbarClass = healthbar.Class;
+	static ConstructorHelpers::FObjectFinder<UClass> healthbar(TEXT("/Game/Blueprints/UI/PlayerHealthbarWidget.PlayerHealthbarWidget_C"));
+	healthbarClass = healthbar.Object;
 }
 
 void APlayerHUD::BeginPlay()

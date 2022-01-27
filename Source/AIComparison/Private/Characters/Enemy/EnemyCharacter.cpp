@@ -35,35 +35,36 @@ AEnemyCharacter::AEnemyCharacter()
 	SkelMesh->CastShadow = true;
 	SkelMesh->SetRelativeRotation(FRotator(0, 0, 0));
 	SkelMesh->SetRelativeLocation(FVector(0, 0, -100.0f));
+	SkelMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	
 	// Set animation blueprint for the third person mesh
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimationBP(TEXT("AnimBlueprint'/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP'"));
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimationBP(TEXT("/Game/Animations/Character/Player3P_AnimBP.Player3P_AnimBP_C"));
 	SkelMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	SkelMesh->AnimClass = AnimationBP.Object->GeneratedClass;
+	SkelMesh->AnimClass = AnimationBP.Object;
 
 	// Setup widget component for healthbar
 	healthbarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthbarWidget"));
-	static ConstructorHelpers::FClassFinder<UUserWidget> healthbar(TEXT("WidgetBlueprint'/Game/Blueprints/UI/EnemyHealthbarWidget.EnemyHealthbarWidget_C'"));
+	static ConstructorHelpers::FObjectFinder<UClass> healthbar(TEXT("/Game/Blueprints/UI/EnemyHealthbarWidget.EnemyHealthbarWidget_C"));
 	healthbarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 80.0f));
 	healthbarWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	healthbarWidget->SetWidgetClass(healthbar.Class);
+	healthbarWidget->SetWidgetClass(healthbar.Object);
 	healthbarWidget->SetDrawSize(FVector2D(50.0f, 20.0f));
 	healthbarWidget->SetDrawAtDesiredSize(true);
 	healthbarWidget->SetupAttachment(RootComponent);
 	
 	// Gather weapon data for the enemy
-	static ConstructorHelpers::FObjectFinder<UBlueprint> swordBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Sword.Sword'"));
-	rightHandSword = swordBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> swordBP(TEXT("/Game/Blueprints/Weapons/Sword.Sword_C"));
+	rightHandSword = swordBP.Object;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> shieldBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Shield.Shield'"));
-	leftHandShield = shieldBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> shieldBP(TEXT("/Game/Blueprints/Weapons/Shield.Shield_C"));
+	leftHandShield = shieldBP.Object;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> bowBP(TEXT("Blueprint'/Game/Blueprints/Weapons/Bow.Bow'"));
-	leftHandBow = bowBP.Object->GeneratedClass;
+	static ConstructorHelpers::FObjectFinder<UClass> bowBP(TEXT("/Game/Blueprints/Weapons/Bow.Bow_C"));
+	leftHandBow = bowBP.Object;
 
 	// Get the death screen widget class
-	static ConstructorHelpers::FClassFinder<UUserWidget> DeathScreen(TEXT("WidgetBlueprint'/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C'"));
-	DeathScreenWidgetClass = DeathScreen.Class;
+	static ConstructorHelpers::FObjectFinder<UClass> DeathScreen(TEXT("/Game/Blueprints/UI/DeathScreenWidget.DeathScreenWidget_C"));
+	DeathScreenWidgetClass = DeathScreen.Object;
 }
 
 void AEnemyCharacter::InitialiseEnemy()
@@ -148,6 +149,11 @@ void AEnemyCharacter::RagdollDeath()
 	// If all enemies are dead
 	if (GameInstance->EnemiesKilled == GameInstance->EnemyCount)
 	{
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->shouldGatherData = false;
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateDataAverages();
+		Cast<UAIComparisonInstance>(GetWorld()->GetGameInstance())->CalculateDataStdDevs();
+
+
 		APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 		FInputModeUIOnly UIInputMode;
 		UIInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
